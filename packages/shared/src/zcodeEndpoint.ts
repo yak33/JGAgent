@@ -1,10 +1,13 @@
 import type { ZCodeEnv } from "./env.js";
 
-export const DEFAULT_ZCODE_ENDPOINT_ORIGIN = "https://zcode.z.ai";
-export const DEFAULT_BIGMODEL_API_ORIGIN = "https://bigmodel.cn";
-export const DEFAULT_ZAI_OAUTH_ORIGIN = "https://chat.z.ai";
-export const DEFAULT_ZAI_BUSINESS_BASE_URL = "https://api.z.ai";
-export const DEFAULT_ZAI_OAUTH_CLIENT_ID = "client_P8X5CMWmlaRO9gyO-KSqtg";
+// JGAgent 去官方化：默认端点全部指向 .invalid 保留域（RFC 2606，保证不解析），
+// DNS 层面直接失败，绝不外发。公司服务端就绪后替换为公司域名，
+// 或通过 ZCODE_BASE_URL / ZCODE_ENDPOINT_ORIGIN 等环境变量注入。
+export const DEFAULT_ZCODE_ENDPOINT_ORIGIN = "https://jgagent.invalid";
+export const DEFAULT_BIGMODEL_API_ORIGIN = "https://bigmodel.invalid";
+export const DEFAULT_ZAI_OAUTH_ORIGIN = "https://zai-oauth.invalid";
+export const DEFAULT_ZAI_BUSINESS_BASE_URL = "https://zai-business.invalid";
+export const DEFAULT_ZAI_OAUTH_CLIENT_ID = "jgagent-oauth-placeholder";
 
 // 构建仅注入公开链接；Node 调用方仍可显式传 env，避免读取另一进程的配置。
 declare const __ZCODE_ENDPOINT_ENV__: Record<string, string | undefined> | undefined;

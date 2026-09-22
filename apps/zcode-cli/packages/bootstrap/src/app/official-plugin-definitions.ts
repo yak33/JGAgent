@@ -54,8 +54,8 @@ export interface OfficialPluginDefinition {
   version: string;
 }
 
-const ZAI_AUTHOR = { name: "Z.ai", url: "https://z.ai" } as const;
-const OFFICIAL_PLUGIN_ASSETS_BASE_URL = "https://cdn-zcode.z.ai/zcode/official-plugin/assets";
+const ZAI_AUTHOR = { name: "JieGuan", url: "https://jgagent.invalid" } as const;
+const OFFICIAL_PLUGIN_ASSETS_BASE_URL = "https://cdn.jgagent.invalid/jgagent/official-plugin/assets";
 
 const OFFICIAL_NODE_REPL_HOST_REQUIRED_SEED_PATHS = ["dist/mcp/server.js"] as const;
 

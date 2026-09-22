@@ -31,10 +31,10 @@ export const DEFAULT_ENABLED_OFFICIAL_PLUGIN_IDS: ReadonlySet<string> = new Set(
 
 export const DEFAULT_PLUGIN_MARKETPLACES: DefaultPluginMarketplace[] = [
   {
-    // JGAgent 官方唯一市场：本地 seed 分片与 CDN 分片在 Agent storage 内合并。
-    // CDN manifest 的 name 必须与该 canonical id 一致。
+    // JGAgent de-officialization: official market CDN source points to a reserved non-resolving domain, local seed shards still available,
+    // CDN refresh fails silently. When self-hosting a company plugin source, replace with the company marketplace.json address.
     id: ZCODE_OFFICIAL_PLUGIN_MARKETPLACE_ID,
-    source: "https://cdn-zcode.z.ai/zcode/official-plugin/marketplace.json",
+    source: "https://cdn.jgagent.invalid/jgagent/official-plugin/marketplace.json",
     name: ZCODE_OFFICIAL_PLUGIN_MARKETPLACE_ID,
     description: "Official JGAgent plugins marketplace: built-in and community plugins for JGAgent.",
     pluginCount: 0,

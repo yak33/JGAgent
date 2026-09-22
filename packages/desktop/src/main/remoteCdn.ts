@@ -1,7 +1,9 @@
 import { ZCODE_VERSION, type ZCodeEnv } from "@zcode/shared";
 
 declare const __ZCODE_CDN_BASE_URL__: string | undefined;
-const DEFAULT_CDN_BASE_URL = "https://cdn-zcode.z.ai";
+// JGAgent de-officialization: default CDN points to a reserved non-resolving domain; remote resource distribution
+// goes through "download locally then upload" or by setting the company CDN via the ZCODE_CDN_BASE_URL environment variable.
+const DEFAULT_CDN_BASE_URL = "https://cdn.jgagent.invalid";
 
 export interface ResolveRemoteCdnOptions {
   env?: ZCodeEnv;
