@@ -110,9 +110,15 @@ pnpm lint                                     # 验证：0 错误、70 警告（
 ## 6. 环境注意事项（新机器避坑）
 
 - **dev 启动必须用隔离数据目录**（已实测踩坑）：
-  ```bash
-  ZCODE_DATA_BASE_DIR="C:/Users/<用户>/.jgagent-dev-home" pnpm dev:desktop
+  ```powershell
+  # PowerShell（Windows 默认终端）
+  $env:ZCODE_DATA_BASE_DIR="C:/Users/<用户>/.jgagent-dev-home"; pnpm dev:desktop
   ```
+  ```bash
+  # Git Bash / macOS / Linux
+  ZCODE_DATA_BASE_DIR="$HOME/.jgagent-dev-home" pnpm dev:desktop
+  ```
+  注意 PowerShell 不支持 bash 的 `VAR=value 命令` 前缀语法，必须用 `$env:VAR` 先设置。
   不设隔离时应用读本机 `~/.zcode`（ZCode 原版数据），遗留的官方账号 provider 会在启动时**真实外发** `zcode.z.ai` 余额查询（带官方凭据），且 `runtime/provider/` 里的官方目录缓存会遮蔽仓库内重写的 `zcode-builtin.json`。这是数据层污染，不是代码问题；阶段 3 摘除账号体系后此类请求源头才彻底消失。
 - **端口残留**：异常退出后 vite（5174）可能残留，`netstat -ano | grep 5174` 找 PID kill 后再启
 - **Node 24.14.0 / pnpm 10.33.2** 以 `mise.toml` 为准；`pnpm install` 约 50 秒（有全局 store 时）；shell 实际 Node 24.19 也可跑（仅 engine 警告）
