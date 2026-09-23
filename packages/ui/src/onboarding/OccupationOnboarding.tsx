@@ -53,7 +53,8 @@ export function OccupationOnboarding({
   const shortcutBindings = useEffectiveShortcutBindings();
   const requested = useZCodeStore((state) => state.newUserOnboardingOpen);
   const setRequested = useZCodeStore((state) => state.setNewUserOnboardingOpen);
-  // 登录态变化（useRootOAuthEffects 登录成功后 setUser）时按 userId 重新判定是否触发引导。
+  // 登录态变化（设置页 provider 连接 setUser）时按 userId 重新判定是否触发引导。
+  // JGAgent 去官方化（阶段 3）：Root 层 OAuth effects 已摘除，user 仅由设置页 provider 连接链路写入。
   const userId = useZCodeStore((state) => state.user?.id) ?? null;
   const { intl } = useZCodeIntl();
   const t = (key: string) => intl.formatMessage({ id: `occupationOnboarding.${key}` });

@@ -20,19 +20,16 @@ const StoreContext = createContext<ZCodeStore | null>(null);
 
 export function StoreProvider({
   broadcastService,
-  initialIsRestoringOAuthSession = false,
   children,
 }: {
   broadcastService: IBroadcastService;
-  initialIsRestoringOAuthSession?: boolean;
   children: ReactNode;
 }) {
   // 只在首次渲染时创建 store，避免 HMR 重复订阅
+  // JGAgent 去官方化（阶段 3）：移除 initialIsRestoringOAuthSession 选项，OAuth 会话恢复门禁已随 Root OAuth effects 摘除。
   const storeRef = useRef<ZCodeStore | null>(null);
   if (!storeRef.current) {
-    storeRef.current = createZCodeStore(broadcastService, {
-      initialIsRestoringOAuthSession,
-    });
+    storeRef.current = createZCodeStore(broadcastService);
   }
 
   return <StoreContext.Provider value={storeRef.current}>{children}</StoreContext.Provider>;

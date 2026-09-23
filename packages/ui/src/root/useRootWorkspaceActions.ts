@@ -5,7 +5,6 @@ import {
   type AppSettings,
   type IPlatformService,
   type RemoteTarget,
-  type UserInfo,
   type ZCodeTaskClientMode,
 } from "@zcode/shared";
 import type { IServiceAccessor } from "@zcode/services";
@@ -82,8 +81,6 @@ export function useRootWorkspaceActions({
   openDirectoryBrowser,
   refreshProviderState,
   updateAppSettings,
-  setOAuthError,
-  setUser,
   onProviderFamilyDomainClearedAfterLogout,
   userId,
   onOpenRemoteConnection,
@@ -102,8 +99,6 @@ export function useRootWorkspaceActions({
   openDirectoryBrowser?: () => void;
   refreshProviderState: () => Promise<void>;
   updateAppSettings: (patch: Partial<AppSettings>) => Promise<void>;
-  setOAuthError: (error: string | null) => void;
-  setUser: (user: UserInfo | null) => void;
   onProviderFamilyDomainClearedAfterLogout?: () => void;
   userId?: string;
   onOpenRemoteConnection?: (preference?: OpenRemoteConnectionPreference) => void;
@@ -336,10 +331,8 @@ export function useRootWorkspaceActions({
     if (!nextProviderFamilyDomain) {
       onProviderFamilyDomainClearedAfterLogout?.();
     }
-    // ZAI/BigModel provider 已恢复为 App 登录镜像。
-    // 派生 Coding/Start key 由 OAuth logout 的 host hook 统一清理，Root 只负责刷新展示态。
-    setOAuthError(null);
-    setUser(null);
+    // JGAgent 去官方化（阶段 3）：登出不再回写 OAuth 错误与 user（store 字段随 OAuth 链路摘除）；
+    // 派生 Coding/Start key 仍由 OAuth logout 的 host hook 统一清理，随后 RelaunchApp 复位 renderer 状态。
     // 退出登录后刷新 Account Source 与 Registry，避免继续展示退出前的 Provider 状态。
     await refreshProviderState();
     // Coding Plan 官网 webview 使用独立持久 partition，App logout 必须同步清理。
@@ -354,8 +347,6 @@ export function useRootWorkspaceActions({
     services.oauthService,
     services.modelSelectionService,
     services.settingService,
-    setOAuthError,
-    setUser,
     updateAppSettings,
     userId,
   ]);

@@ -1,5 +1,6 @@
-import { CodingPlanEntryButton } from "@/settings/CodingPlanEntryButton.js";
-import { Loader2Icon, RocketIcon } from "lucide-react";
+// JGAgent 去官方化（阶段 3）：移除升级弹窗按钮（CodingPlanEntryButton / onUpgradeClick），
+// Start Plan 余额面板只保留展示、静默刷新与用量入口。
+import { Loader2Icon } from "lucide-react";
 import type { UsageEntitlementSnapshot, UsageQuotaLimit } from "@zcode/shared";
 import { cn } from "@/components/lib/utils.js";
 import type { useZCodeIntl } from "@/i18n/IntlProvider.js";
@@ -11,7 +12,6 @@ export interface ChatStartPlanBalanceConfig {
   loading: boolean;
   /** hover 打开 context 面板时发起的静默 access 刷新（与 Coding Plan 段 onAccess 语义一致）。 */
   onAccess?: () => Promise<void> | void;
-  onUpgradeClick?: () => void;
   /** hover 触发的本次刷新 promise 进行中；静默刷新不置 entitlement.loading，spinner 需要跟随它。 */
   refreshing?: boolean;
   snapshot: UsageEntitlementSnapshot | null;
@@ -138,21 +138,6 @@ export function ChatStartPlanBalancePanel({
             <Loader2Icon className="size-3.5 shrink-0 animate-spin text-foreground-subtle" />
           ) : null}
         </div>
-        {config.onUpgradeClick ? (
-          <CodingPlanEntryButton
-            type="button"
-            size="xs"
-            className="h-6 shrink-0 gap-1 px-2 text-ui-sm"
-            onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              config.onUpgradeClick?.();
-            }}
-          >
-            <RocketIcon className="size-3" />
-            {intl.formatMessage({ id: "chat.quota.action.upgrade" })}
-          </CodingPlanEntryButton>
-        ) : null}
       </div>
       <div className={cn("grid gap-2", getContextQuotaMeterGridClass(limits.length))}>
         {limits.map((limit) => (

@@ -1,9 +1,8 @@
-import { CodingPlanEntryButton } from "@/settings/CodingPlanEntryButton.js";
 /* eslint-disable max-lines -- Coding Plan/Start Plan 状态卡集中编排状态、动作和套餐区块，当前先保持同一文件避免拆散状态语义。 */
+// JGAgent 去官方化（阶段 3）：移除升级/续期/订阅按钮（CodingPlanUpgradeAction / CodingPlanEntryButton buyAction）
+// 与配套 upgradePlansVisible 受控状态、BigModel 注册失败 hint（authError 输入已移除），保留连接状态与额度展示。
 import {
-  BIGMODEL_PROVIDER_ID,
   isStartPlanModelProviderId,
-  resolveModelProviderFamilySpecByProviderId,
   type UsageEntitlementSubscriptionDetail,
   type UsageQuotaLimit,
   type ZCodeAccountAccess,
@@ -30,19 +29,15 @@ import {
 } from "@/lib/codingPlanQuotaResetUi.js";
 import {
   type CodingPlanStatus,
+  type CodingPlanLoginOptions,
   type CodingPlanProviderId,
   type TeamPlanAvailabilityReason,
 } from "./constants.js";
 import type { CodingPlanStatusPanelViewState } from "./codingPlanStatusPanelViewState.js";
 import { CodingPlanStatusMeta, StartPlanStatusMeta } from "./CodingPlanStatusMeta.js";
-import { CodingPlanStatusActions, CodingPlanUpgradeAction } from "./CodingPlanStatusActions.js";
-import type { CodingPlanLoginOptions } from "./codingPlanPricingCards.js";
+import { CodingPlanStatusActions } from "./CodingPlanStatusActions.js";
 import { StartPlanQuotaStatusCard } from "./StartPlanQuotaStatusCard.js";
 import { resolveStartPlanQuotaCardEntries } from "./StartPlanBalanceCard.js";
-import {
-  BigModelRegistrationHint,
-  isBigModelUnregisteredAuthError,
-} from "./BigModelRegistrationHint.js";
 import { formatQuotaModelDisplayName } from "./quotaModelDisplayName.js";
 
 const CODING_PLAN_USAGE_SUMMARY_COLORS = [
@@ -140,8 +135,6 @@ export function CodingPlanStatusPanel({
   subscriptionDetails,
   quotaLimits = [],
   mcpQuotaLimit = null,
-  authError,
-  onOpenRegistration,
   onLogin,
   onRetry,
   onOpenPurchase,
@@ -149,9 +142,6 @@ export function CodingPlanStatusPanel({
   loginActionPlacement = "inline",
   loginActionVisible = false,
   usageDetailsVisible = true,
-  upgradeActionVisible = true,
-  upgradePlansVisible: controlledUpgradePlansVisible,
-  onUpgradePlansVisibleChange,
   statusLabelId,
   statusMessage,
   teamPlanAvailabilityReason,
@@ -174,8 +164,6 @@ export function CodingPlanStatusPanel({
   quotaLimits?: UsageQuotaLimit[];
   /** 官方 Server MCP 额度（服务端下发的总额度）。不在 quota.limits[] 里，由 nav item 单独透传。 */
   mcpQuotaLimit?: UsageQuotaLimit | null;
-  authError?: string | null;
-  onOpenRegistration?: () => void;
   onLogin?: (options?: CodingPlanLoginOptions) => number | void | Promise<void>;
   /** Start 套餐获取失败沿用 Host 手动刷新，不强制重新登录。 */
   onRetry?: () => void;
@@ -184,9 +172,6 @@ export function CodingPlanStatusPanel({
   loginActionPlacement?: "inline" | "trailing";
   loginActionVisible?: boolean;
   usageDetailsVisible?: boolean;
-  upgradeActionVisible?: boolean;
-  upgradePlansVisible?: boolean;
-  onUpgradePlansVisibleChange?: (visible: boolean) => void;
   statusLabelId?: string;
   statusMessage?: string | null;
   teamPlanAvailabilityReason?: TeamPlanAvailabilityReason;
@@ -196,10 +181,7 @@ export function CodingPlanStatusPanel({
   onQuotaResetEntitlementRefresh?: () => void | Promise<void>;
 }) {
   const { intl } = useZCodeIntl();
-  const [internalUpgradePlansVisible, setInternalUpgradePlansVisible] = useState(false);
   const [startPlanEntitlementRefreshing, setStartPlanEntitlementRefreshing] = useState(false);
-  const upgradePlansVisible = controlledUpgradePlansVisible ?? internalUpgradePlansVisible;
-  const setUpgradePlansVisible = onUpgradePlansVisibleChange ?? setInternalUpgradePlansVisible;
   const refreshStartPlanEntitlement = async () => {
     if (!onQuotaResetEntitlementRefresh || startPlanEntitlementRefreshing) {
       return;
@@ -232,8 +214,6 @@ export function CodingPlanStatusPanel({
   const isNotPurchased = effectiveViewState.displayStatus === "notPurchased";
   const actionIsDisconnected = effectiveViewState.actionStatus === "disconnected";
   const isStartPlanProvider = isStartPlanModelProviderId(providerId);
-  const providerIcon =
-    resolveModelProviderFamilySpecByProviderId(providerId)?.oauthProviderId ?? null;
   const canDisconnectProvider =
     !isStartPlanProvider &&
     Boolean(onDisconnect) &&
@@ -286,13 +266,9 @@ export function CodingPlanStatusPanel({
     Boolean(onLogin);
   const rawPlanLevel = planLevel?.trim() ?? "";
   const normalizedPlanLevel = rawPlanLevel.toUpperCase();
-  const isMaxPlanLevel = isMaxCodingPlanLevel(rawPlanLevel);
   const displayPlanLevel = /^GLM[\s_-]+CODING\b/i.test(rawPlanLevel)
     ? formatQuotaModelDisplayName(rawPlanLevel)
     : normalizedPlanLevel;
-  const canUpgrade =
-    // Max 已是最高档但仍需要续期入口，不能因为不可升级就隐藏按钮。
-    upgradeActionVisible && isPurchased && !isChecking && !isUnsupported;
   const canManageCodingPlan =
     !isDisconnected &&
     !isChecking &&
@@ -300,44 +276,8 @@ export function CodingPlanStatusPanel({
     isPurchased &&
     Boolean(purchaseUrl) &&
     Boolean(onOpenPurchase);
-  // JGAgent 去官方化（阶段 3）：移除未开通态的 Start Plan 预览营销卡及其远端 preview 拉取。
-  const shouldShowBigModelRegistrationHint =
-    isChecking &&
-    providerIcon === BIGMODEL_PROVIDER_ID &&
-    isBigModelUnregisteredAuthError(authError);
-  const upgradeAction = canUpgrade ? (
-    <CodingPlanUpgradeAction
-      loginLoading={effectiveViewState.loginLoading}
-      upgradePlansVisible={upgradePlansVisible}
-      actionLabelId={
-        isMaxPlanLevel
-          ? "settings.modelProvider.codingPlan.renew"
-          : "settings.modelProvider.codingPlan.upgrade"
-      }
-      // JGAgent 去官方化（阶段 3）：升级弹窗意图链已摘除，这里只保留面板内展开状态切换。
-      onUpgradePlansVisibleChange={setUpgradePlansVisible}
-    />
-  ) : null;
-  const buyAction =
-    !isStartPlanProvider && !canUpgrade && isNotPurchased && !isChecking && !isUnsupported ? (
-      <CodingPlanEntryButton
-        type="button"
-        size="lg"
-        // 未购买状态也可能正在等待权益接口返回；此时必须和 Upgrade
-        // 按钮一样禁用，避免旧的 notPurchased 快照被提前提交为购买入口。
-        disabled={effectiveViewState.loginLoading}
-        // JGAgent 去官方化（阶段 3）：订阅按钮不再唤起升级弹窗，仅保留面板内状态切换。
-        onClick={() => {
-          setUpgradePlansVisible(true);
-        }}
-      >
-        {/* 单卡同步可能晚于全局套餐查询；仅禁用会丢失等待反馈，和 Upgrade 保持一致。 */}
-        {effectiveViewState.loginLoading ? <Loader2Icon className="size-3.5 animate-spin" /> : null}
-        {intl.formatMessage({
-          id: "settings.modelProvider.codingPlan.subscribe",
-        })}
-      </CodingPlanEntryButton>
-    ) : null;
+  // JGAgent 去官方化（阶段 3）：移除未开通态的 Start Plan 预览营销卡及其远端 preview 拉取，
+  // 以及 BigModel 未注册 hint（authError 输入已随 oauthError store 字段移除）。
   const inlineDisconnectVisible = canDisconnectProvider && !isPurchased;
   const planTitle = resolveCodingPlanStatusCardTitle({
     isPurchased,
@@ -403,8 +343,6 @@ export function CodingPlanStatusPanel({
         }
         onUnlink={canDisconnectProvider ? onDisconnect : undefined}
       />
-    ) : shouldShowBigModelRegistrationHint ? (
-      <BigModelRegistrationHint onOpenRegistration={onOpenRegistration} />
     ) : inlineDisconnectVisible ? (
       <CodingPlanStatusMeta
         statusLabel={notPurchasedStatusLabel ?? intl.formatMessage({ id: statusBadgeId })}
@@ -434,7 +372,7 @@ export function CodingPlanStatusPanel({
     isPurchased &&
     (isStartPlanProvider || hasDisplayableCodingPlanUsageLimits(quotaLimits));
   // JGAgent 去官方化（阶段 3）：移除“重新登录”分支（原凭据失败强制 forceOAuth 恢复），
-  // 恢复入口优先级为 重试 > 尾部登录 > 升级/订阅。
+  // 恢复入口优先级为 重试 > 尾部登录（升级/订阅按钮已随购买面板摘除）。
   const trailingAction = retryVisible ? (
     <Button type="button" size="lg" onClick={onRetry} disabled={effectiveViewState.loginLoading}>
       {intl.formatMessage({ id: "common.retry" })}
@@ -449,12 +387,6 @@ export function CodingPlanStatusPanel({
       {effectiveViewState.loginLoading ? <Loader2Icon className="size-3.5 animate-spin" /> : null}
       {intl.formatMessage({ id: loginButtonId }, { provider: providerName })}
     </Button>
-  ) : upgradeAction ? (
-    // 升级是 Plan Card 的主操作，和连接入口同属卡片级 action。
-    // 放在标题旁会随标题换行抖动；放到右侧并使用同尺寸按钮，层级和位置都更稳定。
-    upgradeAction
-  ) : buyAction ? (
-    buyAction
   ) : null;
   const statusContent = (
     <>
@@ -609,10 +541,6 @@ function isStartPlanEntitlementName(planLevel: string): boolean {
   return (
     normalized === "start" || normalized === "start plan" || normalized.endsWith(" start plan")
   );
-}
-
-function isMaxCodingPlanLevel(planLevel: string): boolean {
-  return /(^|[\s_-])MAX($|[\s_-])/i.test(planLevel);
 }
 
 function CodingPlanUsageSummaryCards({

@@ -13,7 +13,6 @@ interface ProviderAvailabilityLoginEntryGuardResult {
 export function useProviderAvailabilityLoginEntryGuard({
   enabled = true,
   user,
-  isRestoringOAuthSession,
   providerFamilyDomain,
   modelSelectionView,
   modelSelectionError,
@@ -23,7 +22,6 @@ export function useProviderAvailabilityLoginEntryGuard({
 }: {
   enabled?: boolean;
   user: UserInfo | null;
-  isRestoringOAuthSession: boolean;
   providerFamilyDomain: string | null | undefined;
   modelSelectionView: ModelSelectionView | null;
   modelSelectionError?: Error;
@@ -100,11 +98,9 @@ export function useProviderAvailabilityLoginEntryGuard({
       return;
     }
 
-    if (
-      startupCheckCompletedRef.current ||
-      isRestoringOAuthSession ||
-      !providerAvailabilityHydrated
-    ) {
+    // JGAgent 去官方化（阶段 3）：移除 isRestoringOAuthSession 等待输入，OAuth 会话恢复链路已摘除；
+    // 启动检查只等 ModelSelectionView 水合。
+    if (startupCheckCompletedRef.current || !providerAvailabilityHydrated) {
       return;
     }
 
@@ -116,7 +112,6 @@ export function useProviderAvailabilityLoginEntryGuard({
     });
   }, [
     enabled,
-    isRestoringOAuthSession,
     modelSelectionError,
     providerAvailabilityHydrated,
     syncLoginEntryWithProviderAvailability,

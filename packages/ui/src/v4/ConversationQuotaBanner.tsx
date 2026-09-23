@@ -1,6 +1,6 @@
-import { CodingPlanEntryButton } from "@/settings/CodingPlanEntryButton.js";
+// JGAgent 去官方化（阶段 3）：移除升级弹窗按钮（CodingPlanEntryButton / onUpgrade / upgradeActionLabelId）。
 import { useEffect, useRef } from "react";
-import { InfoIcon, RocketIcon, XIcon } from "lucide-react";
+import { InfoIcon, XIcon } from "lucide-react";
 import { Button } from "@/components/ui/button.js";
 import { useZCodeIntl } from "@/i18n/IntlProvider.js";
 import type {
@@ -46,14 +46,10 @@ function formatPercent(value: number | null): string {
 
 export function ConversationQuotaBanner({
   state,
-  upgradeActionLabelId = "chat.quota.action.upgrade",
-  onUpgrade,
   onDismiss,
   onShown,
 }: {
   state: SessionQuotaBannerState;
-  upgradeActionLabelId?: string;
-  onUpgrade?: () => void;
   onDismiss: () => void;
   onShown?: () => void;
 }) {
@@ -110,17 +106,6 @@ export function ConversationQuotaBanner({
           <InfoIcon className="size-4 shrink-0" />
           <div className="min-w-0 break-words">{message}</div>
         </div>
-        {onUpgrade ? (
-          <CodingPlanEntryButton
-            type="button"
-            size="sm"
-            className="h-auto shrink-0 gap-1.5 rounded-full"
-            onClick={onUpgrade}
-          >
-            <RocketIcon className="size-3.5" />
-            {intl.formatMessage({ id: upgradeActionLabelId })}
-          </CodingPlanEntryButton>
-        ) : null}
         {state.dismissible ? (
           <Button
             type="button"

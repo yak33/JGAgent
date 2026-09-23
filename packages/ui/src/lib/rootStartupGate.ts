@@ -1,5 +1,5 @@
 interface RootStartupGateState {
-  isResolvingStartupAuthState: boolean;
+  // JGAgent 去官方化（阶段 3）：移除 isResolvingStartupAuthState 输入，OAuth 会话恢复门禁随账号体系摘除。
   isResolvingProviderStartupState: boolean;
   isRestoring: boolean;
   isBootstrappingInitialWorkspace: boolean;
@@ -27,7 +27,6 @@ interface ProviderStartupResolutionState {
 
 export function shouldBlockRootRender(state: RootStartupGateState): boolean {
   return (
-    state.isResolvingStartupAuthState ||
     state.isResolvingProviderStartupState ||
     state.isRestoring ||
     state.isBootstrappingInitialWorkspace

@@ -32,14 +32,14 @@ import { logger } from "@/logger.js";
 import {
   PRESET_PROVIDER_SPECS,
   PRESET_SUBSCRIPTION_TIMEOUT_MS,
-  BIGMODEL_REGISTRATION_URL,
   type CodingPlanStatus,
   type ModelProviderNavGroup,
 } from "./model-provider-section/constants.js";
 import { ModelProviderSectionDetail } from "./model-provider-section/Detail.js";
 import { ModelProviderSectionLayout } from "./model-provider-section/SectionLayout.js";
 import { ProviderTemplatePicker } from "./model-provider-section/ProviderTemplatePicker.js";
-import type { CodingPlanLoginOptions } from "./model-provider-section/codingPlanPricingCards.js";
+// JGAgent 去官方化（阶段 3）：CodingPlanLoginOptions 迁移至 constants（codingPlanPricingCards.ts 已删除）。
+import type { CodingPlanLoginOptions } from "./model-provider-section/constants.js";
 import { useModelProviderNavigation } from "./model-provider-section/useModelProviderNavigation.js";
 import { reportPresetSubscriptionSuccess } from "./model-provider-section/oauthActions.js";
 import {
@@ -385,8 +385,6 @@ export function ModelProviderSection({
   );
   const requestLoginEntry = useZCodeStore((state) => state.requestLoginEntry);
   const setUser = useZCodeStore((state) => state.setUser);
-  const oauthError = useZCodeStore((state) => state.oauthError);
-  const setOAuthError = useZCodeStore((state) => state.setOAuthError);
   const {
     settings: sharedSettings,
     loading: sharedSettingsLoading,
@@ -517,12 +515,12 @@ export function ModelProviderSection({
       if (!normalizedActiveProvider && options.clearUserWhenLoggedOut) {
         // provider Unlink 已等价于 App logout。
         // 服务端 token 已清理后，设置页也要同步清掉 Zustand user，否则侧边栏会一直显示旧登录态直到重启。
+        // JGAgent 去官方化（阶段 3）：oauthError store 字段已随 OAuth 链路移除，不再回写 OAuth 错误态。
         setUser(null);
-        setOAuthError(null);
       }
       return normalizedActiveProvider;
     },
-    [credentialService, setOAuthError, setUser],
+    [credentialService, setUser],
   );
 
   const refreshProviderPanelAfterAuthChange = useCallback(
@@ -1115,10 +1113,6 @@ export function ModelProviderSection({
               : (entitlement?.snapshot?.subscription?.details.length ?? 0);
           })()}
           presetLoading={presetLoading}
-          codingPlanAuthError={oauthError}
-          codingPlanPurchaseTokenAuthenticatedByProviderId={
-            codingPlanPurchaseTokenAuthenticatedByProviderId
-          }
           presetSubscriptionProviderId={presetSubscriptionProviderId}
           codingPlanStatusSyncProviderId={codingPlanStatusSyncProviderId}
           codingPlanDisconnectProviderId={codingPlanDisconnectProviderId}
@@ -1143,14 +1137,7 @@ export function ModelProviderSection({
           onCodingPlanDisconnect={handleCodingPlanDisconnect}
           onOpenApiKeyUrl={handleOpenApiKeyUrl}
           onSelectNavItem={handleSelectNavItem}
-          onOpenBigModelRegistration={() => {
-            // 未注册提示来自一次失败的 OAuth checking 状态；跳转注册后要恢复普通状态，避免提示卡住。
-            setOAuthError(null);
-            setPresetSubscriptionProviderId((current) =>
-              current === BUILTIN_MODEL_PROVIDER_IDS.bigmodelIndividualCodingPlan ? null : current,
-            );
-            platform.openExternal(BIGMODEL_REGISTRATION_URL);
-          }}
+          /* JGAgent 去官方化（阶段 3）：onOpenBigModelRegistration 随 BigModel 注册 hint（authError 链路）移除。 */
           onCodingPlanPurchaseComplete={async () => {
             await refreshProviderPanelAfterAuthChange({ refreshReason: "purchase" });
           }}

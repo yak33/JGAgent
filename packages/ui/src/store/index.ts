@@ -138,18 +138,8 @@ export interface ZCodeState {
   authSessionSeq: number;
   setUser: (user: UserInfo | null) => void;
 
-  /** 启动阶段是否仍在恢复 OAuth 登录态 */
-  isRestoringOAuthSession: boolean;
-  setIsRestoringOAuthSession: (restoring: boolean) => void;
-
-  /** OAuth 回调错误（Root 层写入，统一登录入口读取） */
-  oauthError: string | null;
-  setOAuthError: (error: string | null) => void;
-  oauthPollingActive: boolean;
-  setOAuthPollingActive: (active: boolean) => void;
-  oauthSuccessSeq: number;
-  lastOAuthSuccessProvider: OAuthProviderId | null;
-  markOAuthSuccess: (provider?: OAuthProviderId) => void;
+  // JGAgent 去官方化（阶段 3）：移除 isRestoringOAuthSession / oauthError / oauthPollingActive /
+  // oauthSuccessSeq / lastOAuthSuccessProvider 等 OAuth 会话字段；Root 层 OAuth effects 摘除后已无写入方。
   apiKeyLoginSuccessSeq: number;
   lastApiKeyLoginModel: string | null;
   markApiKeyLoginSuccess: (preferredModel?: string | null) => void;
@@ -227,12 +217,8 @@ const STATE_CHANNEL_PREFIX = "state:";
  *
  * @param broadcastService - 广播服务。Desktop 走 RPC，Web 可传 no-op 实现
  */
-export function createZCodeStore(
-  broadcastService: IBroadcastService,
-  options: {
-    initialIsRestoringOAuthSession?: boolean;
-  } = {},
-) {
+export function createZCodeStore(broadcastService: IBroadcastService) {
+  // JGAgent 去官方化（阶段 3）：移除 initialIsRestoringOAuthSession 选项，OAuth 会话恢复门禁已随 Root OAuth effects 摘除。
   /** 标记：正在应用来自广播的更新，此时不再重复广播（防止循环） */
   let applyingBroadcast = false;
   let loginEntryRequestSeq = 0;
@@ -320,20 +306,6 @@ export function createZCodeStore(
           state.user === null && user !== null ? state.authSessionSeq + 1 : state.authSessionSeq,
       })),
 
-    isRestoringOAuthSession: options.initialIsRestoringOAuthSession ?? false,
-    setIsRestoringOAuthSession: (restoring: boolean) => set({ isRestoringOAuthSession: restoring }),
-
-    oauthError: null,
-    setOAuthError: (error: string | null) => set({ oauthError: error }),
-    oauthPollingActive: false,
-    setOAuthPollingActive: (active: boolean) => set({ oauthPollingActive: active }),
-    oauthSuccessSeq: 0,
-    lastOAuthSuccessProvider: null,
-    markOAuthSuccess: (provider?: OAuthProviderId) =>
-      set((state) => ({
-        oauthSuccessSeq: state.oauthSuccessSeq + 1,
-        lastOAuthSuccessProvider: provider ?? state.lastOAuthSuccessProvider,
-      })),
     apiKeyLoginSuccessSeq: 0,
     lastApiKeyLoginModel: null,
     markApiKeyLoginSuccess: (preferredModel?: string | null) =>

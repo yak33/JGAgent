@@ -13,7 +13,8 @@ interface WelcomeScreenProps {
   onComplete: (reason: LoginCompleteReason) => void | Promise<void>;
 }
 
-export type LoginCompleteReason = "oauth" | "apiKey" | "skip";
+// JGAgent 去官方化（阶段 3）：登录完成原因收窄为 apiKey / skip，OAuth 渠道已摘除。
+export type LoginCompleteReason = "apiKey" | "skip";
 
 export function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   const { intl } = useZCodeIntl();
