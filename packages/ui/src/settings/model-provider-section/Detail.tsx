@@ -654,7 +654,6 @@ export function ModelProviderSectionDetail({
           // 之前详情页没有打开状态卡内置登录动作，导致用户能进入 Coding tab 却只能看到“未连接”文案。
           loginActionVisible
           loginActionPlacement="trailing"
-          reloginOnFailure={!upgradePlansVisible && reloginOnFailure}
           onRetry={
             retryTeamPlan ??
             (!upgradePlansVisible &&
@@ -679,18 +678,10 @@ export function ModelProviderSectionDetail({
               options,
             );
           }}
-          onOpenUpgradePlans={(options) => {
-            openCodingPlanUpgrade({
-              providerId: selectedNavItem.presetId,
-              initialAudience: options.initialAudience,
-              funnelContext: options.funnelContext ?? undefined,
-            });
-          }}
+          // JGAgent 去官方化（阶段 3）：移除升级弹窗透传（onOpenUpgradePlans/purchaseInitialAudience）。
           upgradePlansVisible={upgradePlansVisible}
           onUpgradePlansVisibleChange={handleUpgradePlansVisibleChange}
-          purchaseInitialAudience={selectedNavItem.type === "teamPlan" ? "team" : "personal"}
           upgradeActionVisible={!isStartPlanProvider || !hasActivePaidPlan}
-          startPlanPreviewVisible={false}
         />
       );
 
@@ -768,7 +759,6 @@ export function ModelProviderSectionDetail({
                 options,
               );
             }}
-            reloginOnFailure={!upgradePlansVisible && reloginOnFailure}
             onRetry={
               retryTeamPlan ??
               (!upgradePlansVisible &&
@@ -799,18 +789,10 @@ export function ModelProviderSectionDetail({
                 : undefined
             }
             disconnectLoading={codingPlanDisconnectProviderId === selectedNavItem.presetId}
-            onOpenUpgradePlans={(options) => {
-              openCodingPlanUpgrade({
-                providerId: selectedNavItem.presetId,
-                initialAudience: options.initialAudience,
-                funnelContext: options.funnelContext ?? undefined,
-              });
-            }}
+            // JGAgent 去官方化（阶段 3）：移除升级弹窗透传（onOpenUpgradePlans/purchaseInitialAudience）。
             upgradePlansVisible={upgradePlansVisible}
             onUpgradePlansVisibleChange={handleUpgradePlansVisibleChange}
-            purchaseInitialAudience={selectedNavItem.type === "teamPlan" ? "team" : "personal"}
             upgradeActionVisible={!isStartPlanProvider || !hasActivePaidPlan}
-            startPlanPreviewVisible={false}
           />
           {hidePlanModels ? null : providerSettingsView && !dedicatedProvider ? (
             <PresetProviderPlaceholderCard

@@ -29,11 +29,6 @@ import {
   resolveCodingPlanQuotaResetLimit,
 } from "@/lib/codingPlanQuotaResetUi.js";
 import {
-  createCodingPlanFunnelContext,
-  resolveCodingPlanEntryPlanState,
-  type CodingPlanFunnelContext,
-} from "@/lib/codingPlanFunnelTelemetry.js";
-import {
   type CodingPlanStatus,
   type CodingPlanProviderId,
   type TeamPlanAvailabilityReason,
@@ -42,11 +37,8 @@ import type { CodingPlanStatusPanelViewState } from "./codingPlanStatusPanelView
 import { CodingPlanStatusMeta, StartPlanStatusMeta } from "./CodingPlanStatusMeta.js";
 import { CodingPlanStatusActions, CodingPlanUpgradeAction } from "./CodingPlanStatusActions.js";
 import type { CodingPlanLoginOptions } from "./codingPlanPricingCards.js";
-import type { PurchaseAudience } from "./codingPlanEnterpriseTiers.js";
-import { StartPlanCard } from "./StartPlanCard.js";
 import { StartPlanQuotaStatusCard } from "./StartPlanQuotaStatusCard.js";
 import { resolveStartPlanQuotaCardEntries } from "./StartPlanBalanceCard.js";
-import { useStartPlanPreview } from "./useStartPlanPreview.js";
 import {
   BigModelRegistrationHint,
   isBigModelUnregisteredAuthError,
@@ -152,18 +144,14 @@ export function CodingPlanStatusPanel({
   onOpenRegistration,
   onLogin,
   onRetry,
-  reloginOnFailure = false,
   onOpenPurchase,
   onDisconnect,
-  onOpenUpgradePlans,
-  purchaseInitialAudience = "personal",
   loginActionPlacement = "inline",
   loginActionVisible = false,
   usageDetailsVisible = true,
   upgradeActionVisible = true,
   upgradePlansVisible: controlledUpgradePlansVisible,
   onUpgradePlansVisibleChange,
-  startPlanPreviewVisible = true,
   statusLabelId,
   statusMessage,
   teamPlanAvailabilityReason,
@@ -189,25 +177,16 @@ export function CodingPlanStatusPanel({
   authError?: string | null;
   onOpenRegistration?: () => void;
   onLogin?: (options?: CodingPlanLoginOptions) => number | void | Promise<void>;
-  /** 凭据获取失败提供主动重新登录，不据此自动退出账号。 */
-  reloginOnFailure?: boolean;
   /** Start 套餐获取失败沿用 Host 手动刷新，不强制重新登录。 */
   onRetry?: () => void;
   onOpenPurchase?: (url: string) => void;
   onDisconnect?: () => void;
-  onOpenUpgradePlans?: (options: {
-    initialAudience: PurchaseAudience;
-    funnelContext: CodingPlanFunnelContext | null;
-  }) => void;
-  /** 原生面板移除后，Team 状态卡仍须把购买对象传给统一升级入口。 */
-  purchaseInitialAudience?: PurchaseAudience;
   loginActionPlacement?: "inline" | "trailing";
   loginActionVisible?: boolean;
   usageDetailsVisible?: boolean;
   upgradeActionVisible?: boolean;
   upgradePlansVisible?: boolean;
   onUpgradePlansVisibleChange?: (visible: boolean) => void;
-  startPlanPreviewVisible?: boolean;
   statusLabelId?: string;
   statusMessage?: string | null;
   teamPlanAvailabilityReason?: TeamPlanAvailabilityReason;
@@ -262,10 +241,9 @@ export function CodingPlanStatusPanel({
     !isChecking &&
     !isUnavailable &&
     !isUnsupported;
+  // JGAgent 去官方化（阶段 3）：移除不可用态的“重新登录”专属文案，统一回落普通登录标签。
   const loginButtonId = isStartPlanProvider
-    ? isUnavailable
-      ? "chat.error.action.relogin"
-      : "settings.modelProvider.startPlan.login"
+    ? "settings.modelProvider.startPlan.login"
     : "settings.modelProvider.codingPlan.connect";
   const defaultStatusBadgeId = isUnsupported
     ? "settings.modelProvider.codingPlan.status.unsupported"
@@ -295,14 +273,12 @@ export function CodingPlanStatusPanel({
   const teamPlanWarningVisible = !isChecking && teamPlanAvailabilityReason !== undefined;
   const recoverableUnavailable =
     effectiveViewState.actionStatus === "unavailable" && !teamPlanUnavailableStatusVisible;
-  const reloginVisible = recoverableUnavailable && reloginOnFailure && Boolean(onLogin);
+  // JGAgent 去官方化（阶段 3）：移除凭据失败后的“重新登录”按钮，恢复入口统一走重试/普通登录。
   const retryVisible =
     (recoverableUnavailable ||
       statusLabelId === "settings.modelProvider.codingPlan.status.unavailable") &&
-    !reloginVisible &&
     Boolean(onRetry);
   const trailingLoginVisible =
-    !reloginVisible &&
     !retryVisible &&
     loginActionVisible &&
     loginActionPlacement === "trailing" &&
@@ -324,46 +300,11 @@ export function CodingPlanStatusPanel({
     isPurchased &&
     Boolean(purchaseUrl) &&
     Boolean(onOpenPurchase);
-  const disconnectedStartPlanPricingVisible =
-    isStartPlanProvider && (isDisconnected || isNotPurchased);
-  const startPlanCardVisible =
-    startPlanPreviewVisible && disconnectedStartPlanPricingVisible && !upgradePlansVisible;
-  const startPlanPreview = useStartPlanPreview({
-    enabled: startPlanCardVisible,
-  });
+  // JGAgent 去官方化（阶段 3）：移除未开通态的 Start Plan 预览营销卡及其远端 preview 拉取。
   const shouldShowBigModelRegistrationHint =
     isChecking &&
     providerIcon === BIGMODEL_PROVIDER_ID &&
     isBigModelUnregisteredAuthError(authError);
-  const createSettingPlanCardFunnelContext = (eventText: string) =>
-    createCodingPlanFunnelContext({
-      providerId,
-      // 修复原因：Start Plan 的升级入口与普通 Coding Plan 套餐卡属于不同链接方式，
-      // 埋点必须单独标识，避免把 Start Plan 用户误归类为普通套餐卡来源。
-      upgradeSource: isStartPlanProvider ? "setting_start_plan_card" : "setting_plan_card",
-      eventRegion: "app.setting",
-      eventText,
-      entryPlanState: resolveCodingPlanEntryPlanState({
-        displayStatus: effectiveViewState.displayStatus,
-        providerId,
-        planLevel,
-      }),
-    });
-  const openUpgradePlans = (
-    initialAudience: PurchaseAudience,
-    nextFunnelContext: CodingPlanFunnelContext | null,
-  ) => {
-    if (onOpenUpgradePlans) {
-      // Coding Plan 购买流程不应继续挂载在 Model Settings 内部；
-      // 状态卡只负责发起意图，由弹窗 hook 承载购买面板。
-      onOpenUpgradePlans({
-        initialAudience,
-        funnelContext: nextFunnelContext,
-      });
-      return;
-    }
-    setUpgradePlansVisible(true);
-  };
   const upgradeAction = canUpgrade ? (
     <CodingPlanUpgradeAction
       loginLoading={effectiveViewState.loginLoading}
@@ -373,22 +314,8 @@ export function CodingPlanStatusPanel({
           ? "settings.modelProvider.codingPlan.renew"
           : "settings.modelProvider.codingPlan.upgrade"
       }
-      onUpgradePlansVisibleChange={(visible) => {
-        if (visible) {
-          openUpgradePlans(
-            purchaseInitialAudience,
-            createSettingPlanCardFunnelContext(
-              intl.formatMessage({
-                id: isMaxPlanLevel
-                  ? "settings.modelProvider.codingPlan.renew"
-                  : "settings.modelProvider.codingPlan.upgrade",
-              }),
-            ),
-          );
-          return;
-        }
-        setUpgradePlansVisible(visible);
-      }}
+      // JGAgent 去官方化（阶段 3）：升级弹窗意图链已摘除，这里只保留面板内展开状态切换。
+      onUpgradePlansVisibleChange={setUpgradePlansVisible}
     />
   ) : null;
   const buyAction =
@@ -399,15 +326,9 @@ export function CodingPlanStatusPanel({
         // 未购买状态也可能正在等待权益接口返回；此时必须和 Upgrade
         // 按钮一样禁用，避免旧的 notPurchased 快照被提前提交为购买入口。
         disabled={effectiveViewState.loginLoading}
+        // JGAgent 去官方化（阶段 3）：订阅按钮不再唤起升级弹窗，仅保留面板内状态切换。
         onClick={() => {
-          openUpgradePlans(
-            purchaseInitialAudience,
-            createSettingPlanCardFunnelContext(
-              intl.formatMessage({
-                id: "settings.modelProvider.codingPlan.subscribe",
-              }),
-            ),
-          );
+          setUpgradePlansVisible(true);
         }}
       >
         {/* 单卡同步可能晚于全局套餐查询；仅禁用会丢失等待反馈，和 Upgrade 保持一致。 */}
@@ -512,17 +433,9 @@ export function CodingPlanStatusPanel({
     usageDetailsVisible &&
     isPurchased &&
     (isStartPlanProvider || hasDisplayableCodingPlanUsageLimits(quotaLimits));
-  // 同 family 已登录时默认登录动作只刷新；凭据失败后的主动恢复必须强制进入 OAuth。
-  const trailingAction = reloginVisible ? (
-    <Button
-      type="button"
-      size="lg"
-      onClick={() => onLogin?.({ forceOAuth: true })}
-      disabled={effectiveViewState.loginLoading}
-    >
-      {intl.formatMessage({ id: "login.expired.action" })}
-    </Button>
-  ) : retryVisible ? (
+  // JGAgent 去官方化（阶段 3）：移除“重新登录”分支（原凭据失败强制 forceOAuth 恢复），
+  // 恢复入口优先级为 重试 > 尾部登录 > 升级/订阅。
+  const trailingAction = retryVisible ? (
     <Button type="button" size="lg" onClick={onRetry} disabled={effectiveViewState.loginLoading}>
       {intl.formatMessage({ id: "common.retry" })}
     </Button>
@@ -558,9 +471,7 @@ export function CodingPlanStatusPanel({
         isPurchased={isPurchased}
         loginLoading={effectiveViewState.loginLoading}
         loginButtonId={loginButtonId}
-        loginVisible={
-          loginActionVisible && !trailingLoginVisible && !reloginVisible && !retryVisible
-        }
+        loginVisible={loginActionVisible && !trailingLoginVisible && !retryVisible}
         canDisconnectProvider={inlineDisconnectVisible ? false : canDisconnectProvider}
         disconnectLoading={disconnectLoading}
         onLogin={onLogin}
@@ -639,10 +550,7 @@ export function CodingPlanStatusPanel({
   return (
     <div className="space-y-3">
       {planCards}
-
-      {startPlanCardVisible && !startPlanPreview.loading && startPlanPreview.preview ? (
-        <StartPlanCard preview={startPlanPreview.preview} />
-      ) : null}
+      {/* JGAgent 去官方化（阶段 3）：移除未开通态的 StartPlanCard 预览营销卡渲染。 */}
     </div>
   );
 }
