@@ -8,7 +8,17 @@
 
 ## 1. 项目背景（一段话版）
 
-捷关公司要基于开源项目 ZCode（github.com/zai-org/ZCode，Apache-2.0，AI 编程工作台，约 90 万行 TS 的 pnpm monorepo）二次开发公司自有 Agent 工具 **JGAgent**。改造分四个阶段：环境落位 ✅ → 品牌替换 ✅ → 端点与网络收口 ✅ → 账号与商业化摘除 🔨（进行中，已完成 2/4 批次）→ 发布工程 ⬜。已完成部分均已提交推送。
+捷关公司要基于开源项目 ZCode（github.com/zai-org/ZCode，Apache-2.0，AI 编程工作台，约 90 万行 TS 的 pnpm monorepo）二次开发公司自有 Agent 工具 **JGAgent**。改造分四个阶段：环境落位 ✅ → 品牌替换 ✅ → 端点与网络收口 ✅ → 账号与商业化摘除 ✅（2026-09-23 完成，四个批次）→ 发布工程 ⬜。已完成部分均已提交推送。
+
+阶段 3 全量删除约 **3.8 万行**（批次 1+2：-1279；批次 3a+3b：-6760；批次 3c：-30103）。终验：typecheck exit 0、lint 0 错误 72 警告（全存量）、architecture 0 违规、dev 启动冒烟通过 + 官方域名请求 0。
+
+### 阶段 3 刻意保留项（勿当遗漏）
+- shared 的 `oauth.ts`/`coding-plan-subscription.ts`/`plan-identity.ts` 类型：仍有存活引用（model-provider-family、CLI standalone runtime）
+- CLI 侧 offPeak 协议 schema（`offpeak-port.ts`）：删除需改 CLI 协议层，超出账号域
+- `legacyZCodeConfigProviderReader.ts`：apiKey/Personal 配置升级路径在用
+- store 账号字段（user/loginEntryRequest）与 `PlatformChannels.OAuthCallback` 常量：置空保留，全部消费方清完才可删
+- `zcode://` open-workspace deep link：保留（仅删了 OAuth 回调分支）
+- web 分享回调页保留路由，降级为"登录不可用"提示
 
 ## 2. 仓库与 Git
 
