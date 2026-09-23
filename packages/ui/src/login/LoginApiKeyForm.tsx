@@ -41,7 +41,8 @@ import {
 import { useZCodeStore } from "@/store/StoreProvider.js";
 
 interface LoginApiKeyFormProps {
-  onCancel: () => void;
+  /** JGAgent 去官方化：登录入口仅剩 API Key 表单时无可返回的渠道列表，允许省略并隐藏返回按钮。 */
+  onCancel?: () => void;
   onSaved: () => void | Promise<void>;
   onSkipped: () => void | Promise<void>;
 }
@@ -258,17 +259,19 @@ export function LoginApiKeyForm({ onCancel, onSaved, onSkipped }: LoginApiKeyFor
           {saving ? <Loader2Icon className="size-4 animate-spin" /> : null}
           {intl.formatMessage({ id: "login.apiKey.continue" })}
         </Button>
-        <Button
-          type="button"
-          variant="outline"
-          className="h-10 w-full text-ui-base"
-          size="lg"
-          data-testid={TID_LOGIN_API_KEY_CANCEL_BUTTON}
-          disabled={busy}
-          onClick={onCancel}
-        >
-          {intl.formatMessage({ id: "login.apiKey.cancel" })}
-        </Button>
+        {onCancel ? (
+          <Button
+            type="button"
+            variant="outline"
+            className="h-10 w-full text-ui-base"
+            size="lg"
+            data-testid={TID_LOGIN_API_KEY_CANCEL_BUTTON}
+            disabled={busy}
+            onClick={onCancel}
+          >
+            {intl.formatMessage({ id: "login.apiKey.cancel" })}
+          </Button>
+        ) : null}
         <Button
           type="button"
           variant="link"
