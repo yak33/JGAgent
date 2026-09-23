@@ -82,12 +82,19 @@ pnpm lint                                     # 验证：0 错误、70 警告（
 
 ## 6. 环境注意事项（新机器避坑）
 
-- **Node 24.14.0 / pnpm 10.33.2** 以 `mise.toml` 为准；`pnpm install` 约 50 秒（有全局 store 时）
+- **dev 启动必须用隔离数据目录**（已实测踩坑）：
+  ```bash
+  ZCODE_DATA_BASE_DIR="C:/Users/<用户>/.jgagent-dev-home" pnpm dev:desktop
+  ```
+  不设隔离时应用读本机 `~/.zcode`（ZCode 原版数据），遗留的官方账号 provider 会在启动时**真实外发** `zcode.z.ai` 余额查询（带官方凭据），且 `runtime/provider/` 里的官方目录缓存会遮蔽仓库内重写的 `zcode-builtin.json`。这是数据层污染，不是代码问题；阶段 3 摘除账号体系后此类请求源头才彻底消失。
+- **端口残留**：异常退出后 vite（5174）可能残留，`netstat -ano | grep 5174` 找 PID kill 后再启
+- **Node 24.14.0 / pnpm 10.33.2** 以 `mise.toml` 为准；`pnpm install` 约 50 秒（有全局 store 时）；shell 实际 Node 24.19 也可跑（仅 engine 警告）
 - **推送用 SSH**：该网络环境下 HTTPS 推 GitHub 报 `Connection was reset`，SSH key 已配置（yak33 账户）
 - **`pnpm fmt:check` 双仓都失败**（Windows CRLF 检出 + `.gitattributes` 只固定 mjs/sh 为 LF）：非回归信号，**不要**跑 `pnpm fmt`（会重排约 2789 个文件）
 - **lint 基线 70 警告**：与 ZCode 原仓逐数一致，全为存量；新改动以"不新增"为准
 - 图像处理工具链（sharp）装在旧机器 `D:\NenniuProjects\.icontools`（未入库）；换图时在任意临时目录 `npm install sharp` 后运行入库的 `tools/gen-icons.cjs` 即可
 - 旧机器的 Python 是坏的 Store 存根、无 ImageMagick——别依赖它们
+- **运行时网络审计方法**（阶段 2 最终验收，已通过一次）：启动后在 dev 日志里 `grep -c "zcode\.z\.ai\|api\.z\.ai\|open\.bigmodel\|chat\.z\.ai\|cdn-zcode"`，期望 0
 
 ## 7. 本次改造的关键文件索引
 
