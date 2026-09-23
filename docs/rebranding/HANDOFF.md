@@ -8,7 +8,7 @@
 
 ## 1. 项目背景（一段话版）
 
-捷关公司要基于开源项目 ZCode（github.com/zai-org/ZCode，Apache-2.0，AI 编程工作台，约 90 万行 TS 的 pnpm monorepo）二次开发公司自有 Agent 工具 **JGAgent**。改造分四个阶段：环境落位 ✅ → 品牌替换 ✅ → 端点与网络收口 ✅ → 账号与商业化摘除 ⬜ → 发布工程 ⬜。当前完成前三阶段，均已提交推送。
+捷关公司要基于开源项目 ZCode（github.com/zai-org/ZCode，Apache-2.0，AI 编程工作台，约 90 万行 TS 的 pnpm monorepo）二次开发公司自有 Agent 工具 **JGAgent**。改造分四个阶段：环境落位 ✅ → 品牌替换 ✅ → 端点与网络收口 ✅ → 账号与商业化摘除 🔨（进行中，已完成 2/4 批次）→ 发布工程 ⬜。已完成部分均已提交推送。
 
 ## 2. 仓库与 Git
 
@@ -53,16 +53,33 @@ pnpm lint                                     # 验证：0 错误、70 警告（
 | `@zcode/*` 包名、`zcode://` 协议、`ZCODE_*` 环境变量 | P2 内部标识符，改动波及全仓 import，fork 稳定后再做 |
 | OAuth 登录/订阅支付整套功能 | 阶段 3 计划整体摘除，现在零碎改是浪费 |
 
-## 4. 下一步：阶段 3 账号与商业化摘除（预估 3~5 天）
+## 4. 当前进行中：阶段 3 账号与商业化摘除
 
 **已勘察确认的关键事实**：账号体系无登录墙（欢迎页可 skip，apiKey 直连跑通全部核心功能），是可整体摘除的独立增值层；CLI（apps/zcode-cli）零依赖 packages/services。
 
-**执行顺序**（每摘一块跑 typecheck + lint + `pnpm architecture:check --changed`，架构检查会暴露断链）：
+### 已完成（阶段 3 第一、二批，commit `6d6e055` + `6789704`，-1279 行）
 
-1. 摘 `packages/services/src/` 服务域：`oauth/`、`coding-plan-subscription/`、`bigmodel/`、`usage-stats/`、`session/offPeak*`；`model-provider/` 里 `accountProvider*` 系列与通用运行时同目录混放，需拆分保留通用部分；`credential/` **保留**（apiKey 模式在用）
-2. 摘 UI 入口（清单 3.2 有完整文件列表）：侧栏底栏登录/头像、设置页套餐卡片与 usage tab、升级弹窗、401 横幅、欢迎页登录步骤（保留 apiKey/skip）、`packages/web/src/auth/`
-3. 清理 CLI 侧 `apps/zcode-cli/packages/adapters/src/auth/` 的 OAuth 模块（apiKey 路径不动）
-4. 收尾：`pnpm knip` 查悬空导出；全局搜残留
+- WelcomeScreen 移除 OAuth 渠道登录，仅保留 API Key + 跳过（LoginApiKeyForm onCancel 改可选）
+- WorkspaceSidebarFooter 移除头像/套餐徽标/用量/登录登出，偏好菜单保留
+- ChatErrorBanner 移除套餐升级按钮
+- SettingsPage 移除 CodingPlan 用量 tab 机制、升级弹窗调用、onLogin/onLogout/user props（-409 行）
+- UsageStatsSection 收窄为仅应用级统计；StatusCards 移除 StartPlanCard/重新登录
+- lint 新基线：**0 错误、77 警告**（原 70，差额为存量）
+
+### 剩余批次（按依赖顺序）
+
+**批次 3a 升级弹窗收尾（UI 层）**：
+- Root.tsx 挂载的 `CodingPlanUpgradeDialogProvider`；仍消费它的组件：`V4ComposerToolbar.tsx:385`、`AutomationsSection.tsx:532`、`WorkspaceSidebar.tsx:338`、`v4/SessionPane.tsx`（optional 变体）、`model-provider-section/Detail.tsx` 的 `CodingPlanPurchaseChoiceBanners`/`handlePurchaseChoiceSelect`
+- `StatusCards.tsx` 的升级/续期/订阅按钮已是半死状态（点击无弹窗只自切换）——直接摘按钮
+- 零引用待删文件：`settings/usage-stats/CodingPlanUsagePanel.tsx`、`model-provider-section/useStartPlanPreview.ts`、`lib/sidebarUsageCodingPlanProviderPreference.ts`、`lib/codingPlanUsageSources.ts`、`lib/settingsNavigation.ts` 的 pending usage tab 机制、升级弹窗组件族（`CodingPlanUpgradeDialog*.tsx`、`CodingPlanEntryButton`、`codingPlanPricingCards` 等）
+
+**批次 3b Root 层 OAuth effects**：
+- `root/useRootOAuthEffects.ts`（OAuth 恢复/轮询/回调；footer 已不订阅 `isRestoringOAuthSession`，可整体简化）、`handleReauthenticationRequired`、`setOAuthError`/`setUser` threading、WelcomeScreen onComplete 的 `"oauth"` 分支、`hooks/useOAuth.ts`（已零引用）
+
+**批次 3c 服务域删除**（packages/services/src/）：`oauth/`、`coding-plan-subscription/`、`bigmodel/`、`usage-stats/`、`session/offPeak*` 整体删除；`model-provider/` 的 `accountProvider*` 系列与通用运行时同目录混放需拆分（`credential/` **保留**，apiKey 模式在用）；`desktop/src/main/desktopOAuthDeepLink.ts` 只删 OAuth 分支保留 open-workspace deep link；`packages/web/src/auth/`（仅 /share/callback 路由消费）；CLI `adapters/src/auth/` 的 oauth 模块（apiKey 路径不动）
+- Zustand store 账号字段（user/oauthError/loginEntryRequest/codingPlanQuotaReset*）策略为保留置空，全部消费方清理后再删
+
+**批次 3d 收尾**：`pnpm knip` 悬空导出、`pnpm architecture:check --changed`、全局 grep `codingPlan|oauth|StartPlan` 确认无残留、dev 启动冒烟 + 网络审计（见第 6 节方法）
 
 **阶段 3 之后**是阶段 4 发布工程：`pnpm bundle:desktop`（各平台打包）、`pnpm build:zcode`（CLI 发行包，需 `ZCODE_DIST_BASE_URL`）、`node scripts/licenses.mjs notices` 重生成第三方声明。
 
