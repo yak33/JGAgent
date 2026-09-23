@@ -7,43 +7,31 @@ import {
 import type { ModelSelectionView } from "@zcode/services";
 import { encodeCustomModelValue } from "@/lib/zcodeCustomModelValue.js";
 
-export type ApiKeyProviderChoice = "zai" | "bigmodel";
+export type ApiKeyProviderChoice = "jgagent";
 
 export function resolveLoginApiKeyDefaultProvider(locale: Locale): ApiKeyProviderChoice {
-  return locale === "zh-CN" ? "bigmodel" : "zai";
+  return "jgagent";
 }
 
 export function resolveLoginApiKeyTemplateId(
   choice: ApiKeyProviderChoice,
-): "zai-api" | "bigmodel-api" {
-  return choice === "zai"
-    ? BUILTIN_PROVIDER_TEMPLATE_IDS.zai
-    : BUILTIN_PROVIDER_TEMPLATE_IDS.bigmodel;
+): string {
+  return "jgagent-gateway";
 }
 
 export function resolveLoginApiKeyProviderLabel(choice: ApiKeyProviderChoice): string {
   // Welcome Screen API Key 错误提示需要使用 BigModel 品牌固定写法。
-  return choice === "zai" ? "Z.ai" : "BigModel";
+  return "捷关模型网关";
 }
 
-function resolveLoginApiKeyProviderFamilyDomain(
-  choice: ApiKeyProviderChoice,
-): ProviderFamilyDomain {
-  return choice;
-}
+
 
 export function buildLoginApiKeySkipSettings(
-  choice: ApiKeyProviderChoice,
-  now: number,
-): Pick<
-  AppSettings,
-  "providerFamilyDomain" | "providerFamilyDomainUpdatedAt" | "providerFamilyDomainMigrated"
-> {
-  return {
-    providerFamilyDomain: resolveLoginApiKeyProviderFamilyDomain(choice),
-    providerFamilyDomainUpdatedAt: now,
-    providerFamilyDomainMigrated: true,
-  };
+  _choice: ApiKeyProviderChoice,
+  _now: number,
+): Partial<AppSettings> {
+  // JGAgent 去官方化：providerFamilyDomain 仅服务 OAuth 家族选择，已随账号域删除。
+  return {};
 }
 
 export function shouldShowLoginApiKeyLink(
