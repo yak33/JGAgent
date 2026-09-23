@@ -30,7 +30,7 @@ pnpm lint                                     # 验证：0 错误、70 警告（
 
 ### 阶段 1 品牌替换（`a909fa1`，392 文件）
 
-- 全套图标（PNG/ICO/ICNS/favicon/DMG 背景）替换为公司 "JG" 标识图；再生成脚本在 [tools/gen-icons.cjs](tools/gen-icons.cjs)
+- 全套图标（PNG/ICO/ICNS/favicon/DMG 背景）替换为公司 "JG" 标识图，**透明圆角**（22.5% 比例，接近系统图标规格）；再生成脚本在 [tools/gen-icons.cjs](tools/gen-icons.cjs)（用法：`NODE_PATH=<sharp目录>/node_modules node gen-icons.cjs <源图> <仓库根> [圆角比例，默认0.225，0为直角]`）
 - 产品名 JGAgent、appId `com.jieguan.jgagent`、Linux 可执行名 `jgagent`；单一身份源 `packages/desktop/scripts/desktop-product-identity.mjs`
 - **1073 处** `ZCode` → `JGAgent`，词边界正则（`(?<![A-Za-z0-9_])ZCode(?![A-Za-z0-9_])`），自动跳过代码标识符
 - Web 启动页 Z 闪电 logo → 斜体 JG 字标；README 中英文重写（注明基于 ZCode 二开）

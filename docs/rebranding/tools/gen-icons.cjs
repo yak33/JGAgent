@@ -2,22 +2,28 @@
 //
 // 用法（在任意临时目录准备 sharp，不动本仓库依赖）：
 //   mkdir somewhere && cd somewhere && npm init -y && npm install sharp
-//   node docs/rebranding/tools/gen-icons.cjs <源图.png> <JGAgent仓库根目录>
+//   node gen-icons.cjs <源图.png> <JGAgent仓库根目录> [圆角比例]
 //
 // 源图要求：正方形、≥1024x1024、满版背景（无透明角最佳）。
+// 圆角比例：可选，默认 0.225（约 22.5%，接近 macOS/iOS 系统图标规格）；传 0 则输出直角方图。
 // 产出：public/logo/icons、public/icon_512@2x.png、packages/desktop/build 全套图标与 DMG 背景、
-//       packages/web/public/favicon.ico。
+//       packages/web/public/favicon.ico（均为透明圆角 PNG/ICO/ICNS）。
 // 注意：favicon 的内嵌 base64（packages/web/index.html）需要另行手动替换。
 const path = require("path");
 const fs = require("fs");
 
-const [, , sourceArg, rootArg] = process.argv;
+const [, , sourceArg, rootArg, radiusArg] = process.argv;
 if (!sourceArg || !rootArg) {
-  console.error("用法: node gen-icons.cjs <源图.png> <JGAgent仓库根目录>");
+  console.error("用法: node gen-icons.cjs <源图.png> <JGAgent仓库根目录> [圆角比例，默认0.225]");
   process.exit(1);
 }
 const SRC = path.resolve(sourceArg);
 const ROOT = path.resolve(rootArg);
+const RADIUS_RATIO = Number(radiusArg ?? "0.225");
+if (!Number.isFinite(RADIUS_RATIO) || RADIUS_RATIO < 0 || RADIUS_RATIO >= 0.5) {
+  console.error("圆角比例必须是 [0, 0.5) 内的数字");
+  process.exit(1);
+}
 if (!fs.existsSync(SRC)) {
   console.error(`源图不存在: ${SRC}`);
   process.exit(1);
@@ -39,6 +45,14 @@ async function png(size) {
     buf = await sharp(buf).resize(w, w, { kernel: "cubic" }).png().toBuffer();
   }
   buf = await sharp(buf).resize(size, size, { kernel: "lanczos3" }).png().toBuffer();
+  // 透明圆角：SVG 圆角矩形做 dest-in 遮罩，角部变透明、圆内保留
+  if (RADIUS_RATIO > 0) {
+    const radius = Math.max(1, Math.round(size * RADIUS_RATIO));
+    const mask = Buffer.from(
+      `<svg width="${size}" height="${size}"><rect x="0" y="0" width="${size}" height="${size}" rx="${radius}" ry="${radius}"/></svg>`,
+    );
+    buf = await sharp(buf).composite([{ input: mask, blend: "dest-in" }]).png().toBuffer();
+  }
   pngCache.set(size, buf);
   return buf;
 }
