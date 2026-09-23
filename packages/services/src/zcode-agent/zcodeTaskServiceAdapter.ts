@@ -1,7 +1,6 @@
 /* oxlint-disable eslint(max-lines) -- 迁移期需要在一个门面里集中维护旧 task projection 到 JGAgent session 的协议适配。 */
 import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
-import { homedir } from "node:os";
 import { join } from "node:path";
 import {
   Emitter,
@@ -119,6 +118,7 @@ import type {
   ZCodeTaskTerminalOutcome,
 } from "../session/zcodeTaskService.js";
 import { createServiceLogger } from "#src/logger/serviceLogger.js";
+import { getDataBaseDir } from "#src/paths.js";
 import {
   AUTOMATION_MUTATION_TOOL_NAMES,
   OFF_PEAK_MUTATION_TOOL_NAMES,
@@ -243,7 +243,11 @@ function formatZCodeAgentLogDate(now: Date): string {
 
 function resolveZCodeAgentCurrentLogFilePath(now = new Date()): string {
   const configuredLogDir = process.env.ZCODE_LOG_DIR?.trim();
-  const logDir = configuredLogDir || join(homedir(), ".zcode", "cli", "log");
+  // Agent（CLI）侧 getDefaultLogDir 在设置 ZCODE_DATA_BASE_DIR 时写 <base>/.zcode/cli/log，
+  // Host 读日志尾部必须用同一基准目录，否则隔离运行时读不到当前日志；
+  // 未设置时 getDataBaseDir() 回退 homedir()，与原行为一致。
+  const logDir =
+    configuredLogDir || join(getDataBaseDir(), ".zcode", "cli", "log");
   return join(logDir, `zcode-${formatZCodeAgentLogDate(now)}.jsonl`);
 }
 

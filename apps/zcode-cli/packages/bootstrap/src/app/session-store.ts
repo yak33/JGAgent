@@ -1,7 +1,8 @@
 import { isAbsolute, resolve } from "node:path";
-import { SqliteSessionStore } from "@zcode/adapters/storage";
+import { getDefaultSessionDbPath, SqliteSessionStore } from "@zcode/adapters/storage";
 import { resolvePath, type ConfigResult } from "@zcode/adapters/config";
 import {
+  DefaultRuntimeConfig,
   SESSION_ENTRY_MODEL_SELECTION,
   parseModelSelectionValue,
   type SessionId,
@@ -103,6 +104,13 @@ export async function openStartupSessionStore(
 
 export function getSessionDbPath(configResult: ConfigResult, workingDirectory?: string): string {
   const configured = configResult.config.storage.sessionDbPath;
+  // 默认 sessionDbPath 是 "~/.zcode/cli/db/db.sqlite" 字面量，resolvePath 会把 ~ 展开成 homedir()。
+  // 设置 ZCODE_DATA_BASE_DIR（与 ZCode 原版共机隔离）时，默认库必须落到
+  // <ZCODE_DATA_BASE_DIR>/.zcode/cli/db 下，因此默认值改走 getDefaultSessionDbPath()；
+  // 用户显式配置的路径保持原有解析行为不变。
+  if (configured === DefaultRuntimeConfig.storage.sessionDbPath) {
+    return getDefaultSessionDbPath();
+  }
   // 存储 Worker 不能 chdir；显式传入业务实际 cwd，保持相对路径与普通 Agent 一致。
   if (workingDirectory && !isAbsolute(configured) && !configured.startsWith("~/"))
     return resolve(workingDirectory, configured);

@@ -585,9 +585,12 @@ function sanitizeFileSegment(value?: string): string {
 }
 
 // storage profile 回滚删除了自定义 CLI 根模块，遗留 import 会让 adapters 无法构建。
-// 这里保持历史语义：开发态写 ~/.zcode/cli/debug，生产态写 ~/.zcode/cli/rollout。
+// 这里保持历史语义：开发态写 <base>/.zcode/cli/debug，生产态写 <base>/.zcode/cli/rollout。
+// 设置 ZCODE_DATA_BASE_DIR（与 ZCode 原版共机隔离）时轨迹必须写入隔离目录；
+// services 侧 modelTrajectoryFileTail 的读取候选同时包含 homedir 与隔离根，改写入位置不影响读取。
 function getModelIOBaseDir(isDev: boolean): string {
-  return join(homedir(), ".zcode", "cli", isDev ? "debug" : "rollout");
+  const dataBaseDir = process.env.ZCODE_DATA_BASE_DIR?.trim() || homedir();
+  return join(dataBaseDir, ".zcode", "cli", isDev ? "debug" : "rollout");
 }
 
 function stringifyDebugRecord(record: Record<string, unknown>): string {
