@@ -30,12 +30,16 @@ import { useZCodeIntl } from "@/i18n/IntlProvider.js";
 import { logger } from "@/logger.js";
 import { renderOAuthProviderIcon } from "@/lib/oauthProviderIcon.js";
 import {
+  buildCustomProviderInitialConfig,
   buildLoginApiKeyDefaultModelPreferenceFromSelection,
   buildLoginApiKeySkipSettings,
+  CUSTOM_PROVIDER_BASE_URL_PLACEHOLDER,
+  resolveCustomProviderDisplayName,
   resolveLoginApiKeyDefaultProvider,
   resolveLoginApiKeyTemplateId,
   resolveLoginApiKeyProviderLabel,
   shouldShowLoginApiKeyLink,
+  validateCustomProviderBaseUrl,
   type ApiKeyProviderChoice,
 } from "@/login/LoginApiKeyForm.helpers.js";
 import { useZCodeStore } from "@/store/StoreProvider.js";
@@ -56,6 +60,7 @@ export function LoginApiKeyForm({ onCancel, onSaved, onSkipped }: LoginApiKeyFor
     resolveLoginApiKeyDefaultProvider(locale),
   );
   const [apiKeyValue, setApiKeyValue] = useState("");
+  const [customBaseUrl, setCustomBaseUrl] = useState("");
   const [saving, setSaving] = useState(false);
   const [skipping, setSkipping] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -63,6 +68,7 @@ export function LoginApiKeyForm({ onCancel, onSaved, onSkipped }: LoginApiKeyFor
   const providerSettingsView =
     providerSettingsRead.state.status === "ready" ? providerSettingsRead.state.view : null;
 
+  const isCustomProvider = providerChoice === "custom";
   const providerLabel = resolveLoginApiKeyProviderLabel(providerChoice);
   const templateId = resolveLoginApiKeyTemplateId(providerChoice);
   const templateAccess = providerSettingsView?.providerTemplates.find(
@@ -78,27 +84,45 @@ export function LoginApiKeyForm({ onCancel, onSaved, onSkipped }: LoginApiKeyFor
       setError(intl.formatMessage({ id: "login.apiKey.emptyError" }));
       return;
     }
+    const baseUrlError = isCustomProvider
+      ? validateCustomProviderBaseUrl(customBaseUrl)
+      : null;
+    if (baseUrlError) {
+      setError(baseUrlError);
+      return;
+    }
 
     setSaving(true);
     setError(null);
     try {
-      const template = (await providerSettingsService.getView()).providerTemplates.find(
-        (item) => item.templateId === templateId,
-      );
-      if (!template || !isApiKeyAccess(template.config.access)) {
-        setError(
-          intl.formatMessage(
-            { id: "login.apiKey.providerMissingError" },
-            { provider: providerLabel },
-          ),
+      let created: Awaited<ReturnType<typeof providerSettingsService.createPersonalProvider>>;
+      if (isCustomProvider) {
+        // 自定义供应商与设置页"添加自定义供应商"同一条 createPersonalProvider 服务路径，
+        // 仅不传 templateId，改用 initialConfig 直接写入 OpenAI 兼容地址与 Key；
+        // 模型列表留空，由用户后续在设置页补充。
+        created = await providerSettingsService.createPersonalProvider({
+          providerName: resolveCustomProviderDisplayName(customBaseUrl),
+          initialConfig: buildCustomProviderInitialConfig(customBaseUrl, apiKey),
+        });
+      } else {
+        const template = (await providerSettingsService.getView()).providerTemplates.find(
+          (item) => item.templateId === templateId,
         );
-        return;
-      }
+        if (!template || !isApiKeyAccess(template.config.access)) {
+          setError(
+            intl.formatMessage(
+              { id: "login.apiKey.providerMissingError" },
+              { provider: providerLabel },
+            ),
+          );
+          return;
+        }
 
-      const created = await providerSettingsService.createPersonalProvider({
-        templateId,
-        initialConfig: { access: { type: template.config.access.type, apiKey } },
-      });
+        created = await providerSettingsService.createPersonalProvider({
+          templateId: template.templateId,
+          initialConfig: { access: { type: template.config.access.type, apiKey } },
+        });
+      }
       const defaultModelPreference = buildLoginApiKeyDefaultModelPreferenceFromSelection(
         await modelSelectionService.getView(),
         created.providerId,
@@ -107,6 +131,7 @@ export function LoginApiKeyForm({ onCancel, onSaved, onSkipped }: LoginApiKeyFor
       await onSaved();
     } catch (saveError) {
       logger.error("[LoginEntry] 保存 API Key provider 失败", {
+        providerChoice,
         templateId,
         error: saveError,
       });
@@ -176,7 +201,7 @@ export function LoginApiKeyForm({ onCancel, onSaved, onSkipped }: LoginApiKeyFor
                 <SelectValue />
               </SelectTrigger>
               <SelectContent align="end" className="rounded-lg">
-                {/* JGAgent 去官方化：登录表单仅提供公司模型网关 */}
+                {/* JGAgent 去官方化：捷关为默认渠道；自定义供应商面向 OpenAI 兼容私有网关 */}
                 <SelectItem
                   value="jgagent"
                   className="rounded-md"
@@ -184,9 +209,35 @@ export function LoginApiKeyForm({ onCancel, onSaved, onSkipped }: LoginApiKeyFor
                 >
                   捷关模型网关
                 </SelectItem>
+                <SelectItem
+                  value="custom"
+                  className="rounded-md"
+                  data-testid={testId(TID_LOGIN_API_KEY_PROVIDER_ITEM, "custom")}
+                >
+                  自定义供应商
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
+          {isCustomProvider ? (
+            <div>
+              <Input
+                id="login-api-key-custom-url"
+                type="text"
+                size="lg"
+                className="h-10 w-full text-ui-base"
+                data-testid={testId(TID_LOGIN_API_KEY_INPUT, "custom-url")}
+                aria-label="API 地址"
+                value={customBaseUrl}
+                placeholder={CUSTOM_PROVIDER_BASE_URL_PLACEHOLDER}
+                autoComplete="off"
+                onChange={(event) => {
+                  setCustomBaseUrl(event.target.value);
+                  setError(null);
+                }}
+              />
+            </div>
+          ) : null}
           <div className="relative">
             <Input
               id="login-api-key"
