@@ -100,7 +100,7 @@ pnpm lint                                     # 验证：0 错误、70 警告（
 | `com.jieguan.jgagent` | `desktop-product-identity.mjs`（含 .preview/.dev 变体） | 公司正式反向域名 |
 | 版权主体"捷关 / JieGuan" | `about.ts` | 公司注册全称 |
 | `https://jgagent.invalid` | `zcodeEndpoint.ts` | 公司业务服务端地址 |
-| `https://llm.jgagent.invalid` + `your-model-id` | `config/provider/zcode-builtin.json` | 公司模型网关地址与模型 ID |
+| ✅ `http://106.15.120.94:9527/v1`（14 个模型：glm 全系 + claude 系） | `config/provider/zcode-builtin.json` 的 jgagent-gateway 模板 | 已接通（2026-09-23 实测 /v1/models 返回正常）；每人在网关上有独立 api-key，在应用设置页粘贴即可 |
 | `https://cdn.jgagent.invalid` | `remoteCdn.ts`、`plugin-marketplaces.ts` 等 | 公司 CDN / 插件市场源 |
 | `config/default.json` 空链接 | feedback_url / community_urls | 公司内部反馈与社群地址 |
 | `https://jgagent.invalid/docs` | `packages/ui/src/lib/productDocs.ts` | 公司文档站 |
