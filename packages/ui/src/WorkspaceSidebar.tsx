@@ -1636,6 +1636,11 @@ export const WorkspaceSidebar = memo(function WorkspaceSidebarComponent({
             onLocaleChange={handleLocaleChange}
             onThemeChange={handleThemeChange}
             onSettingsButtonClick={openSettingsTab}
+            onProviderSettingsClick={() => {
+              // 先写入待跳转分区，再打开设置页，SettingsPage 挂载时消费该 intent。
+              setPendingSettingsSectionIntent("modelProvider");
+              openSettingsTab();
+            }}
             workspacePath={workspacePath}
             workspaceIdentity={workspaceIdentity}
             workspaceRemoteSessionId={workspaceRemoteSessionId}

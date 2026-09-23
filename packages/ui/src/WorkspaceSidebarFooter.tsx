@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuSub,
   DropdownMenuSubContent,
@@ -18,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.js";
 import {
+  KeyRound,
   PencilRuler,
   Globe,
   Maximize,
@@ -43,6 +45,7 @@ export const WorkspaceSidebarFooter = memo(function WorkspaceSidebarFooterCompon
   onLocaleChange,
   onThemeChange,
   onSettingsButtonClick,
+  onProviderSettingsClick,
   settingsButtonMode = "settings",
   workspacePath,
   workspaceIdentity,
@@ -56,6 +59,8 @@ export const WorkspaceSidebarFooter = memo(function WorkspaceSidebarFooterCompon
   onLocaleChange: (value: string) => void;
   onThemeChange: (value: string) => void;
   onSettingsButtonClick?: () => void;
+  /** JGAgent：直达设置-模型供应商分区（更换 API Key / 供应商）。 */
+  onProviderSettingsClick?: () => void;
   settingsButtonMode?: "settings" | "back";
   workspacePath?: string;
   workspaceIdentity?: string;
@@ -242,6 +247,15 @@ export const WorkspaceSidebarFooter = memo(function WorkspaceSidebarFooterCompon
                   </DropdownMenuItem>
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
+            ) : null}
+            {onProviderSettingsClick ? (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={onProviderSettingsClick}>
+                  <KeyRound className="size-4" />
+                  供应商设置
+                </DropdownMenuItem>
+              </>
             ) : null}
           </DropdownMenuContent>
         </DropdownMenu>
