@@ -82,5 +82,6 @@
     "typescript": "^6.0.2",
     "vite": "^8.0.2"
   },
-  "productName": "JGAgent"
+  "productName": "JGAgent",
+  "version": "0.1.0"
 }
