@@ -15,7 +15,9 @@ import { ConversationShareReadonlyTimeline } from "@zcode/ui/conversation-share-
 import { renderOAuthProviderIcon } from "@zcode/ui/oauth-provider-icon";
 import { applyTheme, resolveTheme, type Theme } from "@zcode/ui/useTheme";
 import "./conversationShareLandingPage.css";
-import type { WebOAuthProviderId } from "../auth/browserOAuthCredentialRepo.js";
+// JGAgent 去官方化（阶段 3）：WebOAuthProviderId 原定义于 browserOAuthCredentialRepo（已随 OAuth 登录域删除），
+// 此处保留本地联合类型供登录按钮渲染与回调签名使用。
+type WebOAuthProviderId = typeof ZAI_PROVIDER_ID | typeof BIGMODEL_PROVIDER_ID;
 import {
   buildShareImportDeepLink,
   type ConversationSharePreviewClientError,

@@ -52,19 +52,35 @@ import {
   refreshModelProviderSection,
   refreshProviderPanelAfterAuthChange as refreshModelProviderPanelAfterAuthChange,
 } from "./model-provider-section/modelProviderActions.js";
-import {
-  useCodingPlanAccessRefresh,
-  useCodingPlanEntitlements,
-} from "./model-provider-section/useCodingPlanEntitlements.js";
+// JGAgent 去官方化（阶段 3）：useCodingPlanEntitlements / useCodingPlanAccessRefresh 随订阅域删除；
+// 导航与套餐卡的权益入参保留形状，但恒为空（账号体系移除后不会再产生套餐连接）。
+type CodingPlanEntitlementsStub = Partial<Record<string, CodingPlanEntitlementState>>;
+const useCodingPlanEntitlements = (_options: Record<string, unknown>): {
+  entitlements: CodingPlanEntitlementsStub;
+  enabledStartPlanProviderIds: string[];
+  refresh: (options?: { force?: boolean; reason?: string }) => Promise<void>;
+} => ({
+  entitlements: {},
+  enabledStartPlanProviderIds: [],
+  refresh: async () => {},
+});
 import { sortModelProvidersForDisplay } from "@/lib/modelProviderOrdering.js";
 import { useSettings } from "@/hooks/useSettingService.js";
+import type { CodingPlanEntitlementState } from "@/settings/model-provider-section/constants.js";
 import { resolveLogoutProviderFamilyDomain } from "@/lib/providerFamilyDomainSettings.js";
 import {
   addPendingSettingsSectionListener,
   consumePendingSettingsModelProviderTarget,
   type SettingsModelProviderTarget,
 } from "@/lib/settingsNavigation.js";
-import { useEnterpriseCodingPlanProducts } from "@/settings/model-provider-section/useEnterpriseCodingPlanProducts.js";
+// JGAgent 去官方化（阶段 3）：企业套餐商品列表 hook 随订阅域删除，快照恒为空。
+const useEnterpriseCodingPlanProducts = (_options: Record<string, unknown>): {
+  snapshot: null;
+  refresh: () => Promise<void>;
+} => ({
+  snapshot: null,
+  refresh: async () => {},
+});
 
 export {
   fuzzyMatch,
@@ -247,7 +263,7 @@ export function ModelProviderSection({
   const { intl, locale } = useZCodeIntl();
   const confirmDialog = useConfirmDialog();
   const platform = usePlatform();
-  const { modelSelectionService, oauthService, credentialService } = useServices();
+  const { modelSelectionService, credentialService } = useServices();
   const {
     modelProviders,
     providerTemplates,
@@ -416,20 +432,8 @@ export function ModelProviderSection({
       authenticatedZaiEnterpriseProducts.refresh(),
     ]);
   }, [authenticatedEnterpriseProducts, authenticatedZaiEnterpriseProducts]);
-  const subscribedTeamProducts = useMemo(
-    () => [
-      ...(authenticatedEnterpriseProducts.snapshot?.productList.filter(
-        (product) => product.subscribed === true,
-      ) ?? []),
-      ...(authenticatedZaiEnterpriseProducts.snapshot?.productList.filter(
-        (product) => product.subscribed === true,
-      ) ?? []),
-    ],
-    [
-      authenticatedEnterpriseProducts.snapshot?.productList,
-      authenticatedZaiEnterpriseProducts.snapshot?.productList,
-    ],
-  );
+  // JGAgent 去官方化（阶段 3）：企业套餐商品快照恒为空，已购团队产品列表固定为空数组。
+  const subscribedTeamProducts = useMemo(() => [], []);
   const connectionSelections = sharedSettings?.providerFamilyConnectionSelections ?? {};
   const familyConnectionSettingsFailed = sharedSettingsError !== null && sharedSettings === null;
   const effectiveConnectionSelections = useMemo(
@@ -696,16 +700,10 @@ export function ModelProviderSection({
       setSelectedNodeKey,
       intl,
     });
-  const selectedPlanAccessKey =
-    selectedNavItem?.type === "codingPlan" || selectedNavItem?.type === "teamPlan"
-      ? selectedNavItem.key
-      : null;
+  // JGAgent 去官方化（阶段 3）：套餐卡访问期刷新键（selectedPlanAccessKey）随订阅域移除。
   // 套餐卡每次被用户打开时按需校正；共享 freshness window 保证一分钟内切换返回
   // 不会放大 quota 请求。权益展示更新不等于用户重新打开套餐。
-  useCodingPlanAccessRefresh({
-    refresh: refreshCodingPlanEntitlements,
-    selectedPlanKey: selectedPlanAccessKey,
-  });
+  // JGAgent 去官方化（阶段 3）：套餐卡访问期权益刷新（useCodingPlanAccessRefresh）随订阅域移除。
 
   useEffect(() => {
     if (selectedNavItem?.type !== "codingPlan" && selectedNavItem?.type !== "teamPlan") {
@@ -831,7 +829,7 @@ export function ModelProviderSection({
         const nextProviderFamilyDomain = resolveLogoutProviderFamilyDomain({
           currentDomain: sharedSettings?.providerFamilyDomain,
         });
-        await oauthService.logout(providerId);
+        // JGAgent 去官方化（阶段 3）：OAuth logout 随登录域移除；解绑仅重置本地 family 设置。
         // Coding Plan 官网 webview 使用独立持久 partition，provider Unlink 也属于账号边界。
         if (typeof platform.executeDesktopCommand === "function") {
           await platform.executeDesktopCommand(DesktopCommandIds.ClearCodingPlanWebviewStorage);
@@ -861,7 +859,7 @@ export function ModelProviderSection({
       }
     },
     [
-      oauthService,
+
       platform,
       updateSharedSettings,
       sharedSettings?.providerFamilyDomain,

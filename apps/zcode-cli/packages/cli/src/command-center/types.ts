@@ -130,45 +130,8 @@ export type CommandCenterTarget = {
   };
 };
 
-export type CommandCenterLoginResult = {
-  browser?: {
-    opened: boolean;
-    reason?: string;
-  };
-  configPath: string;
-  credentialsPath: string;
-  model: string;
-  providerId?: "bigmodel" | "zai";
-  user: {
-    email?: string;
-    name?: string;
-    user_id: string;
-  };
-};
-
-export type CommandCenterLoginAuthorizeData = {
-  authorize_url: string;
-  expires_at: number;
-  flow_id: string;
-  poll_interval_sec: number;
-};
-
-export type CommandCenterLoginOptions = {
-  abortSignal?: AbortSignal;
-  onAuthorizeUrl?: (data: CommandCenterLoginAuthorizeData) => Promise<void> | void;
-};
-export type CommandCenterBigmodelLoginOptions = CommandCenterLoginOptions;
-
-export type CommandCenterBigmodelLoginResult = {
-  browser?: {
-    opened: boolean;
-    reason?: string;
-  };
-  configPath: string;
-  model: string;
-  providerId: "bigmodel";
-};
-
+// JGAgent 去官方化（阶段 3）：删除 OAuth 登录结果/选项类型（CommandCenterLoginResult /
+// CommandCenterLoginOptions / CommandCenterBigmodelLogin*）；API Key 登录类型保留。
 export type CommandCenterApiKeyOptions = {
   apiKey: string;
   providerId: "bigmodel" | "zai";
@@ -304,10 +267,7 @@ export type CommandCenterDeps = {
   listSessions?: () => Promise<CommandCenterSession[]>;
   listCustomCommands?: () => Promise<CommandCenterCustomCommandListOutcome>;
   listSkills?: () => Promise<CommandCenterSkillListOutcome>;
-  login?: (options?: CommandCenterLoginOptions) => Promise<CommandCenterLoginResult>;
-  loginBigmodel?: (
-    options?: CommandCenterBigmodelLoginOptions,
-  ) => Promise<CommandCenterBigmodelLoginResult>;
+  // JGAgent 去官方化（阶段 3）：login / loginBigmodel deps 字段随 OAuth 登录域删除。
   configureApiKey?: (options: CommandCenterApiKeyOptions) => Promise<CommandCenterApiKeyResult>;
   loadCustomCommand?: (name: string) => Promise<CommandCenterCustomCommandContent>;
   newApp?: () => Promise<CommandCenterApp>;

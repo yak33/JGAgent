@@ -1,5 +1,5 @@
 import { resolveSelectionSideInheritedModel } from "@/lib/selectionSideInheritedModel.js";
-import { useStartPlanRecommendation } from "@/hooks/useStartPlanRecommendation.js";
+// JGAgent 去官方化（阶段 3）：Start Plan 推荐链路随账号域删除。
 import type { SessionCreateSource } from "@zcode/shared";
 import { reportSessionCreate } from "@/lib/sessionCreateTelemetry.js";
 import { getLocalTtftObserver } from "@/v4/telemetry/localTtftObserver.js";
@@ -72,7 +72,7 @@ import {
   type WorkflowRunSettingsChange,
 } from "@/components/workflow-timeline/workflowRunSettings.js";
 import { useWorkflowRunJournalSummaries } from "@/hooks/useWorkflowRunJournalSummaries.js";
-import { usePlanIdentitySnapshot } from "@/hooks/usePlanIdentitySnapshot.js";
+// JGAgent 去官方化（阶段 3）：套餐身份快照（usePlanIdentitySnapshot）随订阅域删除。
 import { useBaseWorkspaceServices } from "@/hooks/useWorkspaceServices.js";
 import { useWorkspaceHomePath } from "@/hooks/useWorkspaceHomePath.js";
 import { prepareWorkspaceWithZCodeSessionService } from "@/hooks/useWorkspacePrepare.js";
@@ -122,7 +122,7 @@ import { ConversationDraftSuggestedPromptsContainer } from "@/v4/ConversationDra
 import { ConversationHeader, type PaneWorkspaceBadge } from "@/v4/ConversationHeader.js";
 import { ConversationQueuePanel } from "@/v4/ConversationQueuePanel.js";
 import { projectPendingGuideQueue } from "@/v4/pendingGuideProjection.js";
-import { ConversationQuotaBanner } from "@/v4/ConversationQuotaBanner.js";
+
 import { PendingCommandRecoveryBanner } from "@/v4/PendingCommandRecoveryBanner.js";
 import { WorkspaceHookPendingBanner } from "@/v4/WorkspaceHookPendingBanner.js";
 import { ConversationStatusPanel } from "@/v4/ConversationStatusPanel.js";
@@ -226,7 +226,7 @@ import { useSlashCommands } from "@/hooks/useSlashCommands.js";
 import { useV4Conversation } from "@/v4/V4ConversationContext.js";
 import { useConversationProjection } from "@/v4/useConversationProjection.js";
 import { usePendingCommandRecovery } from "@/v4/usePendingCommandRecovery.js";
-import { useV4SessionQuotaBanner } from "@/v4/useV4SessionQuotaBanner.js";
+// JGAgent 去官方化（阶段 3）：会话额度横幅（useV4SessionQuotaBanner / ConversationQuotaBanner）随订阅域删除。
 import { resolveMcpUnavailableNotice } from "@/v4/mcpUnavailableBannerNotice.js";
 import { shouldFocusTimelineAfterComposerSend } from "@/v4/promptScrollFocusPolicy.js";
 import {
@@ -1278,7 +1278,7 @@ export function SessionPane({
     // 回收并按最新选择事实重建，已显式选择和正式会话仍保持冻结。
     useZCodeSessionStore.getState().invalidateDraftRuntime(workspacePath, workspaceIdentity);
   }, [draftConfigRef, modelSelectionView?.revision, sessionId, workspaceIdentity, workspacePath]);
-  const recommendStartPlan = useStartPlanRecommendation(modelSelectionView);
+  // JGAgent 去官方化（阶段 3）：Start Plan 推荐移除，模型选择按原值直接生效。
   const createSubmissionFromComposer = useCallback(
     () => createComposerSubmissionConfig(draftConfigRef.current, modelSelectionView),
     [draftConfigRef, modelSelectionView],
@@ -1350,13 +1350,8 @@ export function SessionPane({
     ],
   );
   const { settings: sharedSettings } = useSettings();
-  const readPlanIdentitySnapshot = usePlanIdentitySnapshot(
-    sharedSettings?.providerFamilyDomain,
-    sharedSettings?.providerFamilyDomain
-      ? sharedSettings.providerFamilyConnectionSelections?.[sharedSettings.providerFamilyDomain]
-      : undefined,
-    baseWorkspaceServices.usageStatsService,
-  );
+  // JGAgent 去官方化（阶段 3）：套餐身份快照移除，composer 的 planIdentitySnapshot 恒为空。
+  const readPlanIdentitySnapshot = undefined;
   const appFollowupMode = resolveAppFollowupMode(sharedSettings);
   const messageStreamShowReasoning = sharedSettings?.messageStreamShowReasoning ?? true;
   const messageStreamShowTodos = sharedSettings?.messageStreamShowTodos ?? false;
@@ -1968,9 +1963,8 @@ export function SessionPane({
         snapshotRef.current?.config,
         modelSelectionView,
       );
-      const chosen = inherited ? await recommendStartPlan(inherited) : undefined;
-      if (chosen === null) return false;
-      const modelSelection = chosen && chosen !== inherited ? chosen : undefined;
+      // JGAgent 去官方化（阶段 3）：推荐链路移除，继承模型按原值使用。
+      const modelSelection = inherited ?? undefined;
       // 参数命令每次都是新 child；同一条文本在 ACK 未回时重试仍复用 pending，
       // 不同文本则不能与 bare `/side` 或另一条 prompt 合并。
       const pendingKey = `${selectionSideChatKey}\u0000prompt\u0000${text}`;
@@ -2003,7 +1997,6 @@ export function SessionPane({
     [
       dispatchCommand,
       modelSelectionView,
-      recommendStartPlan,
       onOpenSelectionSideChat,
       remoteSessionId,
       selectionSideChatKey,
@@ -2609,15 +2602,7 @@ export function SessionPane({
         // resumeGoal 等控制命令也不应被发送消息确认框截获。
         return "confirmationRequired" as const;
       }
-      if (slashCommand === null || slashCommand.kind === "sendGoalCommand") {
-        const original = submission.modelSelection;
-        const chosen = await recommendStartPlan(original);
-        if (!chosen) return "blocked" as const;
-        if (chosen !== original) {
-          onAcceptedSelection = captureAcceptedModelSelection(chosen, original);
-          submission = { ...submission, modelSelection: chosen };
-        }
-      }
+      // JGAgent 去官方化（阶段 3）：发送前的 Start Plan 推荐屏障移除，提交模型按原值发送。
       const prewarmTargetBeforeSend =
         sessionId === null ? prewarmBindingRef.current?.sessionId : null;
       if (prewarmTargetBeforeSend) {
@@ -2889,7 +2874,7 @@ export function SessionPane({
     },
     [
       dispatchCommand,
-      recommendStartPlan,
+
       captureAcceptedModelSelection,
       dispatchSlashCommand,
       ensureDraftModelReadyForSend,
@@ -3938,20 +3923,18 @@ export function SessionPane({
     () => resolveMcpUnavailableNotice(snapshot?.rows.window),
     [snapshot?.rows.window],
   );
-  const quotaBanner = useV4SessionQuotaBanner({
-    sessionId: snapshot?.sessionId ?? sessionId,
-    error: controlLastError,
-    errorKey: controlLastErrorKey,
-    phase: snapshot?.control.phase ?? null,
-    providerId: snapshot?.config.provider ?? null,
-    modelId: snapshot?.config.model ?? null,
-    usageStatsService: baseWorkspaceServices.usageStatsService,
-    mcpUnavailableNotice,
-  });
+  // JGAgent 去官方化（阶段 3）：额度横幅随订阅域删除，恒不显示、不阻塞提交。
+  const quotaBanner = {
+    state: { visible: false, blocksSubmit: false },
+    dismissed: false,
+    takesOverError: false,
+    markShown: () => {},
+    dismiss: () => {},
+  };
   const composerError =
     draftModelReadinessError ??
     sendSubmissionError ??
-    (quotaBanner.takesOverError ? null : projectedComposerError);
+    projectedComposerError;
   useEffect(() => {
     setSendSubmissionError(null);
   }, [sessionId]);
@@ -4451,16 +4434,7 @@ export function SessionPane({
     )
   ) : (
     <>
-      {quotaBanner.state.visible &&
-      !quotaBanner.dismissed &&
-      (!projectedComposerError || quotaBanner.takesOverError || quotaBanner.state.blocksSubmit) ? (
-        <ConversationQuotaBanner
-          state={quotaBanner.state}
-          onShown={quotaBanner.markShown}
-          // JGAgent 去官方化（阶段 3）：额度横幅不再携带升级动作，仅保留提示与关闭。
-          onDismiss={quotaBanner.dismiss}
-        />
-      ) : null}
+      {/* JGAgent 去官方化（阶段 3）：会话额度横幅已随订阅域移除。 */}
       {recoverableCommand ? (
         <PendingCommandRecoveryBanner
           entry={recoverableCommand}

@@ -56,13 +56,8 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 5173,
       proxy: {
-        // Web 登录本地调试时，OAuth token 交换必须先命中线上同源接口。
-        // 该专用代理放在 `/api` 通配代理之前，避免被转发到本地 server 导致 404。
-        "/api/v1/oauth/token": {
-          target: zcodeEndpointOrigin,
-          changeOrigin: true,
-          secure: true,
-        },
+        // JGAgent 去官方化（阶段 3）：删除 /api/v1/oauth/token 调试代理（OAuth 登录域移除）。
+
         // 将 /ws 和 /api 请求代理到 server（默认 3030 端口）
         "/ws": { target: "ws://localhost:3030", ws: true },
         "/api": { target: "http://localhost:3030" },

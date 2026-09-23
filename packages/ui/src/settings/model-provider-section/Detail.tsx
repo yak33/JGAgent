@@ -35,7 +35,21 @@ import {
   ProviderFamilyHeader,
   ProviderFamilyPlanModeSwitch,
 } from "./ProviderFamilyModeHeader.js";
-import { useUsageEntitlement } from "@/hooks/useUsageEntitlement.js";
+// JGAgent 去官方化（阶段 3）：useUsageEntitlement（订阅权益快照）随账号域删除。
+// Detail 页的 Team Plan 权益管道保留形状但恒为空：账号体系移除后不会再产生
+// teamPlan 导航项，resolveTeamScopedPlanNavItem 走 item 原样返回分支。
+type TeamPlanEntitlementStub = {
+  snapshot: null;
+  loading: false;
+  error: null;
+  refresh: (options?: { force?: boolean; silent?: boolean; reason?: string }) => Promise<void>;
+};
+const useUsageEntitlement = (_options: Record<string, unknown>): TeamPlanEntitlementStub => ({
+  snapshot: null,
+  loading: false,
+  error: null,
+  refresh: async () => {},
+});
 import { useProviderSettingsView } from "@/hooks/useProviderSettingsView.js";
 import type { ProviderSettingsView } from "@zcode/services";
 import type { SavePersonalModelDraftInput } from "@zcode/provider";
@@ -62,98 +76,13 @@ function hasTeamPlanContext(item: ModelProviderNavItem | null): item is Extract<
   );
 }
 
+// JGAgent 去官方化（阶段 3）：Team Plan 权益快照随订阅域删除（恒为空），
+// resolveTeamScopedPlanNavItem 的额度/订阅分支不再可达，团队导航项按原样返回。
 function resolveTeamScopedPlanNavItem(
   item: Extract<ModelProviderNavItem, { type: "codingPlan" | "teamPlan" }>,
-  entitlement: ReturnType<typeof useUsageEntitlement>,
+  _entitlement: ReturnType<typeof useUsageEntitlement>,
 ): Extract<ModelProviderNavItem, { type: "codingPlan" | "teamPlan" }> {
-  if (item.type !== "teamPlan" || !hasTeamPlanContext(item)) {
-    return item;
-  }
-  if (
-    item.availabilityReason === "credential-unavailable" &&
-    entitlement.snapshot?.unavailableReason !== "no_plan"
-  ) {
-    // 已知 Project Key 不可用时，后续 quota loading/error 不能把真实原因改写成
-    // “正在检查”或“团队套餐未分配”。Provider 配置仍由 Settings View 独立展示。
-    return {
-      ...item,
-      status: "unavailable" as const,
-      statusLabelId: undefined,
-      statusActive: false,
-      quotaLimits: [],
-    };
-  }
-  const snapshot = entitlement.snapshot;
-  if (!snapshot) {
-    if (entitlement.loading) {
-      return {
-        ...item,
-        // Team Plan 额度按组织 / 项目重新查询，切换团队时不能继续展示上一团队额度。
-        status: "checking" as const,
-        statusLabelId: undefined,
-        availabilityReason: undefined,
-        statusActive: false,
-        quotaLimits: [],
-      };
-    }
-    if (entitlement.error) {
-      return {
-        ...item,
-        // 请求失败只证明权益状态未知，不能等价成服务端明确判定“团队套餐未分配”。
-        status: "unavailable" as const,
-        statusLabelId: undefined,
-        availabilityReason: undefined,
-        statusActive: false,
-        quotaLimits: [],
-      };
-    }
-    return item;
-  }
-  if (entitlement.loading && !snapshot.subscription) {
-    return {
-      ...item,
-      status: "checking" as const,
-      statusLabelId: undefined,
-      availabilityReason: undefined,
-      statusActive: false,
-      quotaLimits: [],
-    };
-  }
-  if (entitlement.error && !snapshot.subscription) {
-    return {
-      ...item,
-      status: "unavailable" as const,
-      statusLabelId: undefined,
-      availabilityReason: undefined,
-      statusActive: false,
-      quotaLimits: [],
-    };
-  }
-  const hasTeamSubscription = Boolean(snapshot.subscription?.details.length);
-  const noPlan = snapshot.unavailableReason === "no_plan";
-  const expired = noPlan && snapshot.teamPlanUnavailableReason === "expired";
-  return {
-    ...item,
-    // 权益只来自团队订阅查询；quota 查询失败不能撤销订阅，也不能被解释成未分配。
-    status: hasTeamSubscription ? ("purchased" as const) : ("unavailable" as const),
-    planLevel: item.teamPlanName?.trim() || item.planLevel,
-    currentProductId: item.currentProductId,
-    subscriptionBillingCycle: null,
-    subscriptionRenewTime: null,
-    subscriptionExpireTime: null,
-    subscriptionDetails: [],
-    quotaLimits: snapshot.quota?.limits ?? [],
-    statusLabelId:
-      !hasTeamSubscription && noPlan
-        ? expired
-          ? "settings.modelProvider.codingPlan.status.teamExpired"
-          : "settings.modelProvider.codingPlan.status.teamUnavailable"
-        : undefined,
-    statusMessage: noPlan ? undefined : item.statusMessage,
-    availabilityReason:
-      !hasTeamSubscription && noPlan ? (expired ? "expired" : "not-allocated") : undefined,
-    statusActive: hasTeamSubscription,
-  };
+  return item;
 }
 
 function resolveTeamPlanInspectionAccess(

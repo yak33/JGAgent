@@ -2,7 +2,6 @@ import type { IServiceAccessor } from "@zcode/services";
 import {
   type ProviderFamilyDomain,
   resolveModelProviderFamilyIdByProviderId,
-  resolveProviderFamilyDomainFromOAuthProvider,
 } from "@zcode/shared";
 import { logger } from "@/logger.js";
 
@@ -23,32 +22,30 @@ function inferProviderFamilyDomainFromSelection(
   return [...usableDomains][0] ?? null;
 }
 
+// JGAgent 去官方化（阶段 3）：删除 OAuth active provider → family domain 的推断分支；
+// 迁移只剩"从 Registry 可选 Provider 推断"一条路径（apiKey/Personal 配置）。
 export async function ensureProviderFamilyDomainMigration(
-  services: Pick<IServiceAccessor, "settingService" | "oauthService" | "modelSelectionService">,
+  services: Pick<IServiceAccessor, "settingService" | "modelSelectionService">,
 ): Promise<void> {
   const settings = await services.settingService.get();
   if (settings.providerFamilyDomain || settings.providerFamilyDomainMigrated) {
     return;
   }
 
-  let inferredDomain = resolveProviderFamilyDomainFromOAuthProvider(
-    await services.oauthService.getActiveProvider(),
-  );
+  let inferredDomain: ProviderFamilyDomain | null = null;
   let selectableProviders: readonly { readonly providerId: string }[] | null = null;
 
-  if (!inferredDomain) {
-    try {
-      selectableProviders = (await services.modelSelectionService.getView()).providers;
-      inferredDomain = inferProviderFamilyDomainFromSelection(selectableProviders);
-    } catch (error) {
-      logger.warn("[providerFamilyDomainMigration] 读取模型选择视图失败", {
-        error,
-      });
-    }
+  try {
+    selectableProviders = (await services.modelSelectionService.getView()).providers;
+    inferredDomain = inferProviderFamilyDomainFromSelection(selectableProviders);
+  } catch (error) {
+    logger.warn("[providerFamilyDomainMigration] 读取模型选择视图失败", {
+      error,
+    });
   }
 
   if (!inferredDomain && selectableProviders?.length === 0) {
-    // 启动早期 OAuth active provider 和 Registry 可能都还没恢复。
+    // 启动早期 Registry 可能还没恢复。
     // 此时如果把“空结果”标记为已迁移，会让后续草稿预热在 selectedKey 为空时吃到旧 Start Plan 偏好。
     logger.info("[providerFamilyDomainMigration] provider family domain 迁移等待模型选择视图恢复");
     return;

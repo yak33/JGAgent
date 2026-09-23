@@ -1,63 +1,10 @@
 import { loadBootstrapModule } from "./bootstrap-loader.js";
 import { loadCliDotenv } from "./env.js";
 import type { RunDependencies } from "./cli-types.js";
-import type {
-  CommandCenterApiKeyOptions,
-  CommandCenterBigmodelLoginOptions,
-  CommandCenterLoginOptions,
-} from "./command-center/types.js";
+import type { CommandCenterApiKeyOptions } from "./command-center/types.js";
 
-export async function loginForTui(
-  deps: RunDependencies,
-  options?: CommandCenterLoginOptions,
-) {
-  const env = deps.env ?? process.env;
-  const workingDirectory = (deps.cwd ?? process.cwd)();
-  const dotenvResult = (deps.loadDotenv ?? loadCliDotenv)({
-    cwd: workingDirectory,
-    env,
-  });
-
-  if (dotenvResult.error) {
-    throw new Error(`Failed to load environment file: ${dotenvResult.path}`, {
-      cause: dotenvResult.error,
-    });
-  }
-
-  const login = deps.loginZCodeCli ?? (await loadBootstrapModule()).loginZCodeCli;
-  return await login({
-    abortSignal: options?.abortSignal,
-    env,
-    onAuthorizeUrl: options?.onAuthorizeUrl,
-  });
-}
-
-export async function loginBigmodelForTui(
-  deps: RunDependencies,
-  options?: CommandCenterBigmodelLoginOptions,
-) {
-  const env = deps.env ?? process.env;
-  const workingDirectory = (deps.cwd ?? process.cwd)();
-  const dotenvResult = (deps.loadDotenv ?? loadCliDotenv)({
-    cwd: workingDirectory,
-    env,
-  });
-
-  if (dotenvResult.error) {
-    throw new Error(`Failed to load environment file: ${dotenvResult.path}`, {
-      cause: dotenvResult.error,
-    });
-  }
-
-  const login =
-    deps.loginBigmodelCodingPlan ?? (await loadBootstrapModule()).loginBigmodelCodingPlan;
-  return await login({
-    abortSignal: options?.abortSignal,
-    env,
-    onAuthorizeUrl: options?.onAuthorizeUrl,
-  });
-}
-
+// JGAgent 去官方化（阶段 3）：删除 loginForTui / loginBigmodelForTui（OAuth 登录链路）；
+// TUI 登录仅保留 API Key（configureApiKeyForTui）与登出。
 export async function configureApiKeyForTui(
   deps: RunDependencies,
   options: CommandCenterApiKeyOptions,

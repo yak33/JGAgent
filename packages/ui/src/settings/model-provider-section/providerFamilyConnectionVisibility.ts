@@ -13,7 +13,6 @@ import {
   MODEL_PROVIDER_FAMILY_SPECS,
   resolveModelProviderFamilySpecByProviderId,
 } from "@zcode/shared";
-import { resolveMcpQuotaLimit } from "@/lib/codingPlanQuotaPresentation.js";
 import { resolveUsageEntitlementOutcome } from "@/lib/codingPlanProvider.js";
 import { formatTeamPlanDisplayName } from "@/lib/teamPlanDisplayName.js";
 import {
@@ -193,7 +192,7 @@ export function resolveCodingPlanEntitlementState({
       subscriptionExpireTime,
       subscriptionDetails,
       quotaLimits: snapshot?.quota?.limits ?? [],
-      mcpQuotaLimit: resolveMcpQuotaLimit(snapshot),
+      // JGAgent 去官方化（阶段 3）：官方 Server MCP 额度展示移除（订阅域删除）。
     };
   }
 
@@ -239,7 +238,7 @@ export function resolveCodingPlanEntitlementState({
     subscriptionExpireTime,
     subscriptionDetails,
     quotaLimits: snapshot?.quota?.limits ?? [],
-    mcpQuotaLimit: resolveMcpQuotaLimit(snapshot),
+    // JGAgent 去官方化（阶段 3）：官方 Server MCP 额度展示移除（订阅域删除）。
   };
 }
 

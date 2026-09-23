@@ -286,7 +286,7 @@ export * from "./workspaceSessionRestore.js";
 export * from "./skill-scan-policy.js";
 export * from "./browser-use/index.js";
 
-export * from "./coding-plan-reset.js";
+// JGAgent 去官方化（阶段 3）：删除 coding-plan-reset.js（额度重置协议类型，零引用）。
 export {
   parseSubagentMarkdownSelection,
   formatSubagentMarkdownModel,

@@ -18,10 +18,7 @@ import type {
   inspectZCodeCustomCommand,
   InspectZCodeCustomCommandOptions,
   InspectZCodeSkillOptions,
-  loginZCodeCli,
-  loginBigmodelCodingPlan,
-  LoginBigmodelCodingPlanOptions,
-  LoginZCodeCliOptions,
+  // JGAgent 去官方化（阶段 3）：loginZCodeCli / loginBigmodelCodingPlan 随 OAuth 登录域删除。
   listZCodeCustomCommands,
   ListZCodeCustomCommandsOptions,
   loadZCodeCustomCommand,
@@ -74,10 +71,7 @@ export interface RunDependencies extends PluginsCommandOverrides {
   inspectCustomCommand?: (
     options: InspectZCodeCustomCommandOptions,
   ) => ReturnType<typeof inspectZCodeCustomCommand>;
-  loginZCodeCli?: (options?: LoginZCodeCliOptions) => ReturnType<typeof loginZCodeCli>;
-  loginBigmodelCodingPlan?: (
-    options?: LoginBigmodelCodingPlanOptions,
-  ) => ReturnType<typeof loginBigmodelCodingPlan>;
+  // JGAgent 去官方化（阶段 3）：loginZCodeCli / loginBigmodelCodingPlan 依赖注入字段随 OAuth 删除。
   configureCodingPlanApiKey?: (
     options: ConfigureCodingPlanApiKeyOptions,
   ) => ReturnType<typeof configureCodingPlanApiKey>;

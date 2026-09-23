@@ -20,8 +20,7 @@ import {
 import { DEFAULT_CLI_CLEANUP_TIMEOUT_MS, runCliCleanupWithTimeout } from "./shutdown.js";
 import {
   configureApiKeyForTui,
-  loginBigmodelForTui,
-  loginForTui,
+  // JGAgent 去官方化（阶段 3）：loginForTui / loginBigmodelForTui 随 OAuth 登录域删除。
   logoutForTui,
 } from "./tui-auth.js";
 import {
@@ -265,8 +264,7 @@ export function createTuiSubmitPrompt(
     listSessions: () => listSessionsForTui(deps),
     listSkills: () => listSkillsForTui(deps),
     configureApiKey: (options) => configureApiKeyForTui(deps, options),
-    login: (options) => loginForTui(deps, options),
-    loginBigmodel: (options) => loginBigmodelForTui(deps, options),
+    // JGAgent 去官方化（阶段 3）：login / loginBigmodel wiring 随 OAuth 登录域删除。
     loadCustomCommand: (name) => loadCustomCommandForTui(deps, name),
     newApp,
     recordInputHistory: async (input, kind) => {

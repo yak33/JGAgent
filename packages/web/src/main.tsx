@@ -12,9 +12,9 @@ import {
 import "@zcode/ui/styles.css";
 import { connectViaWebSocket } from "@zcode/client";
 import { WebCallbackPage } from "./auth/WebCallbackPage.js";
-import { createWebAuthService } from "./auth/webAuthService.js";
-import { WEB_ZAI_OAUTH_CONFIG, resolveWebAuthDevReturnTo } from "./auth/webZaiOAuthConfig.js";
-import { parseOAuthState, resolveSafeAppReturnTo } from "./auth/oauthStateCodec.js";
+// JGAgent 去官方化（阶段 3）：删除 web OAuth 登录服务（webAuthService / zaiWebOAuthProvider /
+// browserOAuthCredentialRepo / webZaiOAuthConfig / oauthStateCodec / webAuthLocale）；
+// /share/callback 保留渲染但仅提示登录不可用，分享页 token 读取降级为空。
 import { resolveWebCommunityUrl, resolveWebHelpConfig } from "./communityUrl.js";
 import {
   ConversationShareLandingLoader,
@@ -71,7 +71,6 @@ async function resolveFeedbackUrl(): Promise<string | undefined> {
 }
 
 const root = createRoot(document.getElementById("root")!);
-const webAuthService = createWebAuthService();
 
 // 初始化 Web 端流式 clientId，确保所有 hook 在首次渲染前就使用稳定 ID
 {
@@ -96,19 +95,12 @@ function isWebOAuthCallback(params: URLSearchParams): boolean {
 }
 
 function renderWebAuthCallbackPage(): void {
+  // JGAgent 去官方化（阶段 3）：OAuth 回调不再交换 token，仅渲染不可用提示页。
   document.title = "JGAgent - Sign In";
-  const callbackState = parseOAuthState(
-    new URLSearchParams(window.location.search).get("state") ?? "",
-  );
-  const safeRetryTarget = resolveSafeAppReturnTo(callbackState?.app_return_to);
   root.render(
     <WebCallbackPage
-      authService={webAuthService}
-      onSuccess={({ appReturnTo }) => {
-        window.location.replace(appReturnTo ?? "/");
-      }}
-      onRetry={() => {
-        window.location.replace(safeRetryTarget ?? "/");
+      onBack={() => {
+        window.location.replace("/");
       }}
     />,
   );
@@ -158,28 +150,15 @@ async function renderConversationSharePage(): Promise<void> {
     if (mockMode) {
       window.sessionStorage.removeItem("zcode:share:mock-auth");
       window.location.reload();
-      return;
     }
-    void webAuthService.logout();
+    // JGAgent 去官方化（阶段 3）：非 mock 分支的 Web OAuth 登出随登录域删除（无会话可退）。
   };
   root.render(
     <ConversationShareLandingLoader
       shareCode={shareCode}
       client={client}
-      getAccessToken={() => getMockToken() ?? webAuthService.getZCodeJwtToken()}
-      onLogin={(provider) => {
-        if (mockMode) {
-          window.sessionStorage.setItem("zcode:share:mock-auth", "owner");
-          window.location.reload();
-          return;
-        }
-        webAuthService.startLogin({
-          provider,
-          appReturnTo: window.location.href,
-          redirectUri: WEB_ZAI_OAUTH_CONFIG.shareRedirectUri,
-          devReturnTo: resolveWebAuthDevReturnTo(WEB_ZAI_OAUTH_CONFIG),
-        });
-      }}
+      getAccessToken={() => getMockToken()}
+      // JGAgent 去官方化（阶段 3）：Web OAuth 登录入口不再提供（onLogin 不传，受限分享显示提示而无按钮）。
       onLogout={onLogout}
       locale={routeLocale}
       theme={resolveWebThemePreference("zai-light")}

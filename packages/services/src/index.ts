@@ -9,13 +9,6 @@ export {
   type ProviderSettingsProviderView,
   type ProviderSettingsView,
 } from "./model-provider/providerFacadeServices.js";
-export {
-  createAccountRequestAuthService,
-  type IAccountRequestAuthService,
-  type AccountRequestAuthInput,
-  type AccountRequestAuthMaterial,
-  type AccountRequestAuthResolver,
-} from "./model-provider/accountRequestAuthService.js";
 export { IProviderProvisioningTargetService } from "./model-provider/providerProvisioning.js";
 export {
   collectServiceMemoryDiagnostics,
@@ -212,20 +205,18 @@ export type { SessionRealtimePort } from "./session/sessionRealtimePort.js";
 // FileWatcher service — IFileWatcherService is both a type (interface) and value (descriptor)
 export { IFileWatcherService } from "./fileWatcher/fileWatcher.js";
 
-// OAuth service — IOAuthService is both a type (interface) and value (descriptor)
-export { IOAuthService } from "./oauth/oauth.js";
+// JGAgent 去官方化（阶段 3）：删除 OAuth 服务域（oauth/ 目录）与 IOAuthService 出口。
 
 // UsageStats service — IUsageStatsService is both a type (interface) and value (descriptor)
+// JGAgent 去官方化（阶段 3）：仅保留应用级统计，订阅配额方法随账号域删除。
 export { IUsageStatsService } from "./usage-stats/usageStats.js";
 
 // Storage（资源管理器「存储」tab）：数据类型在 @zcode/shared；这里只导出服务接口与卷分组纯函数
 export type { IStorageService } from "./storage/contract.js";
 
-// CodingPlanSubscription service — ICodingPlanSubscriptionService is both a type (interface) and value (descriptor)
-export {
-  ICodingPlanSubscriptionService,
-  type OffPeakClientConfig,
-} from "./coding-plan-subscription/codingPlanSubscription.js";
+// JGAgent 去官方化（阶段 3）：删除 CodingPlanSubscription 服务域
+// （coding-plan-subscription/ 目录，含 OffPeakClientConfig 类型）与闲时任务服务面
+// （session/offPeakTask.ts 的 IOffPeakTaskService），出口随实现一并移除。
 export {
   IClientScenesService,
   type ClientSceneConfig,
@@ -235,9 +226,6 @@ export {
   type ClientScenesResponse,
 } from "./client-scenes/clientScenes.js";
 export { isValidCronExpr } from "./session/automationCronValidation.js";
-// 闲时任务管理服务（与 automation 服务面独立）；接口/描述符 browser-safe。
-export { IOffPeakTaskService } from "./session/offPeakTask.js";
-export type { OffPeakUpdateTaskParams } from "./session/offPeakTask.js";
 
 // Skills service — ISkillsService is both a type (interface) and value (descriptor)
 export { ISkillsService } from "./skills/skills.js";

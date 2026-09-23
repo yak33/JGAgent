@@ -11,7 +11,6 @@ import type { IServiceAccessor } from "@zcode/services";
 import type { CreateTaskRequest } from "@/app-shell/types.js";
 import { useConfirmDialog } from "@/hooks/useConfirmDialog.js";
 import { reportAppTelemetryEvent } from "@/lib/appTelemetry.js";
-import { resolveLogoutProviderFamilyDomain } from "@/lib/providerFamilyDomainSettings.js";
 import { isRendererReloadNavigation } from "@/lib/rendererNavigation.js";
 import { parseWslUncWorkspacePath } from "@/lib/wslUncWorkspace.js";
 import { logger } from "@/logger.js";
@@ -79,9 +78,8 @@ export function useRootWorkspaceActions({
   allowOpenWorkspace,
   preferDirectoryBrowser,
   openDirectoryBrowser,
-  refreshProviderState,
-  updateAppSettings,
-  onProviderFamilyDomainClearedAfterLogout,
+  // JGAgent 去官方化（阶段 3）：refreshProviderState / updateAppSettings /
+  // onProviderFamilyDomainClearedAfterLogout 解构随 OAuth 登出链路移除（参数接口保留）。
   userId,
   onOpenRemoteConnection,
   workbenchGroupClientMode = "desktop-continuous",
@@ -318,36 +316,16 @@ export function useRootWorkspaceActions({
       },
       "Root",
     );
-    const settingsBeforeLogout = await services.settingService.get();
-    const nextProviderFamilyDomain = resolveLogoutProviderFamilyDomain({
-      currentDomain: settingsBeforeLogout.providerFamilyDomain,
-    });
-    await services.oauthService.logout();
-    await updateAppSettings({
-      providerFamilyDomain: (nextProviderFamilyDomain ?? "") as AppSettings["providerFamilyDomain"],
-      providerFamilyDomainUpdatedAt: Date.now(),
-      providerFamilyDomainMigrated: true,
-    });
-    if (!nextProviderFamilyDomain) {
-      onProviderFamilyDomainClearedAfterLogout?.();
-    }
-    // JGAgent 去官方化（阶段 3）：登出不再回写 OAuth 错误与 user（store 字段随 OAuth 链路摘除）；
-    // 派生 Coding/Start key 仍由 OAuth logout 的 host hook 统一清理，随后 RelaunchApp 复位 renderer 状态。
-    // 退出登录后刷新 Account Source 与 Registry，避免继续展示退出前的 Provider 状态。
-    await refreshProviderState();
+    // JGAgent 去官方化（阶段 3）：OAuth 登录域删除后没有服务端会话可退出，
+    // 登出仅清理本地 Coding Plan webview partition 并重启应用复位 renderer 状态；
+    // providerFamilyDomain 的登出重置逻辑随 OAuth 镜像 provider 一并移除。
     // Coding Plan 官网 webview 使用独立持久 partition，App logout 必须同步清理。
     await platform.executeDesktopCommand(DesktopCommandIds.ClearCodingPlanWebviewStorage);
     await platform.executeDesktopCommand(DesktopCommandIds.RelaunchApp);
   }, [
     intl,
     requestConfirmation,
-    refreshProviderState,
-    onProviderFamilyDomainClearedAfterLogout,
     platform,
-    services.oauthService,
-    services.modelSelectionService,
-    services.settingService,
-    updateAppSettings,
     userId,
   ]);
 
