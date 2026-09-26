@@ -2,7 +2,7 @@
 
 本仓库是捷关公司基于 ZCode（Apache-2.0）二次开发的 JGAgent。改造进度、阶段计划与全部技术细节见 **[docs/rebranding/README.md](docs/rebranding/README.md)**；跨设备/跨会话交接上下文见 **[docs/rebranding/HANDOFF.md](docs/rebranding/HANDOFF.md)**。接手工作前先读这两份文档。发版、官网（website/）与服务器部署见 **[docs/release/README.md](docs/release/README.md)**。
 
-当前状态：阶段 0~2（品牌替换、端点网络收口）已完成；下一步是阶段 3（账号与商业化模块摘除）。官方默认端点已全部占位化为 `.invalid` 不解析域，属刻意设计，勿"修复"。
+当前状态：阶段 0~3（品牌替换、端点网络收口、账号与商业化摘除）已完成，v0.2.0 内部预览版已发布；下一步是阶段 4（发布工程收尾）。发版、官网与服务器运维见 **[docs/release/README.md](docs/release/README.md)**。官方默认端点已全部占位化为 `.invalid` 不解析域，属刻意设计，勿"修复"。
 
 ## 核心原则
 

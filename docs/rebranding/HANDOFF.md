@@ -8,7 +8,7 @@
 
 ## 1. 项目背景（一段话版）
 
-捷关公司要基于开源项目 ZCode（github.com/zai-org/ZCode，Apache-2.0，AI 编程工作台，约 90 万行 TS 的 pnpm monorepo）二次开发公司自有 Agent 工具 **JGAgent**。改造分四个阶段：环境落位 ✅ → 品牌替换 ✅ → 端点与网络收口 ✅ → 账号与商业化摘除 ✅（2026-09-23 完成，四个批次）→ 发布工程 ⬜。已完成部分均已提交推送。
+捷关公司要基于开源项目 ZCode（github.com/zai-org/ZCode，Apache-2.0，AI 编程工作台，约 90 万行 TS 的 pnpm monorepo）二次开发公司自有 Agent 工具 **JGAgent**。改造分四个阶段：环境落位 ✅ → 品牌替换 ✅ → 端点与网络收口 ✅ → 账号与商业化摘除 ✅（2026-09-23 完成，四个批次）→ 发布工程 🟡（v0.2.0 Windows 预览版已于 2026-09-26 上线，剩余项见清单第七节）。已完成部分均已提交推送。
 
 阶段 3 全量删除约 **3.8 万行**（批次 1+2：-1279；批次 3a+3b：-6760；批次 3c：-30103）。终验：typecheck exit 0、lint 0 错误 72 警告（全存量）、architecture 0 违规、dev 启动冒烟通过 + 官方域名请求 0。
 
@@ -23,9 +23,9 @@
 ## 2. 仓库与 Git
 
 - 本地路径（旧机器）：`D:\NenniuProjects\JGAgent`；ZCode 原仓库（只读参照）在同目录 `D:\NenniuProjects\ZCode`
-- **origin**：`git@github.com:yak33/JGAgent.git`（公司仓库，PUBLIC）
-- **upstream**：`git@github.com:zai-org/ZCode.git`（官方源，只读，同步修复用：`git fetch upstream && git merge upstream/main`，合并后按清单"快速收口表"核对）
-- 关键提交：`c959f68` 基线导入 → `a909fa1` 阶段 1 品牌替换 → `867bfe8` 阶段 2 端点收口
+- **origin**：`git@github.com:yak33/JGAgent.git`（公司仓库，**私有**，2026-09-26 由公开改为私有；仓库内含网关与服务器地址，勿再改回公开）
+- **upstream**：`git@github.com:zai-org/ZCode.git`（官方源，只读）。⚠️ 本仓是快照导入（根提交 `c959f68`，无官方 git 历史），**不能用 `git merge upstream/main`**（无共同祖先，强并会全仓库 add/add 冲突）；同步用 `git diff <基线> upstream/main > patch` 后 `git apply --3way patch`，详见 [docs/release/README.md](../release/README.md) 第七节
+- 关键提交：`c959f68` 基线导入 → `a909fa1` 阶段 1 品牌替换 → `867bfe8` 阶段 2 端点收口 → `6d6e055`…`889e292` 阶段 3 四批摘除 → `d700dbf` 数据根迁 `~/.jgagent` → `b1edf61` v0.2.0 → `57d2e64` 官网
 
 **换新电脑步骤**：
 
@@ -33,7 +33,7 @@
 git clone git@github.com:yak33/JGAgent.git   # SSH（HTTPS 推送会 Connection reset）
 cd JGAgent && pnpm install                    # Node 24.14.0 + pnpm 10.33.2（mise.toml 为准）
 pnpm typecheck                                # 验证：exit 0
-pnpm lint                                     # 验证：0 错误、70 警告（基线即如此）
+pnpm lint                                     # 验证：0 错误、72 警告（阶段 3 终验基线，全存量）
 ```
 
 ## 3. 已完成工作摘要（细节见清单 README.md）
@@ -52,7 +52,7 @@ pnpm lint                                     # 验证：0 错误、70 警告（
 - `packages/shared/src/zcodeEndpoint.ts` 5 个常量 + `.env.example`
 - 遥测 `env.ts` `ZCODE_TELEMETRY_ENABLED=false`；官方网关转发路由表清空（机制保留在 `official-coding-plan-gateway.ts`）
 - 插件市场源 / CDN / 插件资产前缀 / 产品文档链接 → `.invalid`
-- Provider 目录 `config/provider/zcode-builtin.json`：移除 4 个官方 zai/bigmodel 模板，新增"捷关模型网关"占位模板，保留 16 个通用第三方模板（revision 30→31，缓存失效用）
+- Provider 目录 `config/provider/zcode-builtin.json`：移除 4 个官方 zai/bigmodel 模板，新增"捷关模型网关"占位模板，保留 16 个通用第三方模板（revision 30→31，缓存失效用）。后续：网关模板 `f31e1c0` 接通；智谱 4 个 API 模板 `fec0cfa` 从上游恢复（公网 API + 用户自带 key，revision 32→33）
 
 ### 刻意不做的（有明确理由，别当遗漏）
 
@@ -63,37 +63,32 @@ pnpm lint                                     # 验证：0 错误、70 警告（
 | `@zcode/*` 包名、`zcode://` 协议、`ZCODE_*` 环境变量 | P2 内部标识符，改动波及全仓 import，fork 稳定后再做 |
 | OAuth 登录/订阅支付整套功能 | 阶段 3 计划整体摘除，现在零碎改是浪费 |
 
-## 4. 当前进行中：阶段 3 账号与商业化摘除
+## 4. 阶段 3 之后的工作（2026-09-23 ~ 09-26）
 
-**已勘察确认的关键事实**：账号体系无登录墙（欢迎页可 skip，apiKey 直连跑通全部核心功能），是可整体摘除的独立增值层；CLI（apps/zcode-cli）零依赖 packages/services。
+阶段 3 各批次的文件级地图见清单 README 第三节，这里不再重复。
 
-### 已完成（阶段 3 第一、二批，commit `6d6e055` + `6789704`，-1279 行）
+| 主题 | 提交 | 要点 |
+| --- | --- | --- |
+| 公司模型网关 | `f31e1c0` | `jgagent-gateway` 模板，OpenAI 兼容，14 个模型 |
+| 欢迎页 | `3c342ec`、`993eb64`、`0be9ae3` | API Key 表单：捷关网关 + 自定义供应商（URL+Key，复用 `createPersonalProvider`），创建时传入 locale |
+| 模型供应商设置页 | `fec0cfa`、`f93d737`、`82c277b` | 模板选择器分「捷关」「其他」两组；导航删智谱 OAuth 预设卡，改为「捷关」「自定义供应商」两组常驻，空配置显示空态 |
+| 数据隔离 | `0781467`、`d700dbf` | 会话库等 7 处路径跟随 `ZCODE_DATA_BASE_DIR`；主目录数据根改为 `~/.jgagent`，不迁移不回读 `~/.zcode`（spec：`docs/specs/storage-root-isolation.md`） |
+| 品牌残留 | `3c342ec`→`535bd6a` 共 6 次 | 标题栏、启动画面、About、新建任务空态等处 Z 标的独立副本逐个替换为 JG 字标 |
+| Agent 提示词 | `ca930f3`、`876fb6c` | 身份改为中文"捷关 Agent"，定位从编程助手调整为全能 AI 助手 |
+| 本地身份 | `ab48017` | 左下角头像颜色 + 用户名 + 个性化设置（无账号体系） |
+| 其他 UI | `94f5e18`、`0449af9`、`711cadc` | 偏好菜单直达供应商设置；西文优先 Segoe UI；关于页正确显示应用版本 |
+| 发版与官网 | `b1edf61`、`57d2e64`、`12ef6e4` | v0.2.0 Windows x64 上线；VitePress 官网（流程见 `docs/release/README.md`） |
 
-- WelcomeScreen 移除 OAuth 渠道登录，仅保留 API Key + 跳过（LoginApiKeyForm onCancel 改可选）
-- WorkspaceSidebarFooter 移除头像/套餐徽标/用量/登录登出，偏好菜单保留
-- ChatErrorBanner 移除套餐升级按钮
-- SettingsPage 移除 CodingPlan 用量 tab 机制、升级弹窗调用、onLogin/onLogout/user props（-409 行）
-- UsageStatsSection 收窄为仅应用级统计；StatusCards 移除 StartPlanCard/重新登录
-- lint 新基线：**0 错误、77 警告**（原 70，差额为存量）
+## 5. 当前进行中：阶段 4 发布工程
 
-### 剩余批次（按依赖顺序）
+进度表见清单 README 第七节。优先级建议：
 
-**批次 3a 升级弹窗收尾（UI 层）**：
-- Root.tsx 挂载的 `CodingPlanUpgradeDialogProvider`；仍消费它的组件：`V4ComposerToolbar.tsx:385`、`AutomationsSection.tsx:532`、`WorkspaceSidebar.tsx:338`、`v4/SessionPane.tsx`（optional 变体）、`model-provider-section/Detail.tsx` 的 `CodingPlanPurchaseChoiceBanners`/`handlePurchaseChoiceSelect`
-- `StatusCards.tsx` 的升级/续期/订阅按钮已是半死状态（点击无弹窗只自切换）——直接摘按钮
-- 零引用待删文件：`settings/usage-stats/CodingPlanUsagePanel.tsx`、`model-provider-section/useStartPlanPreview.ts`、`lib/sidebarUsageCodingPlanProviderPreference.ts`、`lib/codingPlanUsageSources.ts`、`lib/settingsNavigation.ts` 的 pending usage tab 机制、升级弹窗组件族（`CodingPlanUpgradeDialog*.tsx`、`CodingPlanEntryButton`、`codingPlanPricingCards` 等）
+1. **第三方声明**：`node scripts/licenses.mjs notices` 重生成，安装包已对外分发，下次发版前必须补
+2. **网关安全**：网关当前为 `http` 明文，api-key 明文过公网，建议上 HTTPS 或加 IP 白名单
+3. **官网首页改版**（进行中）：设计约束见 `docs/release/README.md` 第三节
+4. macOS / Linux 包、代码签名、自动更新（v2）、CLI 发行包（`pnpm build:zcode`）
 
-**批次 3b Root 层 OAuth effects**：
-- `root/useRootOAuthEffects.ts`（OAuth 恢复/轮询/回调；footer 已不订阅 `isRestoringOAuthSession`，可整体简化）、`handleReauthenticationRequired`、`setOAuthError`/`setUser` threading、WelcomeScreen onComplete 的 `"oauth"` 分支、`hooks/useOAuth.ts`（已零引用）
-
-**批次 3c 服务域删除**（packages/services/src/）：`oauth/`、`coding-plan-subscription/`、`bigmodel/`、`usage-stats/`、`session/offPeak*` 整体删除；`model-provider/` 的 `accountProvider*` 系列与通用运行时同目录混放需拆分（`credential/` **保留**，apiKey 模式在用）；`desktop/src/main/desktopOAuthDeepLink.ts` 只删 OAuth 分支保留 open-workspace deep link；`packages/web/src/auth/`（仅 /share/callback 路由消费）；CLI `adapters/src/auth/` 的 oauth 模块（apiKey 路径不动）
-- Zustand store 账号字段（user/oauthError/loginEntryRequest/codingPlanQuotaReset*）策略为保留置空，全部消费方清理后再删
-
-**批次 3d 收尾**：`pnpm knip` 悬空导出、`pnpm architecture:check --changed`、全局 grep `codingPlan|oauth|StartPlan` 确认无残留、dev 启动冒烟 + 网络审计（见第 6 节方法）
-
-**阶段 3 之后**是阶段 4 发布工程：`pnpm bundle:desktop`（各平台打包）、`pnpm build:zcode`（CLI 发行包，需 `ZCODE_DIST_BASE_URL`）、`node scripts/licenses.mjs notices` 重生成第三方声明。
-
-## 5. 待公司确认的占位值清单（拿到真实值后全局替换）
+## 6. 待公司确认的占位值清单（拿到真实值后全局替换）
 
 | 占位值 | 位置 | 待确认内容 |
 | --- | --- | --- |
@@ -107,7 +102,7 @@ pnpm lint                                     # 验证：0 错误、70 警告（
 
 替换方法：全局搜 `.invalid` 逐项换，或优先用环境变量（`ZCODE_BASE_URL`、`ZCODE_CDN_BASE_URL` 等，见 `.env.example`）。
 
-## 6. 环境注意事项（新机器避坑）
+## 7. 环境注意事项（新机器避坑）
 
 - **dev 启动必须用隔离数据目录**（已实测踩坑）：
   ```powershell
@@ -119,17 +114,17 @@ pnpm lint                                     # 验证：0 错误、70 警告（
   ZCODE_DATA_BASE_DIR="$HOME/.jgagent-dev-home" pnpm dev:desktop
   ```
   注意 PowerShell 不支持 bash 的 `VAR=value 命令` 前缀语法，必须用 `$env:VAR` 先设置。
-  不设隔离时应用读本机 `~/.zcode`（ZCode 原版数据），遗留的官方账号 provider 会在启动时**真实外发** `zcode.z.ai` 余额查询（带官方凭据），且 `runtime/provider/` 里的官方目录缓存会遮蔽仓库内重写的 `zcode-builtin.json`。这是数据层污染，不是代码问题；阶段 3 摘除账号体系后此类请求源头才彻底消失。
+  自 `d700dbf` 起默认数据根为 `~/.jgagent`，不再读 ZCode 原版的 `~/.zcode`（早期踩过的"遗留官方账号 provider 启动时真实外发 `zcode.z.ai` 余额查询"这类问题已从源头消失）。但本机若装了 JGAgent 正式版，dev 不设隔离会与它共用 `~/.jgagent`，两边的 provider 配置、会话库互相污染，所以 dev 仍需隔离。
 - **端口残留**：异常退出后 vite（5174）可能残留，`netstat -ano | grep 5174` 找 PID kill 后再启
 - **Node 24.14.0 / pnpm 10.33.2** 以 `mise.toml` 为准；`pnpm install` 约 50 秒（有全局 store 时）；shell 实际 Node 24.19 也可跑（仅 engine 警告）
 - **推送用 SSH**：该网络环境下 HTTPS 推 GitHub 报 `Connection was reset`，SSH key 已配置（yak33 账户）
 - **`pnpm fmt:check` 双仓都失败**（Windows CRLF 检出 + `.gitattributes` 只固定 mjs/sh 为 LF）：非回归信号，**不要**跑 `pnpm fmt`（会重排约 2789 个文件）
-- **lint 基线 70 警告**：与 ZCode 原仓逐数一致，全为存量；新改动以"不新增"为准
+- **lint 基线 72 警告**（阶段 3 终验值；ZCode 原仓为 70）：全为存量，新改动以"不新增"为准
 - 图像处理工具链（sharp）装在旧机器 `D:\NenniuProjects\.icontools`（未入库）；换图时在任意临时目录 `npm install sharp` 后运行入库的 `tools/gen-icons.cjs` 即可
 - 旧机器的 Python 是坏的 Store 存根、无 ImageMagick——别依赖它们
 - **运行时网络审计方法**（阶段 2 最终验收，已通过一次）：启动后在 dev 日志里 `grep -c "zcode\.z\.ai\|api\.z\.ai\|open\.bigmodel\|chat\.z\.ai\|cdn-zcode"`，期望 0
 
-## 7. 本次改造的关键文件索引
+## 8. 本次改造的关键文件索引
 
 | 文件 | 角色 |
 | --- | --- |
@@ -139,10 +134,12 @@ pnpm lint                                     # 验证：0 错误、70 警告（
 | `config/provider/zcode-builtin.json` | 内置 Provider 目录（schema 见 `packages/provider`） |
 | `packages/shared/src/plugin-marketplaces.ts` | 插件市场源 |
 | `apps/zcode-cli/packages/adapters/src/model/official-coding-plan-gateway.ts` | 官方网关转发（已禁用，机制保留） |
-| `docs/rebranding/README.md` | 改造清单（含阶段 3 完整计划） |
+| `docs/rebranding/README.md` | 改造清单（阶段 3 文件级地图、阶段 4 进度） |
+| `docs/release/README.md` | 发版流程、官网、服务器运维 |
+| `packages/services/src/paths.ts` | 主目录数据根 `~/.jgagent` 唯一定义（`getZCodeDataRootDir`） |
 | `docs/rebranding/tools/gen-icons.cjs` | 图标再生成脚本 |
 
-## 8. 工作约定（沿用自公司全局规范）
+## 9. 工作约定（沿用自公司全局规范）
 
 - 提交格式 `<type>(<scope>): <emoji> <subject>`，subject 简体中文，作者 ZHANGCHAO，**严禁 AI 署名**入 commit message
 - 只在用户明确要求时 commit / push；交付前 `pnpm typecheck` + `pnpm lint` 真实结果如实汇报

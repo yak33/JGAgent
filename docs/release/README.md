@@ -81,7 +81,7 @@ ZCODE_ENV=production node scripts/bundle.mjs --os win --arch x64
 | macOS / Linux 包 | 官网已留"稍后即来"位；mac 包必须在 mac 机器上打 |
 | 签名 | 安装包未签名，首启 SmartScreen 拦截，官网三步指引已写"仍要运行" |
 | 旧服务器 106.15.120.94 | 只跑捷关模型网关（:9527），模板 baseUrl 打包指向它，与官网服务器无关，勿混 |
-| **上游 v3.14.3 同步** | **待办（建议作为 v0.3.0 主项）**：上游 2026-09-23 发布 v3.14.3（单提交 `29628c9`，283 文件 +30,342/-1,768，主体 dynamic-workflow 引擎、session journal、UI v4）。与本地分叉的**冲突面 49 文件**，敏感区：`WorkspaceSidebarFooter`（本地身份）、两套 i18n locale（智谱键清理）、`packages/desktop/src/main/index.ts`（存储根引导）、根/desktop `package.json`（版本 0.2.0 vs 3.14.3）、README。合并流程：`git fetch upstream && git merge upstream/main` → 逐个解冲突时保我方（品牌/端点/存储根/供应商页/本地身份）→ 按改造清单"快速收口表"核对 → typecheck/lint/architecture → 重打包冒烟。upstream remote 已配好 |
+| **上游 v3.14.3 同步** | **待办（建议作为 v0.3.0 主项）**：评估结论与合并预案见**第七节**。⚠️ 本仓无官方 git 历史（快照导入），`git merge upstream/main` 不可行，必须走 `git apply --3way`（2026-09-26 复核修正） |
 
 ## 六、发版验证清单
 
@@ -90,3 +90,47 @@ ZCODE_ENV=production node scripts/bundle.mjs --os win --arch x64
 - [ ] 官网 index.md 下载链接文件名与产物一致，changelog 已加条目
 - [ ] 线上 `/downloads/<exe>` 200 且 sha512 与本地一致
 - [ ] 本机装一遍冒烟：网关连通、左下角本地身份、模型设置页、中文显示
+
+## 七、上游同步预案（v3.14.3，2026-09-26 复核）
+
+### 上游更新现状
+
+官方仓库仅 3 个提交；v3.14.0（`872ad96`，我们的基线）之后只有一个更新：`29628c9` = **v3.14.3**（283 文件，+30,342 / -1,768，其中 87 个新增文件）。主题是 dynamic-workflow（动态工作流）引擎优化与修复：运行中调并发上限、大工作流实时状态、降低 token 消耗、修复界面崩溃等；另含 bots 服务域骨架、session journal、协议 v4 增强。本地参照仓 `D:\NenniuProjects\ZCode` 已与官方一致，无需再更新。
+
+### ⚠️ 为什么不能 `git merge upstream/main`
+
+本仓阶段 0 是**快照导入**（根提交 `c959f68`，与官方无共同 git 历史）。直接 merge 会因 unrelated histories 被拒绝；加 `--allow-unrelated-histories` 强并时合并基准为空树，全仓库同名文件全部 add/add 冲突，不可操作。
+
+### 正确流程
+
+```bash
+# 前提：工作区干净；872ad96 与 29628c9 对象已在本地（git fetch upstream 后即可用）
+git fetch upstream
+git checkout -b sync/upstream-v3.14.3
+git diff 872ad96 29628c9 > /tmp/v3.14.3.patch
+git apply --3way /tmp/v3.14.3.patch   # 用 872ad96 的 blob 做基准三方合并
+```
+
+`--3way` 会把冲突精确限制在"官方改过的行 × 我们改过的行"的重叠处，而不是全仓库。
+
+### 冲突面（2026-09-26 实测：48 文件）
+
+283 个官方改动文件中 235 个可干净应用，48 个与本地分叉交集需逐个解。原则：**敏感区保我方，协议与 workflow 代码取官方**。
+
+保我方的敏感文件：
+
+- `README.md`、`README.en.md`（已重写为 JGAgent 版）
+- 根 `package.json` + `packages/desktop/package.json`（版本 0.2.0、品牌字段）
+- `packages/ui/src/WorkspaceSidebarFooter.tsx`（本地身份；官方只是新增手机远控入口按钮，可兼顾合入）
+- 两套 i18n locale：`apps/zcode-cli/packages/i18n/locales/{en-US,zh-CN}.ts` 与 `packages/ui/src/i18n/locales/{en-US,zh-CN}.ts`（1073 处文案替换所在，逐冲突块解）
+- `packages/desktop/src/main/index.ts`（存储根引导 `~/.jgagent`，spec：`docs/specs/storage-root-isolation.md`）
+
+其余交集文件（协议 v4、services 装配、zcode-agent、composer 等）以官方为准；解完逐个 `git diff` 复查未带入官方端点/品牌。
+
+### 同步后验证
+
+- 按改造清单 [docs/rebranding/README.md](../rebranding/README.md) "快速收口表"逐项核对（`.invalid` 端点、遥测开关、网关路由表是否被冲掉）
+- `pnpm typecheck`（exit 0）+ `pnpm lint`（0 错误、警告不超基线）+ `pnpm architecture:check --changed`
+- `pnpm knip` 查悬空导出
+- `pnpm dev:desktop` 冒烟 + 网络审计（dev 日志 grep `z\.ai|bigmodel|cdn-zcode` 期望 0）
+- 重打包按第六节清单执行，作为 v0.3.0 发布

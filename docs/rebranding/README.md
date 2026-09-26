@@ -8,19 +8,19 @@
 
 ---
 
-## 当前进度（2026-09-22）
+## 当前进度（2026-09-26）
 
 | 阶段 | 状态 | Commit | 说明 |
 | --- | --- | --- | --- |
-| 阶段 0 环境跑通与仓库落位 | ✅ 完成 | `c959f68` | 基线导入，origin=yak33/JGAgent，upstream=zai-org/ZCode |
-| 阶段 1 品牌替换 | ✅ 完成 | `a909fa1` | 图标全套、产品名/appId、1073 处文案、README 中英文 |
+| 阶段 0 环境跑通与仓库落位 | ✅ 完成 | `c959f68` | 基线导入，origin=yak33/JGAgent（私有），upstream=zai-org/ZCode |
+| 阶段 1 品牌替换 | ✅ 完成 | `a909fa1` | 图标全套、产品名/appId、1073 处文案、README 中英文；残留 Z 标后续分 6 次补替换（`3c342ec`→`535bd6a`） |
 | 阶段 2 端点与网络收口 | ✅ 完成 | `867bfe8` | 默认端点/CDN/市场源 .invalid 占位、遥测关闭、网关转发清空、Provider 目录重写 |
 | 阶段 3 账号与商业化摘除 | ✅ 完成 | `6d6e055`→`889e292` 四批 | 约 -3.8 万行；保留项与遗留见 [HANDOFF.md](HANDOFF.md) |
-| 阶段 4 发布工程 | ⬜ 未开始 | — | 桌面打包/CLI 发行/第三方声明重生成 |
+| 阶段 4 发布工程 | 🟡 进行中 | `b1edf61`、`57d2e64` | v0.2.0 Windows x64 预览版已打包并上线官网；剩余项见第七节 |
 
-交接上下文（换设备/新会话接手）见 **[HANDOFF.md](HANDOFF.md)**。
+交接上下文（换设备/新会话接手）见 **[HANDOFF.md](HANDOFF.md)**；发版/官网/服务器运维见 **[docs/release/README.md](../release/README.md)**。
 
-**遗留验证**：阶段 1+2 的改动已通过 typecheck/lint 静态验证，但尚未做运行时冒烟（`pnpm dev:desktop` 启动 + 全程网络审计确认无官方域名请求）。下次启动时优先补做。
+**运行时验证**：阶段 3 终验已做 `pnpm dev:desktop` 启动冒烟 + 网络审计，官方域名请求 0。
 
 ---
 
@@ -35,7 +35,7 @@
 | CDN 默认地址 | `packages/desktop/src/main/remoteCdn.ts` | ✅ 已改 `.invalid` 占位 |
 | 会话分享落地页 | `packages/services/src/conversation-share/conversationShareService.ts` | ✅ 随 endpoint 常量自动占位 |
 | 反馈/社群入口 | `config/default.json` | ✅ 已置空，待公司内部地址 |
-| 内置 Provider 目录 | `config/provider/zcode-builtin.json` | ✅ 移除 4 个官方模板，新增公司网关占位模板 |
+| 内置 Provider 目录 | `config/provider/zcode-builtin.json` | ✅ 新增捷关模型网关模板（已接通）；智谱 4 个 API 模板于 `fec0cfa` 恢复（指向公网 API、用户自带 key，与官方网关无关） |
 
 ---
 
@@ -63,15 +63,15 @@
 - ✅ **1073 处** `ZCode` → `JGAgent`，词边界规则（前后非字母数字下划线才替换），自动跳过 `ZCodeEndpoint` 等代码标识符；覆盖 packages/ui、web、desktop、services、shared、server、client、rpc、provider*、zcode-server-cli 及 apps/zcode-cli
 - ✅ 刻意保留：`mcpUserDirectory/legacy.ts` 与 `services/src/paths.ts` 中引用 "ZCode"/"ZCode Dev" 目录的旧数据迁移与安装探测逻辑（改动会破坏功能，阶段 3 评估是否随账号域一起清理）
 
-### 1.4 内置 Provider 品牌露出（✅ 随阶段 2 目录重写完成）
+### 1.4 内置 Provider 品牌露出（✅ 完成）
 
-官方 zai/bigmodel 模板已从 `zcode-builtin.json` 移除；`ProviderLogo.tsx` 的 zai/bigmodel logo 注册表条目保留（无引用即不露出，阶段 3 一并清理）。
+阶段 2 曾移除官方 zai/bigmodel 模板；`fec0cfa` 从上游原样恢复智谱 4 个 API 模板（`zai`/`zai-standard`/`bigmodel`/`bigmodel-standard`，用户自带 key 直连公网 API），模板选择器分为「捷关」「其他」两个分组。`f93d737` 删除了设置页左侧导航的智谱 OAuth 预设卡（账号域死 UI），导航改为「捷关」「自定义供应商」两组常驻。`ProviderLogo.tsx` 的 zai/bigmodel logo 条目保留，恢复的模板仍在使用。
 
 ### 1.5 对外协议（部分完成，随阶段 3 决策）
 
 | 项 | 位置 | 状态 |
 | --- | --- | --- |
-| `zcode://` OAuth 回调协议 | `desktopOAuthDeepLink.ts`、`desktopLinuxDeepLinkRegistration.ts` | ⬜ 保留账号 OAuth 则需换协议名；摘除账号则一并移除（阶段 3） |
+| `zcode://` OAuth 回调协议 | `desktopOAuthDeepLink.ts`、`desktopLinuxDeepLinkRegistration.ts` | ✅ 阶段 3c 已删 OAuth 回调分支；`zcode://` open-workspace deep link 保留 |
 | `zcode://share/import` 分享导入 | `packages/shared/src/platform.ts:678` | ⬜ 随分享功能去留决策（阶段 3） |
 | `zcode-browser-restore://`、`zcode-media` 内部协议 | `platform.ts:68,106` | ⬜ P2，无品牌露出可不动 |
 
@@ -96,7 +96,9 @@
 
 ---
 
-## 三、账号与商业化模块（⬜ 阶段 3，未开始）
+## 三、账号与商业化模块（✅ 阶段 3 已完成，commit `6d6e055`→`889e292`）
+
+> 以下为阶段 3 开工前的勘察记录与摘除计划，已按批次执行完毕，保留作为文件级地图。刻意保留项见 [HANDOFF.md](HANDOFF.md) 第 1 节。
 
 **结论（已勘察确认）**：账号体系是可整体摘除的独立增值层。核心 Agent 会话只依赖 personal provider + apiKey 路径（`WelcomeScreen.tsx` 的 `LoginCompleteReason` 含 `"skip"`，无登录墙）；CLI（`apps/zcode-cli`）零依赖 `packages/services`，自带独立 auth 模块（`adapters/src/auth/`）。
 
@@ -147,25 +149,41 @@
 | `@zcode/*` 包作用域 | 28 个包 + 全部跨包 import | 纯内部标识；fork 稳定后一次性重命名 |
 | `zcode://` 协议族 | 见 1.5 | 内部协议无品牌露出可不动 |
 | 数据目录 `~/.zcode/`（主目录级） | 全仓库 | **已完成（2026-09-26）**：默认段名改 `~/.jgagent`，不迁移不回读，spec 见 `docs/specs/storage-root-isolation.md`；工作区级 `<workspace>/.zcode` 与 `ZCODE_*` 环境变量前缀仍保留 |
-| 根目录 AGENTS/CONTEXT/DESIGN 文档 | 已部分指向 JGAgent（AGENTS.md 已加交接指引） | 随阶段 3/4 持续更新 |
+| 根目录 AGENTS/CONTEXT/DESIGN 文档 | 已部分指向 JGAgent（AGENTS.md 已加交接指引与当前阶段） | 随阶段 4 持续更新 |
 
 ---
 
 ## 五、验证清单（每阶段通用）
 
 - [ ] `pnpm typecheck`（当前基线：exit 0）
-- [ ] `pnpm lint`（当前基线：0 错误、**70 警告**，与 ZCode 基线逐数一致，全为存量）
+- [ ] `pnpm lint`（当前基线：0 错误、**72 警告**，阶段 3 终验值，全为存量；ZCode 原仓为 70；新改动以"不新增"为准）
 - [ ] `pnpm fmt:check` 在 ZCode/JGAgent **都失败**（Windows CRLF 检出环境问题，`.gitattributes` 仅固定 `*.mjs/*.sh` 为 LF）——非回归信号，**不要**跑 `pnpm fmt`（会重排 2789 个文件制造无关 diff）
 - [ ] 桌面打包版 + CLI 发行包双形态冒烟（会话、文件工具、终端、Git）
 - [ ] 全局搜索 `ZCode`（词边界）、`.invalid`、`z.ai`、`bigmodel` 确认改动符合预期
-- [ ] 网络行为审计：`pnpm dev:desktop` 启动后全程无 `*.z.ai` / `bigmodel.cn` / `cdn-zcode` 请求（**尚未做过，下次启动优先补**）
+- [ ] 网络行为审计：`pnpm dev:desktop` 启动后全程无 `*.z.ai` / `bigmodel.cn` / `cdn-zcode` 请求（阶段 3 终验已通过；上游合并或端点改动后需重做）
 
 ---
 
 ## 六、风险与注意事项
 
 1. **法律边界**：Apache-2.0 允许商用与闭源修改，但不授予商标权（名称/logo 已替换 ✅）；第三方素材条款见 `third-party/inventory.json`；发行物须携带 `THIRD-PARTY-NOTICES.md`（依赖变更后用 `node scripts/licenses.mjs notices` 重生成）。
-2. **上游同步**：官方演进后 `git fetch upstream && git merge upstream/main`，合并后按本清单"快速收口表"逐项核对改动点是否被冲掉。
+2. **上游同步**：官方演进后 `git fetch upstream`，用 `git diff <旧基线> upstream/main > patch && git apply --3way patch` 做三方合并（本仓为快照导入、无官方 git 历史，**不能** `git merge upstream/main`）；合并后按本清单"快速收口表"逐项核对改动点是否被冲掉，详细预案见 [docs/release/README.md](../release/README.md) 第七节。
 3. **隐式网络行为**：NOTICE.md 第二节列明的后台请求已通过 `.invalid` 占位全部切断；运行时审计（第五节最后一条）是最终验收。
 4. **凭据与安全**：公司 apiKey 经 provider 配置与凭据仓库流转；SSH/WSL 远程工作区的凭据自动同步行为（NOTICE 第三节）在内部推广前需评估开关。
 5. **架构约束**：摘除服务域时整体移除目录而非注释代码；`architecture-policy.yaml` 与 knip 会兜底暴露残留引用。
+
+---
+
+## 七、阶段 4 发布工程（🟡 进行中）
+
+流程、命令与陷阱以 [docs/release/README.md](../release/README.md) 为准，本节只记进度。
+
+| 项 | 状态 |
+| --- | --- |
+| Windows x64 安装包（`ZCODE_ENV=production`） | ✅ v0.2.0 已打包上线（`b1edf61`） |
+| 官网与下载站（`website/`，VitePress） | ✅ 已上线（`57d2e64`）；首页改版进行中 |
+| 重新生成第三方声明（`node scripts/licenses.mjs notices`） | ⬜ 未做；分发安装包须携带，下次发版前补 |
+| macOS / Linux 安装包 | ⬜ 未做；mac 包须在 mac 机器上打 |
+| 安装包代码签名 | ⬜ 未做；当前首启会被 SmartScreen 拦截 |
+| 自动更新 | ⬜ v2 待办；需先把 manifest 端点指到自有服务器 |
+| CLI 发行包（`pnpm build:zcode`，需 `ZCODE_DIST_BASE_URL`） | ⬜ 未做 |

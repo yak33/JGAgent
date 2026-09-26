@@ -1,18 +1,25 @@
 # JGAgent 官网（VitePress）
 
-现代简约官网 + 更新日志，部署到 `106.15.120.94`，同时承载安装包下载。
+现代简约官网 + 更新日志，部署到 `82.157.149.224`，同时承载安装包下载。
+
+> 发版全流程、服务器运维与踩坑记录以 [docs/release/README.md](../docs/release/README.md) 为准，本文只讲官网子项目本身。
+> 注意 `106.15.120.94` 是模型网关服务器，与官网无关，勿混。
 
 ## 结构
 
 ```
 website/
 ├── docs/
-│   ├── index.md              # 首页（整版自定义设计，见 .jp-home 样式块）
+│   ├── index.md              # 首页（整版自定义设计，layout: page）
 │   ├── changelog.md          # 更新日志（Markdown 维护）
-│   └── .vitepress/config.ts  # 站点配置（导航/强制暗色/页脚）
+│   └── .vitepress/
+│       ├── config.ts         # 站点配置（导航/强制暗色/页脚）
+│       └── theme/            # 自定义主题：index.ts（字体注册）、custom.css、TermWindow.vue（hero 终端窗）
 ├── package.json              # 独立子项目，不在 pnpm workspace 内
 └── README.md
 ```
+
+设计约束（配色、禁用项）见 release 文档第三节。md 里写含空行的复杂 HTML 会被 Vue 编译器切断，抽成 `theme/` 下的 Vue 组件再用。
 
 ## 本地开发
 
@@ -31,51 +38,23 @@ npm run preview    # 本地伺服构建产物（http://localhost:4173），验�
 
 ## 服务器目录约定
 
+站点由 Docker Compose 运行 `nginx:1.27-alpine`（80 端口），不用宝塔管理 nginx：
+
 ```
-/var/www/jgagent/
-├── （上传 docs/.vitepress/dist/ 的全部内容到此处）
-└── downloads/
-    └── JGAgent-0.2.0-win-x64.exe   # 打包产物，见 packages/desktop/dist/
+/www/wwwroot/jgagent/
+├── html/                 # 上传 docs/.vitepress/dist/ 的全部内容
+├── downloads/            # 安装包，如 JGAgent-0.2.0-win-x64.exe
+├── docker-compose.yml
+└── nginx.conf            # 改完执行 docker compose restart web
 ```
-
-## nginx 配置
-
-```nginx
-server {
-    listen 80;
-    server_name 106.15.120.94;
-
-    root /var/www/jgagent;
-    index index.html;
-
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-
-    # 安装包下载（大文件；后续若启用自动更新，latest.yml 也放这里）
-    location /downloads/ {
-        alias /var/www/jgagent/downloads/;
-        autoindex off;
-        sendfile on;
-        tcp_nopush on;
-        add_header Cache-Control "no-cache";
-    }
-}
-```
-
-## 首次部署
-
-1. 服务器建目录：`sudo mkdir -p /var/www/jgagent/downloads`
-2. 本地 `npm run build`，把 `docs/.vitepress/dist/` **全部内容**上传到 `/var/www/jgagent/`
-3. 写入 nginx 配置（`/etc/nginx/conf.d/jgagent.conf`），`sudo nginx -t && sudo systemctl reload nginx`
-4. 上传安装包 `packages/desktop/dist/JGAgent-0.2.0-win-x64.exe` 到 `/var/www/jgagent/downloads/`
-5. 验证：浏览器打开 `http://106.15.120.94/`，点下载按钮能拿到 exe
 
 ## 发新版本
 
-1. 本地 bump 版本 → `node scripts/bundle.mjs --os win --arch x64` → 得到新 exe
-2. `website/` 里改 `docs/index.md`（hero 下载链接、版本号、changelog 卡）与 `docs/changelog.md` → `npm run build`
-3. 上传 dist 内容与新 exe；旧版本归档到 `downloads/archive/`
+按 release 文档第一节执行。要点：
+
+1. 打包必须带 `ZCODE_ENV=production`（在 `packages/desktop/` 下执行 `ZCODE_ENV=production node scripts/bundle.mjs --os win --arch x64`），否则打出的是 Preview 测试包
+2. 改 `docs/index.md`（下载链接、版本行）与 `docs/changelog.md` → `npm run build`
+3. 上传 dist 内容到 `html/`、新 exe 到 `downloads/`，用 sha512 与本地 `latest.yml` 核对
 
 ## 自动更新（v2 计划，本期未启用）
 
