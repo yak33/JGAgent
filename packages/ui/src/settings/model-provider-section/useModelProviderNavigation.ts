@@ -19,7 +19,6 @@ import {
   CODING_PLAN_PROVIDER_SPECS,
   type CodingPlanEntitlementState,
   type ModelProviderNavGroup,
-  type PresetProviderSpec,
 } from "@/settings/model-provider-section/constants.js";
 import { pickCodingPlanEntitlementProvider } from "@/lib/codingPlanProvider.js";
 import {
@@ -37,12 +36,7 @@ import {
   resolveCodingPlanEntitlementState,
 } from "@/settings/model-provider-section/providerFamilyConnectionVisibility.js";
 
-interface PresetProviderWithConfig extends PresetProviderSpec {
-  provider: ProviderSettingsFormProvider | null;
-}
-
 interface UseModelProviderNavigationOptions {
-  presetProviders: PresetProviderWithConfig[];
   modelProviders: ProviderSettingsFormProvider[];
   /**
    * 当前账号明确有权益的 Provider。缺省等价于尚无账号权益；生产设置页始终显式传入。
@@ -64,7 +58,6 @@ interface UseModelProviderNavigationOptions {
 }
 
 export function useModelProviderNavigation({
-  presetProviders,
   modelProviders,
   entitledAccountProviderIds = new Set(),
   modelProvidersLoading = false,
@@ -178,63 +171,39 @@ export function useModelProviderNavigation({
   );
 
   const navigationGroups = useMemo<ModelProviderNavGroup[]>(() => {
+    // 账号/OAuth 摘除后官方 zai/bigmodel 预设卡不再进导航；
+    // 捷关网关供应商（创建自 jgagent-gateway 模板）单独归入「捷关」组。
+    const toCustomItems = (providers: readonly ProviderSettingsFormProvider[]) =>
+      providers.map((provider) => ({
+        key: createCustomProviderNodeKey(provider.providerId),
+        type: "custom" as const,
+        label: getProviderFormLabel(provider),
+        provider,
+        statusActive: provider.executable === true,
+      }));
     const groups: ModelProviderNavGroup[] = [
       {
-        id: "preset",
-        title: intl.formatMessage({ id: "settings.modelProvider.presetTitle" }),
-        items: [
-          ...presetProviders.map(({ id, displayName, provider }) => {
-            const statusProvider = resolvePresetFamilyStatusProvider({
-              presetId: id,
-              provider,
-              connectionModeItems: connectionModeCodingPlanItems,
-              connectionSelections,
-              modelProviders,
-            });
-            return {
-              key: createPresetProviderNodeKey(id),
-              type: "preset" as const,
-              presetId: id,
-              label: displayName,
-              logo: modelProviders.find(
-                (candidate) =>
-                  candidate.providerId ===
-                  resolveModelProviderFamilySpecByProviderId(id)?.individualCodingPlanProviderId,
-              )?.config.logo,
-              provider,
-              displayName,
-              statusProvider,
-              statusActive: statusProvider?.executable === true,
-            };
-          }),
-          ...codingPlanItems.filter((item) => isStartPlanModelProviderId(item.presetId)),
-        ],
+        id: "jieguan",
+        title: intl.formatMessage({ id: "settings.modelProvider.templateGroup.jieguan" }),
+        items: toCustomItems(
+          customProviders.filter((provider) => provider.templateId === "jgagent-gateway"),
+        ),
       },
       {
         id: "custom",
         title: intl.formatMessage({ id: "settings.modelProvider.customTitle" }),
-        items: customProviders.map((provider) => ({
-          key: createCustomProviderNodeKey(provider.providerId),
-          type: "custom" as const,
-          label: getProviderFormLabel(provider),
-          provider,
-          statusActive: provider.executable === true,
-        })),
+        items: toCustomItems(
+          customProviders.filter((provider) => provider.templateId !== "jgagent-gateway"),
+        ),
       },
     ];
 
     return groups;
   }, [
     customProviders,
-    codingPlanItems,
-    connectionModeCodingPlanItems,
     // 左侧导航分组标题在这个 memo 内格式化。
     // 语言切换时 provider/权益引用可能不变，必须依赖 intl 才能刷新旧 locale 的文案。
     intl,
-    connectionSelections,
-    pendingConnectionSelections,
-    presetProviders,
-    modelProviders,
   ]);
 
   const navigationItems = useMemo(() => {
@@ -336,38 +305,6 @@ function shouldShowCodingPlanForProviderFamilyDomain(
     return true;
   }
   return resolveProviderFamilyDomainFromOAuthProvider(oauthProviderId) === providerFamilyDomain;
-}
-
-function resolvePresetFamilyStatusProvider({
-  presetId,
-  provider,
-  connectionModeItems,
-  connectionSelections,
-  modelProviders,
-}: {
-  presetId: PresetProviderSpec["id"];
-  provider: ProviderSettingsFormProvider | null;
-  connectionModeItems: ModelProviderNavGroup["items"];
-  connectionSelections: ProviderFamilyConnectionSelectionSettings;
-  modelProviders: ProviderSettingsFormProvider[];
-}): ProviderSettingsFormProvider | null {
-  const familySpec = resolveModelProviderFamilySpecByProviderId(presetId);
-  if (!familySpec) {
-    return provider;
-  }
-  const connectionItem = pickFamilyModeNavigationItem(
-    connectionModeItems.filter((item) => item.type !== "codingPlanLoading"),
-    familySpec.id,
-    connectionSelections,
-  );
-  if (!connectionItem || !isPlanConnectionNavigationItem(connectionItem)) {
-    return null;
-  }
-  // 菜单 Team 项可能从个人项派生，携带的 provider 不是团队执行身份。
-  // 必须按具体套餐 ID 回到 Settings View，不能用菜单权益或继承的 provider 点灯。
-  return (
-    modelProviders.find((candidate) => candidate.providerId === connectionItem.presetId) ?? null
-  );
 }
 
 function resolveFallbackModelProviderNodeKey({

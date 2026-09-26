@@ -225,7 +225,7 @@ export type ModelProviderNavItem =
       statusActive: boolean;
     };
 
-export type ModelProviderNavGroupId = "preset" | "custom";
+export type ModelProviderNavGroupId = "jieguan" | "preset" | "custom";
 
 export interface ModelProviderNavGroup {
   id: ModelProviderNavGroupId;
