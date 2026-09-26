@@ -81,6 +81,7 @@ ZCODE_ENV=production node scripts/bundle.mjs --os win --arch x64
 | macOS / Linux 包 | 官网已留"稍后即来"位；mac 包必须在 mac 机器上打 |
 | 签名 | 安装包未签名，首启 SmartScreen 拦截，官网三步指引已写"仍要运行" |
 | 旧服务器 106.15.120.94 | 只跑捷关模型网关（:9527），模板 baseUrl 打包指向它，与官网服务器无关，勿混 |
+| **上游 v3.14.3 同步** | **待办（建议作为 v0.3.0 主项）**：上游 2026-09-23 发布 v3.14.3（单提交 `29628c9`，283 文件 +30,342/-1,768，主体 dynamic-workflow 引擎、session journal、UI v4）。与本地分叉的**冲突面 49 文件**，敏感区：`WorkspaceSidebarFooter`（本地身份）、两套 i18n locale（智谱键清理）、`packages/desktop/src/main/index.ts`（存储根引导）、根/desktop `package.json`（版本 0.2.0 vs 3.14.3）、README。合并流程：`git fetch upstream && git merge upstream/main` → 逐个解冲突时保我方（品牌/端点/存储根/供应商页/本地身份）→ 按改造清单"快速收口表"核对 → typecheck/lint/architecture → 重打包冒烟。upstream remote 已配好 |
 
 ## 六、发版验证清单
 
