@@ -18,6 +18,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Loader2Icon } from "lucide-react";
+import { useZCodeIntl } from "@/i18n/IntlProvider.js";
 import { ProviderStatusIndicator } from "./ProviderStatusIndicator.js";
 
 import {
@@ -376,6 +377,7 @@ export function ModelProviderSectionNavigation({
   onReorderProviderIds?: (providerIds: string[]) => Promise<void>;
   reorderableProviderIds?: ReadonlySet<string>;
 }) {
+  const { intl } = useZCodeIntl();
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, {
@@ -386,13 +388,10 @@ export function ModelProviderSectionNavigation({
   return (
     <aside className="px-1.5 py-3 md:py-2 md:px-2">
       <div className="flex min-h-0 flex-col gap-3 max-md:gap-1">
-        {navigationGroups
-          // 账号/OAuth 摘除后 preset 组恒为空；统一隐藏空组，避免左侧导航只剩"智谱"标题。
-          .filter((group) => group.items.length > 0)
-          .map((group) => (
-            <div key={group.id} className="flex flex-col gap-2 max-md:gap-1">
-              <div className="flex h-7 items-center justify-between px-2 py-1 max-md:hidden">
-                <h3 className="text-ui-sm font-semibold text-foreground-subtlest">{group.title}</h3>
+        {navigationGroups.map((group) => (
+          <div key={group.id} className="flex flex-col gap-2 max-md:gap-1">
+            <div className="flex h-7 items-center justify-between px-2 py-1 max-md:hidden">
+              <h3 className="text-ui-sm font-semibold text-foreground-subtlest">{group.title}</h3>
                 {shouldShowModelProviderGroupLoadingIndicator({
                   groupId: group.id,
                   presetLoading,
@@ -401,6 +400,13 @@ export function ModelProviderSectionNavigation({
                   <Loader2Icon className="size-3 animate-spin text-foreground-subtlest" />
                 ) : null}
               </div>
+
+              {group.items.length === 0 ? (
+                // 分组常驻显示；没有供应商时给一行空态提示，避免左侧整列空白。
+                <div className="px-2 py-1 text-ui-sm text-foreground-subtlest">
+                  {intl.formatMessage({ id: "settings.modelProvider.navGroupEmpty" })}
+                </div>
+              ) : null}
 
               {group.id === "preset" ? (
                 <PresetProviderCardNavigation

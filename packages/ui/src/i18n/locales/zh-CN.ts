@@ -2281,6 +2281,7 @@ const zhCN: Record<string, string> = {
   "settings.modelProvider.templatePickerTitle": "添加供应商",
   "settings.modelProvider.templateGroup.jieguan": "捷关",
   "settings.modelProvider.templateGroup.other": "其他",
+  "settings.modelProvider.navGroupEmpty": "暂无供应商",
   "settings.modelProvider.templatePickerBack": "返回供应商详情",
   "settings.modelProvider.addProviderModelReminder": "添加供应商前，请至少添加一个模型。",
   "settings.modelProvider.baseUrl": "Base URL",
@@ -2903,7 +2904,7 @@ const zhCN: Record<string, string> = {
   "settings.modelProvider.refresh": "刷新",
   "settings.modelProvider.reorderProvider": "拖拽调整供应商顺序",
   "settings.modelProvider.reorderModel": "拖拽调整模型顺序",
-  "settings.modelProvider.empty": "暂无自定义模型供应商",
+  "settings.modelProvider.empty": "暂无模型供应商",
   "settings.modelProvider.deleteConfirm": '确定要删除"{name}"吗？',
   "settings.modelProvider.deleteConfirmTitle": "删除供应商“{name}”？",
   "settings.modelProvider.deleteConfirmDescription":

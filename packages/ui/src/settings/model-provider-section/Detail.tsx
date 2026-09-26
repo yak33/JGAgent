@@ -276,7 +276,16 @@ export function ModelProviderSectionDetail({
   );
 
   if (!selectedNavItem) {
-    return <ModelProviderLoadingCard loadingLabel={loadingLabel} />;
+    // 一个供应商都没有时不该永远转圈；请求结束后显示空态，引导用户添加供应商。
+    if (presetLoading) {
+      return <ModelProviderLoadingCard loadingLabel={loadingLabel} />;
+    }
+
+    return (
+      <div className="flex flex-col gap-2 rounded-xl border border-border bg-surface p-3 text-ui-base text-foreground-subtle">
+        {intl.formatMessage({ id: "settings.modelProvider.empty" })}
+      </div>
+    );
   }
 
   if (selectedNavItem.type === "preset") {

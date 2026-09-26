@@ -2432,6 +2432,7 @@ const enUS: Record<string, string> = {
   "settings.modelProvider.templatePickerTitle": "Add provider",
   "settings.modelProvider.templateGroup.jieguan": "JieGuan",
   "settings.modelProvider.templateGroup.other": "Other",
+  "settings.modelProvider.navGroupEmpty": "No providers yet",
   "settings.modelProvider.templatePickerBack": "Back to provider details",
   "settings.modelProvider.addProviderModelReminder":
     "Add at least one model before adding the provider.",
@@ -3359,7 +3360,7 @@ const enUS: Record<string, string> = {
   "settings.modelProvider.refresh": "Refresh",
   "settings.modelProvider.reorderProvider": "Drag to reorder provider",
   "settings.modelProvider.reorderModel": "Drag to reorder model",
-  "settings.modelProvider.empty": "No custom model providers yet",
+  "settings.modelProvider.empty": "No model providers yet",
   "settings.modelProvider.deleteConfirm": 'Delete "{name}"?',
   "settings.modelProvider.deleteConfirmTitle": 'Delete provider "{name}"?',
   "settings.modelProvider.deleteConfirmDescription":
