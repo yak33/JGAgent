@@ -106,7 +106,7 @@ export function getSessionDbPath(configResult: ConfigResult, workingDirectory?: 
   const configured = configResult.config.storage.sessionDbPath;
   // 默认 sessionDbPath 是 "~/.zcode/cli/db/db.sqlite" 字面量，resolvePath 会把 ~ 展开成 homedir()。
   // 设置 ZCODE_DATA_BASE_DIR（与 ZCode 原版共机隔离）时，默认库必须落到
-  // <ZCODE_DATA_BASE_DIR>/.zcode/cli/db 下，因此默认值改走 getDefaultSessionDbPath()；
+  // <ZCODE_DATA_BASE_DIR>/.jgagent/cli/db 下，因此默认值改走 getDefaultSessionDbPath()；
   // 用户显式配置的路径保持原有解析行为不变。
   if (configured === DefaultRuntimeConfig.storage.sessionDbPath) {
     return getDefaultSessionDbPath();

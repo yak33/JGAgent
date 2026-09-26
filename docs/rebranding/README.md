@@ -146,7 +146,7 @@
 | --- | --- | --- |
 | `@zcode/*` 包作用域 | 28 个包 + 全部跨包 import | 纯内部标识；fork 稳定后一次性重命名 |
 | `zcode://` 协议族 | 见 1.5 | 内部协议无品牌露出可不动 |
-| 数据目录 `~/.zcode/`、`ZCODE_*` 环境变量前缀 | 全仓库 | 用户本机路径与运维脚本可见；改前评估共存需求 |
+| 数据目录 `~/.zcode/`（主目录级） | 全仓库 | **已完成（2026-09-26）**：默认段名改 `~/.jgagent`，不迁移不回读，spec 见 `docs/specs/storage-root-isolation.md`；工作区级 `<workspace>/.zcode` 与 `ZCODE_*` 环境变量前缀仍保留 |
 | 根目录 AGENTS/CONTEXT/DESIGN 文档 | 已部分指向 JGAgent（AGENTS.md 已加交接指引） | 随阶段 3/4 持续更新 |
 
 ---

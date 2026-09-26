@@ -221,10 +221,10 @@ export function createNodeLoggerFactory(options: NodeLoggerFactoryOptions = {}):
 
 export function getDefaultLogDir(): string {
   // 设置 ZCODE_DATA_BASE_DIR（与 ZCode 原版共机隔离）时，Agent 日志必须写入
-  // <ZCODE_DATA_BASE_DIR>/.zcode/cli/log，避免污染原版 ~/.zcode/cli/log；
-  // 未设置时保持 ~/.zcode 原行为不变。须与 services 侧 zcodeTaskServiceAdapter 的日志路径解析保持一致。
+  // <ZCODE_DATA_BASE_DIR>/.jgagent/cli/log，避免污染 ZCode 原版 ~/.zcode/cli/log；
+  // 未设置时保持 ~/.jgagent 原行为不变。须与 services 侧 zcodeTaskServiceAdapter 的日志路径解析保持一致。
   const dataBaseDir = process.env.ZCODE_DATA_BASE_DIR?.trim() || homedir();
-  return join(dataBaseDir, ".zcode", "cli", "log");
+  return join(dataBaseDir, ".jgagent", "cli", "log");
 }
 
 function getDefaultMinLevel(env: NodeJS.ProcessEnv | undefined): LogLevel {

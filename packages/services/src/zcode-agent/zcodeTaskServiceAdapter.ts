@@ -247,7 +247,7 @@ function resolveZCodeAgentCurrentLogFilePath(now = new Date()): string {
   // Host 读日志尾部必须用同一基准目录，否则隔离运行时读不到当前日志；
   // 未设置时 getDataBaseDir() 回退 homedir()，与原行为一致。
   const logDir =
-    configuredLogDir || join(getDataBaseDir(), ".zcode", "cli", "log");
+    configuredLogDir || join(getDataBaseDir(), ".jgagent", "cli", "log");
   return join(logDir, `zcode-${formatZCodeAgentLogDate(now)}.jsonl`);
 }
 

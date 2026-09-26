@@ -590,7 +590,7 @@ function sanitizeFileSegment(value?: string): string {
 // services 侧 modelTrajectoryFileTail 的读取候选同时包含 homedir 与隔离根，改写入位置不影响读取。
 function getModelIOBaseDir(isDev: boolean): string {
   const dataBaseDir = process.env.ZCODE_DATA_BASE_DIR?.trim() || homedir();
-  return join(dataBaseDir, ".zcode", "cli", isDev ? "debug" : "rollout");
+  return join(dataBaseDir, ".jgagent", "cli", isDev ? "debug" : "rollout");
 }
 
 function stringifyDebugRecord(record: Record<string, unknown>): string {

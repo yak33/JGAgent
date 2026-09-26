@@ -17,19 +17,19 @@ import type {
 
 /**
  * 诊断数据根基准目录。设置 ZCODE_DATA_BASE_DIR（与 ZCode 原版共机隔离）时，
- * 会话库与 Agent 日志实际落在 <ZCODE_DATA_BASE_DIR>/.zcode 下，诊断必须读取隔离目录；
- * 未设置时保持 ~/.zcode 原行为不变。
+ * 会话库与 Agent 日志实际落在 <ZCODE_DATA_BASE_DIR>/.jgagent 下，诊断必须读取隔离目录；
+ * 未设置时保持 ~/.jgagent 原行为不变。
  */
 function resolveDiagnosisBaseDir(): string {
   return process.env.ZCODE_DATA_BASE_DIR?.trim() || homedir();
 }
 
 export function defaultLogDir(): string {
-  return join(resolveDiagnosisBaseDir(), ".zcode", "cli", "log");
+  return join(resolveDiagnosisBaseDir(), ".jgagent", "cli", "log");
 }
 
 export function defaultDbPath(): string {
-  return join(resolveDiagnosisBaseDir(), ".zcode", "cli", "db", "db.sqlite");
+  return join(resolveDiagnosisBaseDir(), ".jgagent", "cli", "db", "db.sqlite");
 }
 
 export async function loadLogs(options: ObservationOptions): Promise<SourceLoadResult<LogRecord>> {
