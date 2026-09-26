@@ -2,8 +2,8 @@
 import { onBeforeUnmount, onMounted, ref } from "vue";
 
 // 版本与下载地址单点维护：发版时只改这里与 changelog 数组。
-const DOWNLOAD_URL = "/downloads/JGAgent-0.3.0-win-x64.exe";
-const VERSION = "0.3.0";
+const DOWNLOAD_URL = "/downloads/JGAgent-0.3.1-win-x64.exe";
+const VERSION = "0.3.1";
 
 const changelog: Array<{ date: string; items: string[] }> = [
   {

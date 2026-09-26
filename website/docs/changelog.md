@@ -1,8 +1,17 @@
 # 更新日志
 
+## v0.3.1 <Badge type="tip">Preview</Badge>
+
+2026-09-27 · [下载 Windows 版](/downloads/JGAgent-0.3.1-win-x64.exe)
+
+- 存储根隔离收尾：修复设置、会话库、凭据、MCP/命令/插件/技能配置仍在读写官方 ZCode 数据目录（~/.zcode）的问题，首次启动不再出现官方 ZCode 的项目列表
+- 更新缓存目录独立（jgagent-updater），不再与官方 ZCode 共享待更新状态
+- 打包版端点密封化：不再受启动环境注入的端点变量影响
+- 暂不支持自动更新，新版本请回[首页](/)手动下载
+
 ## v0.3.0 <Badge type="tip">Preview</Badge>
 
-2026-09-26 · [下载 Windows 版](/downloads/JGAgent-0.3.0-win-x64.exe)
+2026-09-26 · 该版本存在启动联网缺陷已撤下，请安装 [v0.3.1](/downloads/JGAgent-0.3.1-win-x64.exe)
 
 - 同步上游 ZCode v3.14.3：动态工作流引擎优化、运行中可调并发、界面崩溃修复
 - 模型列表改为从捷关网关动态拉取（`/v1/models`），设置页可手动刷新，引导页填 Key 后自动同步
