@@ -26,6 +26,41 @@ import { resolveIntranetDepsBaseUrl } from "../../../scripts/intranetDefaults.mj
 
 const desktopRoot = resolve(import.meta.dirname, "..");
 const workspaceRoot = resolve(desktopRoot, "../..");
+
+// JGAgent 防污染守卫：tsup 会把 process.env 里影响产品行为的端点/配置路径经
+// __ZCODE_ENDPOINT_ENV__ 等常量烧进产物。若在宿主 ZCode 会话（或其它带官方端点
+// 环境变量的 shell）里打包，官方地址会被打进安装包，导致启动即外发官方域名、
+// 甚至被官方强制升级配置拦停（2026-09-26 v0.3.0 首版事故）。这里在打包入口直接拒绝。
+const FORBIDDEN_BUILD_ENV_VARS = [
+  "ZCODE_BASE_URL",
+  "ZCODE_ENDPOINT_ORIGIN",
+  "ZCODE_CDN_BASE_URL",
+  "ZCODE_DIST_BASE_URL",
+  "ZCODE_BUILTIN_PROVIDER_CONFIG_FILE",
+  "ZCODE_PERSONAL_PROVIDER_CONFIG_FILE",
+  "BIGMODEL_API_BASE_URL",
+];
+function assertCleanBuildEnvironment() {
+  const leaked = FORBIDDEN_BUILD_ENV_VARS.filter((name) => process.env[name]?.trim());
+  if (leaked.length === 0) {
+    return;
+  }
+  // 显式开关：在打包进程内直接删除泄漏变量再继续（子进程继承清理后的环境）。
+  // 某些 shell 包装器里 `unset` 不可靠，用这个开关比反复排查 shell 行为更确定。
+  if (process.env.JGAGENT_SANITIZE_BUILD_ENV === "1") {
+    for (const name of leaked) {
+      delete process.env[name];
+    }
+    console.warn(`[bundle] 已按 JGAGENT_SANITIZE_BUILD_ENV=1 清理泄漏变量：${leaked.join(", ")}`);
+    return;
+  }
+  throw new Error(
+    `检测到会污染打包产物的环境变量：${leaked.join(", ")}。` +
+      `请先在 shell 中 unset 这些变量（它们通常来自宿主 ZCode 会话注入），` +
+      `或确认环境无误后以 JGAGENT_SANITIZE_BUILD_ENV=1 运行让脚本自动清理。`,
+  );
+}
+assertCleanBuildEnvironment();
 const requireFromBundle = createRequire(import.meta.url);
 const asarCliPath = resolve(
   dirname(requireFromBundle.resolve("@electron/asar/package.json")),

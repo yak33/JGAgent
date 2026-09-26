@@ -41,6 +41,18 @@ ZCODE_ENV=production node scripts/bundle.mjs --os win --arch x64
 `pnpm dev:desktop` 的 tsup watch 与生产构建同写 `out/`，并存会互相污染。
 先 `taskkill //F //IM electron.exe` 并停掉后台 dev 任务再打包。
 
+### 陷阱 3：宿主 ZCode 会话注入的 ZCODE_* 变量会烧进安装包（有守卫）
+
+在 ZCode 会话里执行打包时，宿主注入的 `ZCODE_BASE_URL`（官方域名）、
+`ZCODE_BUILTIN_PROVIDER_CONFIG_FILE` 等会经 `__ZCODE_ENDPOINT_ENV__` 烧进产物：
+启动即外发官方域名、被官方 `/client/configs` 的强制升级配置拦停
+（2026-09-26 v0.3.0 首版事故：官方 minVersion 3.5.3 > 我们 0.3.0）。
+`scripts/bundle.mjs` 入口守卫 `assertCleanBuildEnvironment` 会直接拒绝；
+环境确认无害后可用 `JGAGENT_SANITIZE_BUILD_ENV=1` 让脚本在进程内自动清理
+（shell 包装器里 `unset` 不可靠时用这个）。⚠️ 打包后务必 grep
+`dist/win-unpacked/resources/app.asar` 确认 `api.z.ai` 等 0 命中再上传
+（NSIS exe 是压缩载荷，grep 不出，别拿 exe 验）。
+
 ### 产物校验
 
 - `dist/latest.yml` 的 `version` 与 sha512 是权威校验源；
