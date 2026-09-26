@@ -19,9 +19,13 @@ website/
 ```bash
 cd website
 npm install
-npm run dev        # http://localhost:5173 热更新预览
-npm run build      # 产物在 docs/.vitepress/dist/
+npm run build      # 构建，产物在 docs/.vitepress/dist/
+npm run preview    # 本地伺服构建产物（http://localhost:4173），验收设计用这个
 ```
+
+⚠️ **本机 `npm run dev`（5173）SSR 静默失效**（2026-09-26 实测：所有路由返回无样式空壳、
+无任何报错，清 `.vitepress/cache` 无效；`build` 不受影响）—— 验收/调试一律走
+`build + preview`，别用 dev 服务器，也别信 5173 端口上看到的页面。
 
 首页下载按钮指向 `/downloads/…`，本地预览点不开属正常（指向服务器路径）。
 

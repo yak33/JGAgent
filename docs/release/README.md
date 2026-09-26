@@ -50,8 +50,10 @@ ZCODE_ENV=production node scripts/bundle.mjs --os win --arch x64
 
 - **独立子项目**：自带 package.json / node_modules，`pnpm-workspace.yaml` 的 packages
   通配不覆盖它 —— 别把它加进 workspace，也别在根目录 pnpm install 它。
-- 命令：`cd website && npm run dev`（5173 热更）/ `npm run build`（产物
-  `docs/.vitepress/dist/`）。
+- 命令：`cd website && npm run build`（产物 `docs/.vitepress/dist/`）+
+  `npm run preview`（4173 伺服构建产物，**验收一律用这个**）。
+- ⚠️ 本机 `npm run dev`（5173）SSR 静默失效（返回无样式空壳、无报错、清缓存无效，
+  build 不受影响）——不要用 dev 验收，勿信 5173 页面。
 - 字体自托管（`@fontsource/space-grotesk`、`jetbrains-mono`），**不依赖 Google Fonts**，
   国内可访问；改字体在 `docs/.vitepress/theme/index.ts`。
 - 设计基调（2026-09-26 定稿）：墨蓝黑 `#0B0E14` + 琥珀 `#F5B453` 单强调色，
