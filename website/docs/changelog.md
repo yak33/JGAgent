@@ -1,5 +1,16 @@
 # 更新日志
 
+## v0.3.0 <Badge type="tip">Preview</Badge>
+
+2026-09-26 · [下载 Windows 版](/downloads/JGAgent-0.3.0-win-x64.exe)
+
+- 同步上游 ZCode v3.14.3：动态工作流引擎优化、运行中可调并发、界面崩溃修复
+- 模型列表改为从捷关网关动态拉取（`/v1/models`），设置页可手动刷新，引导页填 Key 后自动同步
+- 引导页同模板重复提交时复用已有供应商并更新 Key，不再堆出重复条目
+- 隐藏暂不可用的电脑控制入口（上游开源版 CUA 为占位实现）
+- 官网整版重设计：玻璃质感暗色主题与不对称 Bento 布局
+- 暂不支持自动更新，新版本请回[首页](/)手动下载
+
 ## v0.2.0 <Badge type="tip">Preview</Badge>
 
 2026-09-26 · [下载 Windows 版](/downloads/JGAgent-0.2.0-win-x64.exe)

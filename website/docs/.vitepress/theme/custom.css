@@ -1,0 +1,118 @@
+/* JGAgent 官网全局定制：Ethereal Glass 基调（OLED 近黑 + 琥珀微光）。
+ * 首页主体样式在 Home.vue 内 scoped；本文件只覆盖 VitePress 框架层
+ * （字体栈、导航玻璃药丸、页脚），保证内容页与首页基调一致。 */
+
+:root {
+  --jg-bg: #060608;
+  --jg-text: #f2f4f8;
+  --jg-text-dim: #98a0ad;
+  --jg-amber: #f5b453;
+  --jg-hairline: rgba(255, 255, 255, 0.08);
+  /* 刻意避开 Inter/Roboto 等网络字体：中文站点以系统黑体为主，
+   * 西文回退 Segoe UI Variable / SF，视觉上仍是 geometric grotesk 家族。 */
+  --vp-font-family-base: "Segoe UI Variable Display", "SF Pro Display", -apple-system,
+    "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+  --vp-font-family-mono: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono",
+    Consolas, monospace;
+  --vp-c-bg: var(--jg-bg);
+  --vp-c-bg-alt: #0a0a0e;
+  --vp-c-text-1: var(--jg-text);
+  --vp-c-text-2: var(--jg-text-dim);
+  --vp-c-text-3: #6b7280;
+  --vp-c-divider: var(--jg-hairline);
+  --vp-c-brand-1: var(--jg-amber);
+  --vp-c-brand-2: #f7c67a;
+  --vp-c-brand-3: #d99a35;
+  --vp-button-brand-bg: var(--jg-amber);
+  --vp-button-brand-text: #171003;
+}
+
+/* 站点画布：统一近黑底，避免默认主题的灰阶底色在首页边界露出来。 */
+html {
+  background: var(--jg-bg);
+}
+
+body {
+  background:
+    radial-gradient(1100px 520px at 50% -160px, rgba(245, 180, 83, 0.09), transparent 68%),
+    radial-gradient(900px 460px at 85% 12%, rgba(99, 102, 241, 0.06), transparent 70%),
+    var(--jg-bg);
+  background-attachment: fixed;
+}
+
+/* 顶栏：脱离边缘的玻璃药丸（仅此一处使用 backdrop-blur，符合性能约束）。 */
+.VPNav {
+  position: fixed;
+  top: 20px;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+.VPNavBar {
+  pointer-events: auto;
+  background: transparent;
+}
+.VPNavBar .wrapper .container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.VPNavBar.has-sidebar .container {
+  max-width: 1080px;
+}
+.VPNavBar .container > .title,
+.VPNavBar .container > .content {
+  background: rgba(12, 12, 16, 0.55);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--jg-hairline);
+  border-radius: 999px;
+}
+.VPNavBar .container {
+  gap: 8px;
+}
+.VPNavBarTitle a {
+  padding: 8px 4px 8px 18px;
+}
+.VPNavBar .content-body {
+  padding: 0 14px;
+}
+.Divider {
+  display: none;
+}
+
+/* 内容页与首页共用的大留白节奏。 */
+.VPContent {
+  padding-top: 40px;
+}
+.VPContent.is-home {
+  padding-top: 0;
+}
+
+/* 页脚收窄到与内容同宽，弱化边框感。 */
+.VPFooter {
+  border-top: 1px solid var(--jg-hairline);
+  background: transparent;
+  color: var(--vp-c-text-3);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+
+/* 内容页标题与正文微调，贴近编辑式排版。 */
+.vp-doc h1,
+.vp-doc h2 {
+  letter-spacing: -0.015em;
+}
+
+@media (max-width: 767px) {
+  .VPNav {
+    top: 10px;
+  }
+  .VPNavBar .container > .title {
+    background: rgba(12, 12, 16, 0.55);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid var(--jg-hairline);
+    border-radius: 999px;
+  }
+}

@@ -51,14 +51,20 @@ ZCODE_ENV=production node scripts/bundle.mjs --os win --arch x64
 - **独立子项目**：自带 package.json / node_modules，`pnpm-workspace.yaml` 的 packages
   通配不覆盖它 —— 别把它加进 workspace，也别在根目录 pnpm install 它。
 - 命令：`cd website && npm run build`（产物 `docs/.vitepress/dist/`）+
-  `npm run preview`（4173 伺服构建产物，**验收一律用这个**）。
+  `npm run preview`（伺服构建产物，**验收一律用这个**；端口被占时 `npx vitepress preview docs --port 4273`）。
 - ⚠️ 本机 `npm run dev`（5173）SSR 静默失效（返回无样式空壳、无报错、清缓存无效，
   build 不受影响）——不要用 dev 验收，勿信 5173 页面。
-- 字体自托管（`@fontsource/space-grotesk`、`jetbrains-mono`），**不依赖 Google Fonts**，
-  国内可访问；改字体在 `docs/.vitepress/theme/index.ts`。
-- 设计基调（2026-09-26 定稿）：墨蓝黑 `#0B0E14` + 琥珀 `#F5B453` 单强调色，
-  hero 右侧琥珀磷光终端窗（`TermWindow.vue`），diff 绿红只出现在终端行内。
-  修改请守住：无渐变、无光晕、无滚动入场动画、emoji 不进特性区。
+- ⚠️ 4173 可能残留来历不明的旧伺服进程（serve 旧产物且 CSS 404）：验收前
+  `netstat -ano | grep :4173` 找 PID 杀掉再起 preview。
+- 字体走系统栈（Segoe UI Variable / PingFang / 雅黑，无网络字体依赖），
+  栈定义在 `docs/.vitepress/theme/custom.css`；**未引入** @fontsource（旧文档记录有误）。
+- 设计基调（2026-09-26 二版，推翻首版墨蓝黑定稿）：**Ethereal Glass** ——
+  OLED 近黑 `#060608` + 琥珀 `#F5B453` 品牌微光（body 固定径向光斑）、双嵌套玻璃卡
+  （外壳 hairline + 内核 inset 高光、同心圆角）、不对称 Bento 特性网格、药丸 CTA
+  内嵌圆形图标、IntersectionObserver 入场 fade-up（cubic-bezier(0.32,0.72,0,1)）。
+  首页整体在 `docs/.vitepress/theme/Home.vue`（index.md 只留 `<JgHome/>` 一行），
+  版本号与下载地址是组件内 `DOWNLOAD_URL`/`VERSION` 常量，**发版必改**。
+  约束：backdrop-blur 只用于顶栏药丸；动效只用 transform/opacity/filter。
 - **坑**：md 里写含空行的 `<pre>` 块会被 Vue 编译器按空行切断报
   "Element is missing end tag" —— 复杂 HTML 抽成 `theme/` 下的 Vue 组件再用。
 - `.vitepress/cache/` 已进 .gitignore（曾误提交 2.8 万行，勿回退）。
