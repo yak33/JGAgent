@@ -458,11 +458,19 @@ export default {
   // CI 环境下若这些字段缺失会在产物阶段直接失败。这里统一在构建配置补齐，避免依赖外部注入。
   extraMetadata: {
     version: buildMetadata.appVersion,
+    // JGAgent 去官方化：electron-builder 用包名派生 app-update.yml 的
+    // updaterCacheDirName（@zcode/desktop → @zcodedesktop-updater），会与本机
+    // 官方 ZCode 的更新缓存互相可见。覆盖 name 隔离缓存目录；productName
+    // 仍是 JGAgent，应用显示名与产物命名不受影响。
+    name: "jgagent",
+    version: buildMetadata.appVersion,
     zcodeProductFlavor: desktopProductIdentity.flavor,
-    homepage: "https://zcode.z.ai",
+    // JGAgent 去官方化：包元数据曾遗留官方主页/作者与 zcode.z.ai 邮箱（会进安装包元数据），
+    // 统一改为占位域，待公司域名确定后随 appId 一起全局替换。
+    homepage: "https://jgagent.invalid",
     author: {
-      name: "ZCode",
-      email: "dev@zcode.z.ai",
+      name: "JieGuan",
+      email: "dev@jgagent.invalid",
     },
   },
   // macOS 签名阶段会对 Electron Framework 下每个语言包逐个 codesign。
@@ -765,5 +773,9 @@ export default {
     // 新客户端运行时使用服务端 manifest provider；这里仅保留 electron-builder 必需的
     // generic publish 占位，避免打包产物继续携带可配置的旧 stable feed。
     url: "http://localhost:8081",
+    // JGAgent 去官方化：默认缓存目录名从包名派生为 @zcodedesktop-updater，与本机安装的
+    // 官方 ZCode 共用同一目录（pending 更新状态/缓存互相可见），曾把官方 3.14.3 的
+    // 待更新状态恢复进 JGAgent。改用独立目录实现隔离。
+    updaterCacheDirName: "jgagent-updater",
   },
 };

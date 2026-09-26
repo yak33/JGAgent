@@ -151,6 +151,7 @@ import {
   listAvailableDockerContainers,
   listAvailableWSLDistros,
   loadHostProcessEnvFromLocalFiles,
+  sanitizeAmbientEndpointEnvForPackagedApp,
   resolveBundledGlmBinaryPath,
   resolveRemoteAssetDirs,
   resolveZCodeEndpointEnvBaseOrigin,
@@ -547,6 +548,17 @@ mainMemoryDiagnosticsRegistry.register("app", () => ({
   windows: BrowserWindow.getAllWindows().filter((win) => !win.isDestroyed()).length,
   willDownloadListeners: session.defaultSession.listenerCount("will-download"),
 }));
+// JGAgent 网络收口：打包版必须在任何端点解析发生前清掉启动环境携带的
+// ZCODE_*/BIGMODEL_* 端点变量（宿主 ZCode 会话会注入官方地址，见
+// sanitizeAmbientEndpointEnvForPackagedApp 注释）。module scope 尽早执行，
+// 保证下方 hostProcessLocalEnv、force-update 与 Host 子进程全部拿到净化后的环境。
+const sanitizedAmbientEndpointEnvVars = sanitizeAmbientEndpointEnvForPackagedApp();
+if (sanitizedAmbientEndpointEnvVars.length > 0) {
+  // 此时 logger 尚未初始化，用 console 落一条；后续诊断日志会带完整上下文。
+  console.info(
+    `[startup] 打包版已忽略启动环境注入的端点变量: ${sanitizedAmbientEndpointEnvVars.join(", ")}`,
+  );
+}
 const hostProcessLocalEnv = loadHostProcessEnvFromLocalFiles();
 interface RuntimeProcessEnvPreparation {
   patchPromise: Promise<Record<string, string>>;

@@ -151,6 +151,39 @@ function resolveWorkspaceRootForEnvFiles(): string | null {
     : null;
 }
 
+// JGAgent 网络收口：这些环境变量会影响端点/CDN/内置 Provider 配置的解析，
+// 宿主 ZCode 会话会把官方 ZCODE_BASE_URL 注入它启动的所有子进程。打包版 v0.3.0
+// 首版曾因此被改道到官方服务端：拉到官方强制升级配置（min 3.5.3 > 0.3.0）启动即被拦。
+// 打包版在主进程启动最早期删除这些变量（子进程继承净化后的环境）；
+// dev 未打包状态保留它们用于本地测试注入。
+const AMBIENT_ENDPOINT_ENV_VARS = [
+  "ZCODE_BASE_URL",
+  "ZCODE_ENDPOINT_ORIGIN",
+  "ZCODE_CDN_BASE_URL",
+  "ZCODE_DIST_BASE_URL",
+  "BIGMODEL_API_BASE_URL",
+  "ZAI_OAUTH_ORIGIN",
+  "ZAI_BUSINESS_BASE_URL",
+  "ZAI_OAUTH_CLIENT_ID",
+  "ZAI_OAUTH_APP_ID",
+  "ZCODE_BUILTIN_PROVIDER_CONFIG_FILE",
+  "ZCODE_PERSONAL_PROVIDER_CONFIG_FILE",
+];
+
+export function sanitizeAmbientEndpointEnvForPackagedApp(): string[] {
+  if (!isElectronAppPackaged()) {
+    return [];
+  }
+  const removed: string[] = [];
+  for (const name of AMBIENT_ENDPOINT_ENV_VARS) {
+    if (process.env[name]?.trim()) {
+      delete process.env[name];
+      removed.push(name);
+    }
+  }
+  return removed;
+}
+
 export function loadHostProcessEnvFromLocalFiles(): Record<string, string> {
   if (isElectronAppPackaged()) {
     // 安装包不内嵌 OTLP 端点或鉴权，避免 CI 凭据随产物公开；连接配置由运行时环境提供。

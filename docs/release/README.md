@@ -41,17 +41,26 @@ ZCODE_ENV=production node scripts/bundle.mjs --os win --arch x64
 `pnpm dev:desktop` 的 tsup watch 与生产构建同写 `out/`，并存会互相污染。
 先 `taskkill //F //IM electron.exe` 并停掉后台 dev 任务再打包。
 
-### 陷阱 3：宿主 ZCode 会话注入的 ZCODE_* 变量会烧进安装包（有守卫）
+### 陷阱 3：ZCODE_* 环境变量污染（构建期 + 运行期，双重防护）
 
-在 ZCode 会话里执行打包时，宿主注入的 `ZCODE_BASE_URL`（官方域名）、
-`ZCODE_BUILTIN_PROVIDER_CONFIG_FILE` 等会经 `__ZCODE_ENDPOINT_ENV__` 烧进产物：
-启动即外发官方域名、被官方 `/client/configs` 的强制升级配置拦停
-（2026-09-26 v0.3.0 首版事故：官方 minVersion 3.5.3 > 我们 0.3.0）。
-`scripts/bundle.mjs` 入口守卫 `assertCleanBuildEnvironment` 会直接拒绝；
-环境确认无害后可用 `JGAGENT_SANITIZE_BUILD_ENV=1` 让脚本在进程内自动清理
-（shell 包装器里 `unset` 不可靠时用这个）。⚠️ 打包后务必 grep
-`dist/win-unpacked/resources/app.asar` 确认 `api.z.ai` 等 0 命中再上传
-（NSIS exe 是压缩载荷，grep 不出，别拿 exe 验）。
+宿主 ZCode 会话会把官方 `ZCODE_BASE_URL` 等注入它启动的所有子进程，两个方向都会出事：
+
+- **构建期**：tsup 把 process.env 经 `__ZCODE_ENDPOINT_ENV__` 烧进产物。
+  `scripts/bundle.mjs` 入口守卫直接拒绝；`JGAGENT_SANITIZE_BUILD_ENV=1` 可让脚本
+  在进程内自动清理（shell 包装器里 `unset` 不可靠时用这个）。
+- **运行期**：上游设计让打包版也读取启动环境的端点变量。v0.3.0 首版事故链：
+  被污染的包 → 官方 `/client/configs` → 官方 minVersion 3.5.3 > 0.3.0 → 启动即拦。
+  现在 `main/index.ts` 模块加载时调用 `sanitizeAmbientEndpointEnvForPackagedApp()`
+  （desktopRuntimeEnv.ts）对打包版密封：删除全部端点/配置路径变量，dev 不受影响。
+- **更新缓存共享**：electron-builder 从包名派生 `updaterCacheDirName`，默认与本机
+  官方 ZCode 共用 `@zcodedesktop-updater`，官方的待更新状态会被 JGAgent 恢复
+  （"restored ready update version=3.14.3"）。publish 里显式改为 `jgagent-updater` 隔离。
+- ⚠️ 打包后验收 grep `dist/win-unpacked/resources/app.asar`：`api.z.ai` 仅允许
+  OAuth 白名单/刻意保留常量（约 15 处），`ZCODE_BASE_URL":"https` 形式的烧入值必须为 0
+  （NSIS exe 是压缩载荷，grep 不出，别拿 exe 验）。
+- 其它品牌残留点（阶段 1 词边界替换覆盖不到的构建资产）：`build/installer.nsh`
+  的安装日志前缀（已改 JGAgent）、`electron-builder.config.js` 的 pkgData
+  homepage/author（已改占位域）。
 
 ### 产物校验
 
