@@ -182,7 +182,7 @@ The dynamic-workflow timeline draws with a feature-scoped token family:
 
 ### Font families
 
-- **UI Sans**: use the app's default `font-sans` stack for almost all interface text.
+- **UI Sans**: use the app's default `font-sans` stack for almost all interface text. The stack pins a Latin UI font (`"Segoe UI"` on Windows, `-apple-system` elsewhere) ahead of the CJK fallbacks: on zh-CN Windows, `ui-sans-serif` resolves to Microsoft YaHei, which would render all Latin text and digits in YaHei's Latin glyphs. Never drop the leading Latin UI font from the stack.
 - **UI Mono**: use `font-mono` for paths, commands, code, identifiers, shortcuts, commit hashes, model IDs, and terminal-like data.
 
 ### UI font tokens

@@ -135,6 +135,12 @@ body {
 /* === 主题变量 === */
 
 @theme {
+  /* 中文 Windows 的 Chromium 把 ui-sans-serif/system-ui 按系统 locale 解析成微软雅黑，
+   * 界面西文与数字会整体使用雅黑的西文字形（实测宽度与 YaHei 精确一致），观感明显差于 Segoe UI。
+   * 显式让西文优先落到各系统 UI 字体，中文再落到雅黑 UI；勿把开头的西文字体从栈里去掉。 */
+  --font-sans:
+    "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Microsoft YaHei UI",
+    "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", ui-sans-serif, system-ui, sans-serif;
   /* Windows 的 Consolas 不含中文字形，Tailwind 默认栈最终会让中文落到宋体。
    * 保留各平台西文等宽字体，并在通用 monospace 前显式加入各平台 CJK 无衬线字体。 */
   --font-mono:
