@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.js";
 import {
+  Dices,
   KeyRound,
   PencilRuler,
   Globe,
@@ -28,13 +29,19 @@ import {
   ZoomIn,
   ZoomOut,
 } from "lucide-react";
+import { Input } from "@/components/ui/input.js";
 import { usePlatform } from "@/hooks/usePlatform.js";
+import { useLocalProfile, LOCAL_PROFILE_COLOR_PALETTE } from "@/hooks/useLocalProfile.js";
+import {
+  normalizeLocalProfileName,
+  LOCAL_PROFILE_NAME_MAX_LENGTH,
+} from "@/lib/randomUsername.js";
 import { useZCodeIntl } from "@/i18n/IntlProvider.js";
 import { useShortcutCommandLabel } from "@/shortcuts/useShortcutBindings.js";
 import { useZCodeStore } from "@/store/StoreProvider.js";
 import { normalizeInterfaceMode } from "@/lib/interfaceMode.js";
 import type { Theme } from "@/useTheme.js";
-import { ZCodeAboutLogo } from "@/components/ui/ZCodeAboutLogo.js";
+import { LocalProfileAvatar } from "@/LocalProfileAvatar.js";
 
 const DESKTOP_ZOOM_MIN_LEVEL = -3;
 const DESKTOP_ZOOM_MAX_LEVEL = 5;
@@ -71,8 +78,21 @@ export const WorkspaceSidebarFooter = memo(function WorkspaceSidebarFooterCompon
 }) {
   // JGAgent 去官方化（阶段 3）：账号体系摘除后，footer 头像/套餐徽标/用量/登录登出
   // 整体移除，原「头像菜单」改为「JGAgent 偏好菜单」，语言/主题/界面模式/缩放保留。
+  // JGAgent 本地身份（2026-09-26）：左下角改为本地头像+用户名，菜单顶部加个性化区块（docs/specs/local-profile.md）。
   // workspace* / activeTaskId 等 props 为公共调用签名保留（父组件仍在传递，后续批次统一清理）。
   const { intl } = useZCodeIntl();
+  const { profile, setName, setColorIndex, rollName } = useLocalProfile();
+  const [nameDraft, setNameDraft] = useState(profile.name);
+  useEffect(() => {
+    setNameDraft(profile.name);
+  }, [profile.name]);
+  const commitNameDraft = () => {
+    if (!normalizeLocalProfileName(nameDraft)) {
+      setNameDraft(profile.name);
+      return;
+    }
+    setName(nameDraft);
+  };
   const platform = usePlatform();
   const interfaceMode = useZCodeStore((state) => state.interfaceMode);
   const setInterfaceMode = useZCodeStore((state) => state.setInterfaceMode);
@@ -131,19 +151,69 @@ export const WorkspaceSidebarFooter = memo(function WorkspaceSidebarFooterCompon
               type="button"
               variant="ghost"
               size={"lg"}
-              className="min-w-0 flex-1 justify-start gap-2 overflow-hidden rounded-tl-2xl rounded-bl-2xl border-0 pl-0"
-              aria-label="JGAgent"
+              className="min-w-0 flex-1 justify-start gap-1.5 overflow-hidden rounded-tl-2xl rounded-bl-2xl border-0 pl-0"
+              aria-label={profile.name}
             >
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[linear-gradient(180deg,#000000_0%,#151718_100%)] text-white">
-                <ZCodeAboutLogo className="h-auto w-5" />
-              </span>
+              <LocalProfileAvatar name={profile.name} colorIndex={profile.colorIndex} />
               <span className="min-w-0 truncate text-ui-base font-semibold text-foreground">
-                JGAgent
+                {profile.name}
               </span>
             </Button>
           </DropdownMenuTrigger>
           {/* 菜单内容保持挂载，避免每次点击菜单都重建 footer 内部状态。*/}
           <DropdownMenuContent align="start" className="w-max min-w-50" forceMount>
+            {/* 个性化区块：输入与色点需要键盘输入/点击，stopPropagation 避免 Dropdown 导航抢键（与空态菜单内嵌搜索框同款模式）。 */}
+            <div
+              data-slot="local-profile-editor"
+              className="flex w-64 flex-col gap-2 px-2 py-1.5"
+              onKeyDown={(event) => event.stopPropagation()}
+            >
+              <span className="text-ui-sm font-medium text-foreground-subtle">
+                {intl.formatMessage({ id: "settings.profile.sectionTitle" })}
+              </span>
+              <div className="flex items-center gap-1.5" role="group" aria-label={intl.formatMessage({ id: "settings.profile.colorLabel" })}>
+                {LOCAL_PROFILE_COLOR_PALETTE.map((color, index) => (
+                  <button
+                    key={color}
+                    type="button"
+                    aria-label={`${intl.formatMessage({ id: "settings.profile.colorLabel" })} ${index + 1}`}
+                    aria-pressed={profile.colorIndex === index}
+                    className={cn(
+                      "size-4 rounded-full outline-hidden transition-transform hover:scale-110",
+                      profile.colorIndex === index &&
+                        "ring-2 ring-foreground/50 ring-offset-2 ring-offset-background",
+                    )}
+                    style={{ backgroundColor: color }}
+                    onClick={() => setColorIndex(index)}
+                  />
+                ))}
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Input
+                  value={nameDraft}
+                  maxLength={LOCAL_PROFILE_NAME_MAX_LENGTH}
+                  aria-label={intl.formatMessage({ id: "settings.profile.nameLabel" })}
+                  className="h-8 text-ui-base"
+                  onChange={(event) => setNameDraft(event.target.value)}
+                  onBlur={commitNameDraft}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      commitNameDraft();
+                    }
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label={intl.formatMessage({ id: "settings.profile.rollName" })}
+                  onClick={() => setNameDraft(rollName())}
+                >
+                  <Dices className="size-4" />
+                </Button>
+              </div>
+            </div>
+            <DropdownMenuSeparator />
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>
                 <Globe className="size-4" />

@@ -8,6 +8,7 @@ import { type CSSProperties, useEffect, useLayoutEffect, useRef, useState } from
 import darkEmptyStateLogoUrl from "@/assets/Z.svg";
 import { cn } from "@/components/lib/utils.js";
 import { useZCodeIntl } from "@/i18n/IntlProvider.js";
+import { useLocalProfile } from "@/hooks/useLocalProfile.js";
 import { useIsOfficeMode } from "@/hooks/useInterfaceMode.js";
 import { logger } from "@/logger.js";
 
@@ -79,6 +80,7 @@ function resolveGreetingFontSizePx({
 
 export function ConversationDraftEmptyState({ className }: { className?: string }) {
   const { intl } = useZCodeIntl();
+  const { profile } = useLocalProfile();
   const isOfficeMode = useIsOfficeMode();
   const [greetingDate, setGreetingDate] = useState(() => new Date());
   const [greetingFontSizePx, setGreetingFontSizePx] = useState(GREETING_MAX_FONT_SIZE_PX);
@@ -87,6 +89,10 @@ export function ConversationDraftEmptyState({ className }: { className?: string 
   const greeting = intl.formatMessage({
     id: isOfficeMode ? "chat.empty.greeting.office" : getChatEmptyGreetingMessageId(greetingDate),
   });
+  // 本地身份消费点：问候语拼接用户名；标点差异（，/,）由各 locale 文案承载。
+  const greetingWithName = profile.name
+    ? intl.formatMessage({ id: "chat.empty.greeting.named" }, { greeting, name: profile.name })
+    : greeting;
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -201,9 +207,9 @@ export function ConversationDraftEmptyState({ className }: { className?: string 
           aria-hidden="true"
           className="pointer-events-none invisible absolute whitespace-nowrap text-3xl/[1.2]"
         >
-          {greeting}
+          {greetingWithName}
         </span>
-        <span>{greeting}</span>
+        <span>{greetingWithName}</span>
       </p>
     </div>
   );
