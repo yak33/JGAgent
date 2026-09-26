@@ -767,7 +767,10 @@ async function main() {
   }
 
   if (!skipBuild) {
-    run(pnpmCommand, ["build"], buildEnv);
+    // 这里必须用 build:no-runtime-assets 而不是 build：bundle.mjs 上面已经跑过
+    // prepare:runtime-assets，build 脚本内部会再跑一遍（远程资源里 CLI 工作区
+    // 十几个包的 tsc 全量重来），白白多花约 5 分钟。
+    run(pnpmCommand, ["build:no-runtime-assets"], buildEnv);
   }
 
   await runTimedAsync("bundle:electron-builder", () =>
