@@ -34,17 +34,16 @@ export function ProviderTemplatePicker({
   const { intl, locale } = useZCodeIntl();
   const { dismissFeedback, showFeedback } = useProviderDetailFeedback();
   const customLabel = intl.formatMessage({ id: "settings.modelProvider.newProviderName" });
-  const zhipuIds = ["bigmodel-api", "zai-api", "bigmodel-standard-api", "zai-standard-api"];
+  // 捷关网关模板独占「捷关」组；其余模板（含恢复的智谱 z.ai/BigModel API 模板）归入「其他」。
+  const jieguanIds = ["jgagent-gateway"];
   const groups = [
     {
-      id: "zhipu",
-      templates: zhipuIds.flatMap((id) =>
-        templates.filter((template) => template.templateId === id),
-      ),
+      id: "jieguan",
+      templates: templates.filter((template) => jieguanIds.includes(template.templateId)),
     },
     {
       id: "other",
-      templates: templates.filter((template) => !zhipuIds.includes(template.templateId)),
+      templates: templates.filter((template) => !jieguanIds.includes(template.templateId)),
     },
   ] as const;
   const createWithFeedback = async (create: () => Promise<void>) => {
