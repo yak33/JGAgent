@@ -120,6 +120,8 @@ export function LoginApiKeyForm({ onCancel, onSaved, onSkipped }: LoginApiKeyFor
 
         created = await providerSettingsService.createPersonalProvider({
           templateId: template.templateId,
+          // 不传 locale 会按 en-US 把模板英文名固化进 providerName；与设置页创建路径保持一致。
+          locale,
           initialConfig: { access: { type: template.config.access.type, apiKey } },
         });
       }
