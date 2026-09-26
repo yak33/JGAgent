@@ -121,6 +121,7 @@ export type {
   CuaHelperInstaller,
   CuaHelperInstallerOptions,
 } from "./cua-permission-broker/index.js";
+export { createBotsService } from "./bots/botsService.js";
 export { createFileWatcherService } from "./fileWatcher/fileWatcherService.js";
 // JGAgent 去官方化（阶段 3）：删除 OAuth 服务域（oauth/ 目录）——createOAuthService、
 // createOAuthProviderLogoutHandler、OAuthCredentialRepo 及其出口随目录一并移除。
@@ -271,6 +272,7 @@ import {
 } from "./conversation-share/conversationShareService.js";
 import { createLocalConversationShareArtifactSource } from "./conversation-share/conversationShareArtifactSource.js";
 import { ConversationShareHttpClient } from "./conversation-share/conversationShareHttpClient.js";
+import { IBotsService } from "./bots/bots.js";
 import { IFileWatcherService } from "./fileWatcher/fileWatcher.js";
 import { IUsageStatsService } from "./usage-stats/usageStats.js";
 import { IClientScenesService } from "./client-scenes/clientScenes.js";
@@ -308,6 +310,8 @@ import { createZCodeTaskServiceAdapter } from "./zcode-agent/zcodeTaskServiceAda
 import { createZCodeSessionService } from "./zcode-session/zcodeSessionService.js";
 import { createZCodeTaskIndexSyncer } from "./zcode-agent/zcodeTaskIndexSyncer.js";
 import { TaskIndexRepo } from "./session/taskIndexRepo.js";
+import { createBotsService } from "./bots/botsService.js";
+import { createBotRemoteWorkspaceService } from "./bots/botRemoteWorkspaceBridge.js";
 import type { SessionMessageSendRequested } from "#src/session/sessionMailbox.js";
 import { createFileWatcherService } from "./fileWatcher/fileWatcherService.js";
 // JGAgent 去官方化（阶段 3）：以下 import 随账号域删除——oauth/oauthService、oauth/oauthProviderLogout、
@@ -1326,10 +1330,14 @@ export function createLocalServices(options: {
     resolveZCodeEndpointOrigin: resolveCurrentZCodeEndpointOrigin,
   });
   const systemService = createSystemService();
+  // onboarding 资格与任务列表共用同一份全局 tasks-index；repo 懒加载数据库，提前构造不会
+  // 增加启动 I/O，后续 session syncer 也继续复用这一实例。
+  const taskIndexRepo = new TaskIndexRepo();
   // onboarding 完成记录：userId 由登录态补全（apikey/未登录为 null）。
   // JGAgent 去官方化（阶段 3）：登录体系删除后 userId 恒为 null（apikey 模式）。
   const onboardingRecordService = createOnboardingRecordService({
     loadUserId: async () => null,
+    hasExistingLocalTask: async () => (await taskIndexRepo.listTaskMetas({})).length > 0,
   });
   const providerConfigLog = createServiceLogger("provider-config");
   const clientConfigPlatform = resolveClientConfigPlatform();
@@ -2021,7 +2029,6 @@ export function createLocalServices(options: {
   // mapServiceEvent 路径，导致 task_complete 永远不会写回 sqlite，侧边栏 spinner 不停。
   // 在 services 层装配一个共享的 taskIndexRepo + syncer，session 任意入口都会唤醒
   // shadow 订阅，把 runtime 终态收敛进 sqlite。
-  const taskIndexRepo = new TaskIndexRepo();
   const zcodeTaskIndexSyncer = createZCodeTaskIndexSyncer({
     agentService: zcodeAgentService,
     taskIndexRepo,
@@ -2083,6 +2090,13 @@ export function createLocalServices(options: {
   // JGAgent 去官方化（阶段 3）：删除 OAuth 服务实例与 JWT 401 登出广播链路
   // （oauthService / zcodeJwtLogoutHandlerRef 随 oauth/ 目录移除）；
   // 同时删除闲时任务（Off-Peak）凭证解析闭包与逐票据 RequestAuth 装配。
+  // 上游 v3.14.3 同步：保留官方新增的 botRemoteWorkspaceService（bots 远程工作区桥，
+  // 仅依赖 credentialService / settingService，与账号域无关）。
+  const botRemoteWorkspaceService = createBotRemoteWorkspaceService({
+    parentPort: options?.parentPort,
+    settingService,
+    credentialService,
+  });
   const fileService = createFileService({
     workspaceFileSearchFilter: options?.workspaceFileSearchFilter,
   });
@@ -2130,6 +2144,20 @@ export function createLocalServices(options: {
     .register(ICuaPermissionService, cuaPermissionService)
     .register(ICuaPipSessionService, cuaPipSessionService)
     .register(IConversationShareService, conversationShareService)
+    .register(
+      IBotsService,
+      createBotsService({
+        credentialService,
+        zcodeTaskService,
+        broadcastService,
+        settingService,
+        modelSelectionService: providerRuntime.modelSelection,
+        remoteWorkspaceService: botRemoteWorkspaceService,
+        // 远端与本地 Bot 都读取所属 Environment 的 Model Selection View。
+        // 远端启动期不再轮询旧 Preset，避免重新制造一套模型候选事实。
+        runStartupBackgroundTasks: !isDesktopAttachedRemote,
+      }),
+    )
     .register(IFileWatcherService, createFileWatcherService())
     // JGAgent 去官方化（阶段 3）：注册链移除 IOAuthService / ICodingPlanSubscriptionService /
     // IOffPeakTaskService；UsageStats 收窄为仅应用级统计（依赖只剩 agent service）。
@@ -2315,6 +2343,7 @@ export function disposeServiceResources(services: ServiceCollection): void {
     services.getOptional(IZCodeTaskService),
     services.getOptional(IZCodeAgentService),
     services.getOptional(IZCodeSessionService),
+    services.getOptional(IBotsService),
     services.getOptional(IFileWatcherService),
   ].filter((service) => service !== undefined);
 
@@ -2347,6 +2376,7 @@ export async function disposeServiceResourcesAndWait(services: ServiceCollection
     services.getOptional(IZCodeTaskService),
     services.getOptional(IZCodeAgentService),
     services.getOptional(IZCodeSessionService),
+    services.getOptional(IBotsService),
     services.getOptional(IFileWatcherService),
   ].filter((service) => service !== undefined);
 

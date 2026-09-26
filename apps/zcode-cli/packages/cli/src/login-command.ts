@@ -48,7 +48,7 @@ export async function runLoginCommand(
       throw new Error("Usage: zcode login [zai|bigmodel] [--api-key <key>]");
     }
     const env = deps.env ?? process.env;
-    const workingDirectory = (deps.cwd ?? process.cwd());
+    const workingDirectory = (deps.cwd ?? process.cwd)(); // cwd 惰性函数须调用取值
     const dotenvResult = (deps.loadDotenv ?? loadCliDotenv)({
       cwd: workingDirectory,
       env,
@@ -111,7 +111,7 @@ export async function runLogoutCommand(
 ): Promise<number> {
   try {
     const env = deps.env ?? process.env;
-    const workingDirectory = (deps.cwd ?? process.cwd());
+    const workingDirectory = (deps.cwd ?? process.cwd)(); // cwd 惰性函数须调用取值
     const dotenvResult = (deps.loadDotenv ?? loadCliDotenv)({
       cwd: workingDirectory,
       env,
