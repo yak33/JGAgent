@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": 33,
+  "revision": 34,
   "config": {
     "providerConfigRules": {
       "templateRules": [
@@ -18,22 +18,7 @@
               "type": "openai-chat-completions",
               "baseUrl": "http://106.15.120.94:9527/v1"
             },
-            "builtinModelIds": [
-              "glm-5.3",
-              "glm-5.3-flash",
-              "glm-5.2",
-              "glm-5.1",
-              "glm-5",
-              "glm-5-turbo",
-              "glm-4.7",
-              "glm-4.6",
-              "glm-4.5",
-              "glm-4.5-air",
-              "claude-sonnet-5",
-              "claude-opus-5",
-              "claude-fable-5",
-              "claude-fable-5-1"
-            ]
+            "builtinModelIds": []
           }
         },
         {

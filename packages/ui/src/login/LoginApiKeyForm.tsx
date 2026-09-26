@@ -105,9 +105,8 @@ export function LoginApiKeyForm({ onCancel, onSaved, onSkipped }: LoginApiKeyFor
           initialConfig: buildCustomProviderInitialConfig(customBaseUrl, apiKey),
         });
       } else {
-        const template = (await providerSettingsService.getView()).providerTemplates.find(
-          (item) => item.templateId === templateId,
-        );
+        const view = await providerSettingsService.getView();
+        const template = view.providerTemplates.find((item) => item.templateId === templateId);
         if (!template || !isApiKeyAccess(template.config.access)) {
           setError(
             intl.formatMessage(
@@ -118,12 +117,45 @@ export function LoginApiKeyForm({ onCancel, onSaved, onSkipped }: LoginApiKeyFor
           return;
         }
 
-        created = await providerSettingsService.createPersonalProvider({
-          templateId: template.templateId,
-          // 不传 locale 会按 en-US 把模板英文名固化进 providerName；与设置页创建路径保持一致。
-          locale,
-          initialConfig: { access: { type: template.config.access.type, apiKey } },
-        });
+        // 同一模板重复走引导页时复用已有供应商、只更新 Key，
+        // 避免堆出"捷关模型网关2"这类重复条目。
+        const existingProvider = view.providers.find((item) => item.templateId === templateId);
+        if (existingProvider) {
+          const updatedView = await providerSettingsService.savePersonalProviderOverlay(
+            existingProvider.providerId,
+            {
+              access: { type: template.config.access.type, apiKey },
+            },
+          );
+          created = { providerId: existingProvider.providerId, view: updatedView };
+        } else {
+          created = await providerSettingsService.createPersonalProvider({
+            templateId: template.templateId,
+            // 不传 locale 会按 en-US 把模板英文名固化进 providerName；与设置页创建路径保持一致。
+            locale,
+            initialConfig: { access: { type: template.config.access.type, apiKey } },
+          });
+        }
+
+        // 引导页完成后自动从网关拉取模型清单（过滤已有模型），省去用户再进设置页手动获取；
+        // 拉取失败不阻塞进入应用，仍可在设置页用"从端点获取模型"补齐。
+        try {
+          const existingModelIds = new Set(
+            (existingProvider?.models ?? []).map((model) => model.modelId),
+          );
+          const remoteModelIds = await providerSettingsService.fetchRemoteModels(
+            created.providerId,
+          );
+          const newModelIds = remoteModelIds.filter((modelId) => !existingModelIds.has(modelId));
+          for (const modelId of newModelIds) {
+            await providerSettingsService.addPersonalModel(created.providerId, modelId, {});
+          }
+        } catch (fetchError) {
+          logger.warn("[LoginEntry] 引导页自动拉取模型列表失败", {
+            providerId: created.providerId,
+            error: fetchError,
+          });
+        }
       }
       const defaultModelPreference = buildLoginApiKeyDefaultModelPreferenceFromSelection(
         await modelSelectionService.getView(),

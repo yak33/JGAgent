@@ -68,6 +68,11 @@ export interface IProviderSettingsService {
   testModelConnectivity(
     input: ProviderSettingsConnectivityRequest,
   ): Promise<ModelConnectivityResult>;
+  /**
+   * 从供应商端点（GET {baseUrl}/v1/models）拉取可用模型 id 列表。
+   * 只读操作：不落盘、不改动 Provider 配置，入库由调用方决定。
+   */
+  fetchRemoteModels(providerId: ProviderId): Promise<string[]>;
 }
 
 export const IProviderSettingsService = createServiceDescriptor<IProviderSettingsService>(
@@ -92,6 +97,8 @@ export type ProviderSettingsConnectivityTester = (
   input: ProviderSettingsConnectivityTestInput,
 ) => Promise<ModelConnectivityResult>;
 
+export type ProviderSettingsRemoteModelsFetcher = (providerId: ProviderId) => Promise<string[]>;
+
 export interface IModelSelectionService {
   readonly onDidChange: Event<ModelSelectionView>;
   getView(input?: ModelSelectionViewInput): Promise<ModelSelectionView>;
@@ -110,6 +117,7 @@ export function createProviderSettingsService(
   facade: ProviderSettingsFacade,
   ensureReady: () => Promise<void> = async () => {},
   testConnectivity?: ProviderSettingsConnectivityTester,
+  fetchRemoteModelsImpl?: ProviderSettingsRemoteModelsFetcher,
 ): IProviderSettingsService {
   return {
     onDidChange: toEvent((listener) => facade.onDidChange(listener)),
@@ -205,6 +213,21 @@ export function createProviderSettingsService(
         providerId: input.providerId,
         modelId: input.modelId,
       });
+    },
+    fetchRemoteModels: async (providerId) => {
+      await ensureReady();
+      if (!fetchRemoteModelsImpl) {
+        throw new Error("当前 Environment 未装配模型列表拉取能力");
+      }
+      // 拉取前只做存在性校验，不要求 enabled/executable——禁用中的供应商
+      // 也允许先看网关上有什么模型，再决定是否补齐配置。
+      const provider = facade
+        .getView()
+        .providers.find((item) => item.providerId === providerId);
+      if (!provider) {
+        throw new Error(`供应商不存在：providerId=${providerId}`);
+      }
+      return fetchRemoteModelsImpl(providerId);
     },
   };
 }

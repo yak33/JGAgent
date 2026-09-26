@@ -22,7 +22,7 @@ import {
   TID_MODEL_PROVIDER_NAME_INPUT,
   testId,
 } from "@zcode/shared";
-import { InfoIcon, LockKeyholeIcon, Plus, Pencil, Trash2, MoreHorizontal } from "lucide-react";
+import { InfoIcon, LockKeyholeIcon, Plus, Pencil, RefreshCw, Trash2, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button.js";
 import { Input } from "@/components/ui/input.js";
 import {
@@ -402,6 +402,47 @@ export function ProviderModelsSection({
   });
   const { draft: addDraft } = editor;
 
+  const [fetchingModels, setFetchingModels] = useState(false);
+  const [fetchModelsMessage, setFetchModelsMessage] = useState<string | null>(null);
+  const [fetchModelsFailed, setFetchModelsFailed] = useState(false);
+
+  // 从供应商端点（GET /v1/models）拉取模型清单并批量入库。
+  // 服务端按 providerId 自行解析 baseUrl 与密钥，UI 不经手凭据。
+  const handleFetchRemoteModels = useCallback(async () => {
+    if (fetchingModels) return;
+    setFetchingModels(true);
+    setFetchModelsMessage(null);
+    setFetchModelsFailed(false);
+    try {
+      const remoteModelIds = await providerSettingsService.fetchRemoteModels(providerId);
+      const existingIds = new Set(models.map((model) => model.modelId));
+      const newModelIds = remoteModelIds.filter((modelId) => !existingIds.has(modelId));
+      if (newModelIds.length === 0) {
+        setFetchModelsMessage(
+          intl.formatMessage(
+            { id: "settings.modelProvider.fetchModels.upToDate" },
+            { count: remoteModelIds.length },
+          ),
+        );
+        return;
+      }
+      for (const modelId of newModelIds) {
+        await onAddModel({ ...createEmptyModel(), modelId });
+      }
+      setFetchModelsMessage(
+        intl.formatMessage(
+          { id: "settings.modelProvider.fetchModels.added" },
+          { count: newModelIds.length },
+        ),
+      );
+    } catch (error) {
+      setFetchModelsFailed(true);
+      setFetchModelsMessage(error instanceof Error ? error.message : String(error));
+    } finally {
+      setFetchingModels(false);
+    }
+  }, [fetchingModels, intl, models, onAddModel, providerId, providerSettingsService]);
+
   const openAddDialog = useCallback(() => {
     editor.reset(createEmptyModel());
     setAddDraftErrorField(null);
@@ -470,20 +511,46 @@ export function ProviderModelsSection({
         <span className="text-ui-base text-foreground-subtle">
           {intl.formatMessage({ id: "settings.modelProvider.models" })}
         </span>
-        <Button
-          type="button"
-          variant="secondary"
-          size="default"
-          className="rounded-lg"
-          data-testid={TID_MODEL_PROVIDER_ADD_MODEL_BUTTON}
-          onClick={openAddDialog}
-        >
-          <Plus data-icon="inline-start" aria-hidden="true" />
-          {intl.formatMessage({ id: "settings.modelProvider.addModel" })}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="secondary"
+            size="default"
+            className="rounded-lg"
+            disabled={fetchingModels}
+            onClick={() => void handleFetchRemoteModels()}
+          >
+            <RefreshCw data-icon="inline-start" aria-hidden="true" className={fetchingModels ? "animate-spin" : undefined} />
+            {intl.formatMessage({ id: "settings.modelProvider.fetchModels" })}
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            size="default"
+            className="rounded-lg"
+            data-testid={TID_MODEL_PROVIDER_ADD_MODEL_BUTTON}
+            onClick={openAddDialog}
+          >
+            <Plus data-icon="inline-start" aria-hidden="true" />
+            {intl.formatMessage({ id: "settings.modelProvider.addModel" })}
+          </Button>
+        </div>
       </div>
+      {fetchModelsMessage ? (
+        <p
+          className={
+            fetchModelsFailed
+              ? "mb-1 text-ui-sm text-destructive"
+              : "mb-1 text-ui-sm text-foreground-subtle"
+          }
+        >
+          {fetchModelsMessage}
+        </p>
+      ) : null}
       {models.length > 0 ? (
-        <div className="overflow-hidden rounded-lg border border-input-border bg-input">
+        // 模型条目可能很多（从端点拉取后常见数十个）：限高 + 区域内滚动，
+        // 避免把供应商详情页撑开过长；拖拽排序在滚动容器内照常工作。
+        <div className="max-h-72 overflow-y-auto rounded-lg border border-input-border bg-input">
           <SortableProviderModelList
             modelIds={models.map((model) => model.modelId)}
             sortableModelIds={models.map((model) => model.modelId)}

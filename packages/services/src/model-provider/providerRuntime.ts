@@ -23,11 +23,13 @@ import {
   type IProviderSettingsService,
   type ModelSelectionConfiguredDefaultSource,
   type ProviderSettingsConnectivityTester,
+  type ProviderSettingsRemoteModelsFetcher,
 } from "./providerFacadeServices.js";
 
 export interface ProviderRuntimeOptions extends ProviderConfigRuntimeOptions {
   readonly accountSource?: RefreshableProviderSource<AccountProviderConfigSnapshot>;
   readonly testConnectivity?: ProviderSettingsConnectivityTester;
+  readonly fetchRemoteModels?: ProviderSettingsRemoteModelsFetcher;
 }
 
 export interface ProviderRuntimeDependencies {
@@ -35,6 +37,7 @@ export interface ProviderRuntimeDependencies {
   readonly accountSource?: RefreshableProviderSource<AccountProviderConfigSnapshot>;
   readonly disposeAccountSource?: () => void;
   readonly testConnectivity?: ProviderSettingsConnectivityTester;
+  readonly fetchRemoteModels?: ProviderSettingsRemoteModelsFetcher;
   readonly modelSelectionConfiguredDefaultSource?: ModelSelectionConfiguredDefaultSource;
   readonly disposeModelSelectionConfiguredDefaultSource?: () => void;
 }
@@ -105,6 +108,7 @@ export class ProviderRuntime {
       settingsFacade,
       ensureReady,
       dependencies.testConnectivity,
+      dependencies.fetchRemoteModels,
     );
     this.#modelSelectionRuntime = createModelSelectionService(
       createNodeModelSelectionFacade(this.registryService),

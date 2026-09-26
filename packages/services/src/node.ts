@@ -329,6 +329,7 @@ import {
   IProviderSettingsService,
 } from "./model-provider/providerFacadeServices.js";
 import { createProviderSettingsConnectivityTester } from "./model-provider/providerSettingsConnectivity.js";
+import { createRemoteModelsFetcher } from "./model-provider/providerSettingsRemoteModels.js";
 import {
   createProviderProvisioningSource,
   listProviderProvisioningCredentialKeys,
@@ -1429,6 +1430,34 @@ export function createLocalServices(options: {
         return providerConnectivityAgentService.testModelConnectivity(input);
       },
     }),
+    // 模型列表拉取：按 providerId 从 Registry 快照解析 baseUrl/apiKey 后直连网关
+    // GET /v1/models。走 hostApiNetworkTransport 以继承用户配置的 HTTP 代理与 CA 证书。
+    fetchRemoteModels: createRemoteModelsFetcher(
+      async (providerId) => {
+        const snapshot = providerRuntime.registryService.getSnapshot();
+        // 与 ProviderSettingsFacade.getView 同源：resolvedProviders 覆盖未完全注册的供应商，
+        // registry.providers 只含可执行条目；两处先后查找，保证 UI 里可见的都能解析。
+        const resolvedProvider = snapshot?.resolution.resolvedProviders.find(
+          (item) => item.providerId === providerId,
+        );
+        const registryProvider = resolvedProvider
+          ? undefined
+          : snapshot?.registry.providers.find((item) => item.providerId === providerId);
+        // personal overlay 是稀疏覆盖：用户通常只填 key，baseUrl 继承自模板层，需回退 templateConfig。
+        const baseUrl = (
+          resolvedProvider?.config.api?.baseUrl ??
+          resolvedProvider?.templateConfig?.api?.baseUrl ??
+          registryProvider?.config.api?.baseUrl
+        )?.trim();
+        const access = resolvedProvider?.config.access ?? registryProvider?.config.access;
+        const apiKey = access?.type === "api-key" ? access.apiKey : undefined;
+        if (!baseUrl || !apiKey) {
+          return null;
+        }
+        return { baseUrl, apiKey };
+      },
+      hostApiNetworkTransport.fetch,
+    ),
   });
   // JGAgent 去官方化（阶段 3）：账号域删除后没有 Coding Plan 账号连接可解析，
   // 官方 Server MCP 的凭证解析统一以"无账号"stub 应答（resolveAccessCurrent 恒 null），
