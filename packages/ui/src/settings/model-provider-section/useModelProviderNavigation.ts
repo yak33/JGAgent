@@ -270,7 +270,7 @@ export function useModelProviderNavigation({
 
   const fallbackNodeKey = resolveFallbackModelProviderNodeKey({
     selectedNodeKey,
-    selectableNavigationItems,
+    selectableSideNavigationItems,
   });
   useEffect(() => {
     const hasSelectedNode = selectedNodeKey ? sideNavigationItemByKey.has(selectedNodeKey) : false;
@@ -309,14 +309,20 @@ function shouldShowCodingPlanForProviderFamilyDomain(
 
 function resolveFallbackModelProviderNodeKey({
   selectedNodeKey,
-  selectableNavigationItems,
+  selectableSideNavigationItems,
 }: {
   selectedNodeKey: string | null;
-  selectableNavigationItems: Array<
+  selectableSideNavigationItems: Array<
     Exclude<ModelProviderNavGroup["items"][number], { type: "codingPlanLoading" }>
   >;
 }): string | null {
-  const initialConnectionItem = pickInitialConnectionNavigationItem(selectableNavigationItems);
+  // JGAgent 去官方化：初始回退只允许落在真实侧栏条目上。上游会把 Start Plan 等
+  // 套餐连接节点混进 selectableNavigationItems 并优先选中；账号域摘除后这些节点
+  // 在 JGAgent 没有真实数据也不在侧栏展示，选中它们会出现左侧无高亮、右侧
+  // "暂无模型供应商"的空页面（v0.3.0 用户实测）。因此初始优先级一律基于侧栏条目。
+  const initialConnectionItem = pickInitialConnectionNavigationItem(
+    selectableSideNavigationItems,
+  );
   const initialSideNodeKey = initialConnectionItem
     ? resolveSideNavigationNodeKeyForConnectionItem(initialConnectionItem)
     : null;
@@ -327,9 +333,10 @@ function resolveFallbackModelProviderNodeKey({
   }
 
   // 初始化只在没有有效选中项时发生；如果当前用户选择仍有效，上层 effect 不会调用 fallback 抢焦点。
+  // 兜底取第一个真实侧栏条目（第一个供应商），没有供应商时为 null 走空态引导。
   return (
     initialSideNodeKey ??
-    resolveSideNavigationNodeKeyForConnectionItem(selectableNavigationItems[0] ?? null)
+    resolveSideNavigationNodeKeyForConnectionItem(selectableSideNavigationItems[0] ?? null)
   );
 }
 
