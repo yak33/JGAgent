@@ -15,6 +15,7 @@ export default defineConfig({
       { text: "双模式", link: "/#modes" },
       { text: "能力", link: "/#features" },
       { text: "三步开始", link: "/#install" },
+      { text: "文档", link: "/docs" },
       { text: "更新日志", link: "/changelog" },
     ],
     outline: { level: [2, 3] },
