@@ -7,7 +7,7 @@
   <a href="README.md">简体中文</a> | English
 </p>
 
-JGAgent is an AI coding workbench built by JieGuan, providing a desktop app, a browser interface, and a terminal Agent. This repository contains the clients, backend services, shared UI, and the Agent CLI with its runtime sources.
+JGAgent is an AI workbench built by JieGuan — not just for coding: the **coding mode** goes deep into terminals, Git, and every line of code change for developers, while the **office mode** focuses on summaries and results for daily work. It ships as a desktop app, a browser interface, and a terminal Agent, connecting to the JieGuan model gateway out of the box. This repository contains the clients, backend services, shared UI, and the Agent CLI with its runtime sources.
 
 > This project is a secondary development based on the open-source [ZCode](https://github.com/zai-org/ZCode) (Apache-2.0). Thanks to the upstream community.
 
@@ -100,7 +100,7 @@ See [.env.example](.env.example) for service endpoints and build configuration; 
 
 | Variable                             | Purpose                                                  |
 | ------------------------------------ | -------------------------------------------------------- |
-| `ZCODE_DATA_BASE_DIR`                | Base data directory (data goes under `.zcode/`)          |
+| `ZCODE_DATA_BASE_DIR`                | Base data directory (data goes under `.jgagent/`)        |
 | `ZCODE_SERVER_WORKSPACE`             | Workspace path for the Web backend                       |
 | `ZCODE_BUILTIN_PROVIDER_CONFIG_FILE` | Local provider config file; built-in config if unset     |
 | `ZCODE_DIST_BASE_URL`                | Download root used by the CLI install script             |
@@ -141,6 +141,10 @@ pnpm build:zcode --base-url https://downloads.example.com/jgagent/
 | `apps/zcode-cli`                                     | Agent CLI, TUI, runtime and tools                     |
 | `scripts`, `config`, `third-party`                   | Build tooling, built-in config, third-party notices   |
 | `docs/rebranding`                                    | De-officialization checklist and dev docs             |
+
+## Download
+
+Internal users can get the Windows installer from the [download site](http://82.157.149.224/) (in-app auto-update since v0.3.2). On first launch, choose "JieGuan Model Gateway" in the welcome screen and paste your API key; the model list syncs automatically. All data stays local under `~/.jgagent`.
 
 ## Notices
 

@@ -7,7 +7,7 @@
   简体中文 | <a href="README.en.md">English</a>
 </p>
 
-JGAgent 是捷关自研的 AI 编程工作台，提供桌面应用、浏览器界面和终端 Agent。本仓库包含客户端、后端服务、共享 UI，以及 Agent CLI 与运行时源码。
+JGAgent 是捷关自研的 AI 工作台，不止写代码：**编程模式**深入终端、Git 与每一行代码变更，面向开发者；**办公模式**聚焦摘要与结果，替办公人群处理日常事务。提供桌面应用、浏览器界面和终端 Agent，直连捷关模型网关，开箱即用。本仓库包含客户端、后端服务、共享 UI，以及 Agent CLI 与运行时源码。
 
 > 本项目基于开源项目 [ZCode](https://github.com/zai-org/ZCode)（Apache-2.0）二次开发，感谢上游社区的贡献。
 
@@ -121,7 +121,7 @@ node apps/zcode-cli/packages/cli/dist/zcode.cjs --help
 
 | 配置                                 | 用途                                             |
 | ------------------------------------ | ------------------------------------------------ |
-| `ZCODE_DATA_BASE_DIR`                | 应用数据基目录，数据写入其下的 `.zcode/`         |
+| `ZCODE_DATA_BASE_DIR`                | 应用数据基目录，数据写入其下的 `.jgagent/`       |
 | `ZCODE_SERVER_WORKSPACE`             | Web 后端的工作区路径                             |
 | `ZCODE_BUILTIN_PROVIDER_CONFIG_FILE` | 本地 Provider 配置文件路径；未设置时使用内置配置 |
 | `ZCODE_DIST_BASE_URL`                | 命令行安装脚本使用的下载根地址                   |
@@ -172,6 +172,10 @@ pnpm build:zcode --base-url https://downloads.example.com/jgagent/
 | `apps/zcode-cli`                                     | Agent CLI、TUI、运行时与工具               |
 | `scripts`、`config`、`third-party`                   | 构建维护脚本、内置配置与第三方声明材料     |
 | `docs/rebranding`                                    | 去官方化改造清单与二开工作文档             |
+
+## 下载安装
+
+内部用户从官网 [jgagent 下载站](http://82.157.149.224/) 获取 Windows 安装包（v0.3.2 起支持应用内自动更新）。首次启动在引导页选择「捷关模型网关」并粘贴 API Key，模型清单自动同步；数据全部保存在本机 `~/.jgagent`。
 
 ## 项目声明
 
