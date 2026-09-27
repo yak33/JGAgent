@@ -168,6 +168,8 @@ export interface FeedbackTicketDetail extends FeedbackTicketSummary {
   comments: FeedbackComment[];
   events: FeedbackTicketEvent[];
   lark_record_id?: string | null;
+  /** JGAgent 离线降级：true 表示该工单仅保存在本地（反馈服务端未接入），跳过附件上传。 */
+  local_only?: boolean,
 }
 
 export interface FeedbackListQuery {

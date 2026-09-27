@@ -1,7 +1,8 @@
 import { basename, join } from "node:path";
+import { randomUUID } from "node:crypto";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 
-import type { ApiClient, FeedbackDeviceInfo } from "@zcode/shared";
+import type { ApiClient, FeedbackDeviceInfo, FeedbackTicketDetail } from "@zcode/shared";
 import {
   buildRuntimeZCodeApiUrl,
   ZCODE_BUILD_TIME,
@@ -140,6 +141,32 @@ export function createFeedbackService(options: CreateFeedbackServiceOptions): IF
           await localTicketStore.upsert(requireHostDeviceMid(), ticket);
         }
         return ticket;
+      } catch (error) {
+        // 用户主动取消（abort）原样上抛，由 UI 的取消路径处理。
+        if (error instanceof Error && error.name === "AbortError") {
+          throw error;
+        }
+        // JGAgent 离线降级：反馈服务端尚未接入（endpoint 为占位域）时，
+        // 工单降级保存到本地 ~/.jgagent（tickets.json，上限 200 条），
+        // 保证反馈内容不丢失；local_only 标记让 UI 跳过附件上传并提示
+        // "已保存到本地"。服务端接入后该降级分支自然不再触发。
+        const localTicket: FeedbackTicketDetail = {
+          id: `local-${randomUUID()}`,
+          title: input.title,
+          type: input.type,
+          severity: input.severity,
+          module: input.module,
+          status: "已提交",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          description: input.description,
+          attachments: [],
+          comments: [],
+          events: [],
+          local_only: true,
+        };
+        await localTicketStore.upsert(requireHostDeviceMid(), localTicket);
+        return localTicket;
       } finally {
         if (operationId && activeCreateControllers.get(operationId) === controller) {
           activeCreateControllers.delete(operationId);

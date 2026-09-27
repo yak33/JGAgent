@@ -6023,6 +6023,8 @@ const zhCN: Record<string, string> = {
   "feedback.submission.canceledLabel": "反馈提交已取消",
   "feedback.submission.canceledDetail": "反馈提交已取消",
   "feedback.submission.uploadingScreenshotLabel": "正在上传截图",
+  "feedback.submission.localSavedLabel": "反馈已保存到本地",
+  "feedback.submission.localSavedDetail": "反馈服务尚未接入，内容不会丢失；可在「我的工单」中查看。",
   "feedback.submission.submittedLabel": "反馈已提交",
   "feedback.submission.submittedDetail": "我们会尽快处理。",
   "feedback.submission.submittedToast": "反馈已提交，我们会尽快处理。",

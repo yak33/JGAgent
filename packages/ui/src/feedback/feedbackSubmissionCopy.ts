@@ -13,6 +13,8 @@ export function useFeedbackSubmissionCopy(
       canceledLabel: formatMessage("feedback.submission.canceledLabel"),
       canceledDetail: formatMessage("feedback.submission.canceledDetail"),
       uploadingScreenshotLabel: formatMessage("feedback.submission.uploadingScreenshotLabel"),
+      localSavedLabel: formatMessage("feedback.submission.localSavedLabel"),
+      localSavedDetail: formatMessage("feedback.submission.localSavedDetail"),
       submittedLabel: formatMessage("feedback.submission.submittedLabel"),
       submittedDetail: formatMessage("feedback.submission.submittedDetail"),
       failedLabel: formatMessage("feedback.submission.failedLabel"),

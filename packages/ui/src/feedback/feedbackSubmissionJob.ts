@@ -30,6 +30,8 @@ export interface FeedbackSubmissionCopy {
   canceledLabel: string;
   canceledDetail: string;
   uploadingScreenshotLabel: string;
+  localSavedLabel: string;
+  localSavedDetail: string;
   submittedLabel: string;
   submittedDetail: string;
   failedLabel: string;
@@ -94,6 +96,8 @@ const DEFAULT_SUBMISSION_COPY: FeedbackSubmissionCopy = {
   canceledLabel: "反馈提交已取消",
   canceledDetail: "反馈提交已取消",
   uploadingScreenshotLabel: "正在上传截图",
+  localSavedLabel: "反馈已保存到本地",
+  localSavedDetail: "反馈服务尚未接入，内容已保存在本机，不会丢失。",
   submittedLabel: "反馈已提交",
   submittedDetail: "我们会尽快处理。",
   failedLabel: "反馈提交失败",
@@ -255,6 +259,27 @@ export function startFeedbackSubmissionJob(
       setState({ status: "running", ticketId: ticket.id, error: undefined });
       // 工单创建成功后前台弹窗可以收起；截图和日志继续由后台 job 负责上传。
       options.onTicketCreated?.(ticket.id);
+
+      // JGAgent 离线降级：反馈服务端未接入时，create 返回 local_only 工单（内容已存
+      // 本地 ~/.jgagent），跳过截图/日志上传——它们没有可用的上传目标。
+      if (ticket.local_only === true) {
+        setState({
+          status: "success",
+          ticketId: ticket.id,
+          progress: {
+            kind: "success",
+            label: copy.localSavedLabel,
+            detail: copy.localSavedDetail,
+            progress: 100,
+          },
+        });
+        options.onCompleted?.(ticket.id);
+        logger.info("[FeedbackSubmissionJob] 反馈已保存到本地（服务端未接入）", {
+          jobId,
+          ticketId: ticket.id,
+        });
+        return { ticketId: ticket.id };
+      }
 
       const failedScreenshots: string[] = [];
       for (const [index, screenshot] of options.screenshots.entries()) {

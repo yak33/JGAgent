@@ -92,10 +92,7 @@ export function WorkspaceHelpMenuButton({
           <BookOpenIcon className="size-4" />
           {intl.formatMessage({ id: "workspaceHeader.help.docs" })}
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={handleOpenCommunity}>
-          <UsersIcon className="size-4" />
-          {intl.formatMessage({ id: "workspaceHeader.help.community" })}
-        </DropdownMenuItem>
+        {/* JGAgent：用户社群尚未建立（community_urls 未配置），菜单项先隐藏，建立后再恢复。 */}
         <DropdownMenuItem onSelect={helpMenuActions.openIssueReport}>
           <MessageSquareIcon className="size-4" />
           {intl.formatMessage({ id: "workspaceHeader.help.issueReport" })}

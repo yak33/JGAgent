@@ -6306,6 +6306,8 @@ const enUS: Record<string, string> = {
   "feedback.submission.canceledLabel": "Feedback submission canceled",
   "feedback.submission.canceledDetail": "Feedback submission canceled",
   "feedback.submission.uploadingScreenshotLabel": "Uploading screenshot",
+  "feedback.submission.localSavedLabel": "Feedback saved locally",
+  "feedback.submission.localSavedDetail": "The feedback service is not connected yet. Your report is stored locally and will not be lost.",
   "feedback.submission.submittedLabel": "Feedback submitted",
   "feedback.submission.submittedDetail": "We will review it soon.",
   "feedback.submission.submittedToast": "Feedback submitted. We will review it soon.",
