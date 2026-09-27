@@ -1,5 +1,12 @@
 # 更新日志
 
+## v0.3.2 <Badge type="tip">Preview</Badge>
+
+2026-09-27 · [下载 Windows 版](/downloads/JGAgent-0.3.2-win-x64.exe)
+
+- 自动更新通道启用：此后新版本将在应用内提示更新（含差分下载），无需再手动回官网
+- 本版本仍需手动安装一次，作为自动更新的起点；此后新版本将在应用内直接提示更新
+
 ## v0.3.1 <Badge type="tip">Preview</Badge>
 
 2026-09-27 · [下载 Windows 版](/downloads/JGAgent-0.3.1-win-x64.exe)
