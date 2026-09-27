@@ -76,7 +76,7 @@ onBeforeUnmount(() => {
           都交给 <span class="brand">JGAgent</span>
         </h1>
         <p class="tagline reveal" data-reveal-delay="2">
-          捷关团队自己的 AI 工作台。编程模式深入终端、Git 与每一行代码变更；办公模式只看摘要与结果，
+          捷关团队开发的 AI 工作台。编程模式深入终端、Git 与每一行代码变更；办公模式只看摘要与结果，
           替你处理日常事务。直连捷关模型网关，装好就能用。
         </p>
         <div class="mode-chips reveal" data-reveal-delay="3">
