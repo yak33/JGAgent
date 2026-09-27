@@ -20,8 +20,12 @@
 5. 上传官网     scp -i ~/.ssh/jgagent_deploy dist 内容 → root@82.157.149.224:/www/wwwroot/jgagent/html/
 6. 上传安装包   scp exe + latest.yml + blockmap → /www/wwwroot/jgagent/downloads/
                ⚠️ 顺序必须 exe 在前、latest.yml 在后：客户端轮询到新 latest.yml 时 exe 必须已就位
+               ⚠️ 必做：覆盖稳定下载链接（首页/导航都指向它）
+               ssh 时执行：cp /www/wwwroot/jgagent/downloads/JGAgent-<ver>-win-x64.exe \
+                           /www/wwwroot/jgagent/downloads/JGAgent-latest-win-x64.exe
 7. 验证         curl -sI http://82.157.149.224/downloads/<exe> 看 200 与 Content-Length；
                服务端 sha512sum | xxd -r -p | base64 与本地 latest.yml 的 sha512 比对
+               并对 JGAgent-latest-win-x64.exe 重复同样的 sha512 比对（防止 latest 是旧包）
 8. 提交推送     版本号与 website 改动各一个 commit
 ```
 
