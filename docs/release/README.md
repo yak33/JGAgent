@@ -113,6 +113,8 @@ node scripts/bundle.mjs --os win --arch x64
 
 - 系统 OpenCloudOS 9.6，装了宝塔但**不用它管 nginx**；站点用 Docker Compose 跑
   `nginx:1.27-alpine`（80 端口，`restart: unless-stopped`）。
+  ⚠️ nginx.conf 是单文件 bind mount：宿主机改完配置后容器内仍是旧 inode
+  （sed -i 尤其如此），必须 docker restart jgagent-web 才生效（仅 nginx -s reload 不够）。
 - 目录：`/www/wwwroot/jgagent/`（`html/` 官网、`downloads/` 安装包、
   `docker-compose.yml`、`nginx.conf`）。改 nginx 配置后 `docker compose restart web`。
 - **部署通道**：本机 `~/.ssh/jgagent_deploy` 密钥（root），首次由用户手动装公钥；
