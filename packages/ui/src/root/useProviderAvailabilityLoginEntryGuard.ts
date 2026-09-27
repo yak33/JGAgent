@@ -19,6 +19,7 @@ export function useProviderAvailabilityLoginEntryGuard({
   refreshProviderState,
   readModelSelectionView,
   setLoginEntryOpen,
+  hasCompletedOnboarding,
 }: {
   enabled?: boolean;
   user: UserInfo | null;
@@ -28,6 +29,12 @@ export function useProviderAvailabilityLoginEntryGuard({
   refreshProviderState: () => Promise<void>;
   readModelSelectionView: () => Promise<ModelSelectionView>;
   setLoginEntryOpen: (open: boolean) => void;
+  /**
+   * JGAgent：欢迎页（启动引导）只出现一次的依据——引导记录里已有决策
+   * （跳过、填 Key 都算）。为 true 时启动检查不再弹欢迎页；
+   * 手动打开入口（设置页、菜单）不走此守卫，不受影响。
+   */
+  hasCompletedOnboarding?: boolean;
 }) {
   const [startupCheckCompleted, setStartupCheckCompleted] = useState(!enabled);
   const startupCheckCompletedRef = useRef(false);
@@ -52,7 +59,12 @@ export function useProviderAvailabilityLoginEntryGuard({
         : modelSelectionView;
       const availability = resolveProviderAvailabilityState({ modelSelectionView: refreshedView });
       const { hasUsableProvider, providerCount } = availability;
-      const shouldOpenLoginEntry = !providerFamilyDomain || (!user && !hasUsableProvider);
+      // JGAgent：欢迎页只在首次使用出现。做过引导决策（跳过/填 Key）后，即使
+      // "未登录 + 无可用模型"也不再于启动时弹出——否则禁用中的供应商或未拉取
+      // 模型的状态会让每次重启都回到欢迎页（v0.3.2 用户实测）。需要配置时
+      // 用户可从设置页进入；启动路径不再承担催促职责。
+      const shouldOpenLoginEntry =
+        !hasCompletedOnboarding && (!providerFamilyDomain || (!user && !hasUsableProvider));
 
       // 未登录且没有可用模型配置时必须引导用户连接账号或填写 API Key。
       // 启动检查、API Key 设置回流等入口统一走这里，避免各处复制判断后语义分叉。

@@ -414,6 +414,31 @@ function RootInner({
   });
   const providerAvailabilityLoginEntryGuardEnabled =
     shouldEnableProviderAvailabilityLoginEntryGuard();
+  // JGAgent：欢迎页只出现一次的依据——onboarding 记录里已有决策（跳过/填 Key 均落盘）。
+  // 读取失败按"未完成"处理，退回原判定（宁可多弹一次也不挡配置入口）。
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean | undefined>(
+    undefined,
+  );
+  useEffect(() => {
+    const onboardingRecordService = services.onboardingRecordService;
+    if (!onboardingRecordService) {
+      setHasCompletedOnboarding(false);
+      return;
+    }
+    let disposed = false;
+    void onboardingRecordService
+      .shouldOnboard(platform.getDeviceId())
+      .then((shouldOnboard) => {
+        if (!disposed) setHasCompletedOnboarding(!shouldOnboard);
+      })
+      .catch((error: unknown) => {
+        logger.warn("[Root] 读取引导完成记录失败，按未完成处理", error);
+        if (!disposed) setHasCompletedOnboarding(false);
+      });
+    return () => {
+      disposed = true;
+    };
+  }, [platform, services.onboardingRecordService]);
   const { startupCheckCompleted: providerAvailabilityStartupCheckCompleted } =
     useProviderAvailabilityLoginEntryGuard({
       enabled: providerAvailabilityLoginEntryGuardEnabled,
@@ -426,6 +451,7 @@ function RootInner({
           : undefined,
       refreshProviderState,
       readModelSelectionView: readRootModelSelectionView,
+      hasCompletedOnboarding,
       setLoginEntryOpen: (open) => {
         setWelcomeScreenOpenReason((currentReason) => {
           if (open) {
@@ -826,6 +852,21 @@ function RootInner({
   const handleWelcomeScreenComplete = useCallback(
     async (reason: LoginCompleteReason) => {
       await refreshAppSettings();
+      // JGAgent：欢迎页无论以何种方式完成（填 Key、跳过）都落一条引导决策记录，
+      // 之后启动检查不再弹欢迎页，与 shouldOnboard 判定闭环（有记录即不弹）。
+      // 写失败只记日志：下次启动 shouldOnboard 仍为 true 会再弹一次，不会卡死。
+      const onboardingRecordService = services.onboardingRecordService;
+      if (onboardingRecordService) {
+        try {
+          // appendRecord 需要完整职业/模式答卷，欢迎页的"跳过/仅填 Key"没有这些
+          // 信息；dismissOnboarding 落盘 dismissed 决策，hasIdentityRecord 对
+          // decisions 同样认可，语义就是"用户已处理过首次引导"。
+          await onboardingRecordService.dismissOnboarding(platform.getDeviceId());
+          setHasCompletedOnboarding(true);
+        } catch (error) {
+          logger.warn("[Root] 欢迎页完成记录写入失败", { error, reason });
+        }
+      }
       if (
         welcomeScreenOpenReason !== "startup-provider-required" ||
         workspaceShellPath ||
@@ -849,7 +890,9 @@ function RootInner({
     [
       allowOpenWorkspace,
       handleEnsureConversationWorkspace,
+      platform,
       refreshAppSettings,
+      services.onboardingRecordService,
       welcomeScreenOpenReason,
       workspaceShellPath,
     ],
