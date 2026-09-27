@@ -13,7 +13,7 @@ const latest = [
 
 // Hero 规格表：macOS / Linux 与 Windows 并列，仅以"稍后即来"弱化展示。
 const specRows = [
-  { k: "版本", v: "v0.3.2 Preview", faint: false },
+  { k: "版本", v: `v${VERSION} Preview`, faint: false },
   { k: "Windows", v: "10 · 11 x64", faint: false },
   { k: "macOS", v: "稍后即来", faint: true },
   { k: "Linux", v: "稍后即来", faint: true },
@@ -367,6 +367,8 @@ onBeforeUnmount(() => {
   margin: 0 auto;
   padding: 0 28px;
   color: var(--jg-text);
+  /* 统一定义在根上，子元素（含 .text-link）都能取到 */
+  --ease: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 /* 锚点定位时避开固定导航 */
@@ -384,7 +386,6 @@ onBeforeUnmount(() => {
     transform 0.9s var(--ease),
     filter 0.9s var(--ease);
   transition-delay: calc(var(--reveal-step, 0) * 90ms);
-  --ease: cubic-bezier(0.32, 0.72, 0, 1);
 }
 .reveal[data-reveal-delay="1"] { --reveal-step: 1; }
 .reveal[data-reveal-delay="2"] { --reveal-step: 2; }
@@ -492,7 +493,6 @@ h1 {
     transform 0.5s var(--ease),
     box-shadow 0.5s var(--ease),
     filter 0.5s var(--ease);
-  --ease: cubic-bezier(0.32, 0.72, 0, 1);
 }
 .btn-primary:hover {
   transform: translateY(-2px);
@@ -1032,7 +1032,6 @@ h1 {
   text-decoration: none;
   border-bottom: 1px solid var(--jg-amber-soft);
   transition: border-color 0.4s var(--ease);
-  --ease: cubic-bezier(0.32, 0.72, 0, 1);
 }
 .inline-link:hover {
   border-bottom-color: var(--jg-amber-text);

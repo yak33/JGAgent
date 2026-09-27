@@ -203,19 +203,6 @@ body::after {
 .VPNavBarMenuLink:hover {
   color: var(--jg-text);
 }
-/* 导航里的下载入口做成琥珀主按钮 */
-.VPNavBarMenuLink[href$=".exe"] {
-  background: var(--jg-amber);
-  color: var(--jg-on-amber);
-  font-weight: 600;
-  padding: 0 16px;
-  line-height: 30px;
-  border-radius: 999px;
-}
-.VPNavBarMenuLink[href$=".exe"]:hover {
-  color: var(--jg-on-amber);
-  filter: brightness(1.05);
-}
 .VPNavBarAppearance {
   border: 1px solid var(--jg-hairline);
   border-radius: 999px;
@@ -261,10 +248,6 @@ body::after {
   }
   .VPNavBar .wrapper .container {
     padding: 4px 6px 4px 14px;
-  }
-  /* 小屏只保留下载主按钮，次要链接与主题切换收起 */
-  .VPNavBarMenuLink:not([href$=".exe"]) {
-    display: none;
   }
   .VPNavBarTitle a {
     font-size: 15px;
