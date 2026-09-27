@@ -3,7 +3,7 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 
 // 版本与下载地址单点维护：发版时只改这里与 latest（需与 changelog.md 最新一节一致）。
 const DOWNLOAD_URL = "/downloads/JGAgent-latest-win-x64.exe";
-const VERSION = "0.3.2";
+const VERSION = "0.3.3";
 const RELEASE_DATE = "2026-09-27";
 
 const latest = [

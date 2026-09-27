@@ -1,5 +1,15 @@
 # 更新日志
 
+## v0.3.3 <Badge type="tip">Preview</Badge>
+
+2026-09-27 · [下载 Windows 版](/downloads/JGAgent-0.3.3-win-x64.exe)
+
+- 欢迎页只在首次使用出现，完成引导后不再反复弹出
+- 问题上报/提需求集中收集到团队反馈库，支持截图与日志附件
+- 模型设置进入时自动选中已有供应商
+- 修复启动引导的判定竞态；官网文档页上线（右上角 ? → 产品文档）
+- 本版本起应用内自动更新全面生效：之后新版本将在应用内提示，差分下载
+
 ## v0.3.2 <Badge type="tip">Preview</Badge>
 
 2026-09-27 · [下载 Windows 版](/downloads/JGAgent-0.3.2-win-x64.exe)
