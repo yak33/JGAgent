@@ -2,7 +2,9 @@ import { defineConfig } from "vitepress";
 
 export default defineConfig({
   lang: "zh-CN",
-  title: "JGAgent",
+  title: "捷关Agent",
+  // 浏览器标签图标：复用产品 JG 图标（与桌面端同源）
+  head: [["link", { rel: "icon", href: "/favicon.ico", sizes: "any" }]],
   description:
     "捷关团队 AI 工作台：编程模式深入终端、Git 与代码变更，办公模式聚焦摘要与结果。基于开源 ZCode 二次开发。",
   // 明暗双主题：跟随系统 + 导航栏手动切换。两套令牌值见 theme/custom.css，
