@@ -21,14 +21,9 @@ export default defineConfig({
     outline: { level: [2, 3] },
     footer: {
       message: "捷关团队·荣誉出品",
-      copyright: "基于开源项目 ZCode（Apache-2.0）二次开发",
-      links: [
-        {
-          // 内部反馈管理页：key 直接内嵌（内部工具，站点不对外公开）。
-          text: "反馈管理",
-          link: "/feedback-admin?key=85c1ae8ddf2f1c33c6b91611",
-        },
-      ],
+      // v-html 渲染：可直接放反馈管理入口（进入后需输入管理密钥登录，30 天免登录）
+      copyright:
+        '基于开源项目 ZCode（Apache-2.0）二次开发 · <a href="/feedback-admin">反馈管理</a>',
     },
   },
 });

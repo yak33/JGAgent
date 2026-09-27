@@ -106,6 +106,18 @@ function checkAdminKey(url) {
   return ADMIN_KEY.length > 0 && url.searchParams.get("key") === ADMIN_KEY;
 }
 
+// 管理 cookie（登录后 30 天有效）：jgadmin=<ADMIN_KEY>
+function getAdminCookie(req) {
+  const cookies = req.headers.cookie || "";
+  for (const pair of cookies.split(";")) {
+    const trimmed = pair.trim();
+    if (trimmed.startsWith("jgadmin=")) {
+      return trimmed.slice("jgadmin=".length);
+    }
+  }
+  return "";
+}
+
 // 从 multipart 体中提取带 filename 的文件部分（客户端表单里还混有 policy 等
 // OSS 字段，必须按 Content-Disposition 的 filename 定位，而不是取第一个部分）。
 // latin1 读写保证二进制字节一一对应。
@@ -206,11 +218,44 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    // ---- 管理查看页 ----
-    if (pathname === "/admin") {
-      if (!checkAdminKey(url)) {
+    // ---- 管理查看页（需登录：输入管理密钥换取 30 天 cookie）----
+    if (pathname === "/admin" || pathname === "/admin/login") {
+      const isLoginPost = pathname === "/admin/login" && req.method === "POST";
+      if (isLoginPost) {
+        const form = await readBody(req, 4096);
+        const password = new URLSearchParams(form.toString("utf8")).get("password") || "";
+        if (ADMIN_KEY.length > 0 && password === ADMIN_KEY) {
+          res.setHeader(
+            "Set-Cookie",
+            `jgadmin=${ADMIN_KEY}; Path=/; HttpOnly; Max-Age=2592000; SameSite=Lax`,
+          );
+        }
+        res.writeHead(302, { Location: "/feedback-admin" });
+        res.end();
+        return;
+      }
+      // 已通过 ?key= 或 cookie 授权则直接展示数据；否则渲染登录表单。
+      const authorized = checkAdminKey(url) || getAdminCookie(req) === ADMIN_KEY;
+      if (ADMIN_KEY.length === 0) {
         res.writeHead(403, { "Content-Type": "text/plain; charset=utf-8" });
-        res.end("forbidden");
+        res.end("feedback admin disabled");
+        return;
+      }
+      if (!authorized) {
+        const wrong = url.searchParams.get("e") === "1";
+        const html = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>JGAgent 反馈管理登录</title>
+        <style>body{font-family:system-ui,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;background:#f5f5f5}
+        form{background:#fff;padding:32px;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.08);width:280px}
+        input{width:100%;box-sizing:border-box;padding:10px;margin:8px 0 16px;border:1px solid #ddd;border-radius:8px;font-size:14px}
+        button{width:100%;padding:10px;border:0;border-radius:8px;background:#d97706;color:#fff;font-size:14px;cursor:pointer}
+        .err{color:#c0392b;font-size:13px;margin:0 0 8px}</style>
+        </head><body><form method="post" action="/feedback-admin/login">
+        <h2 style="margin:0 0 16px;font-size:18px">JGAgent 反馈管理</h2>
+        ${wrong ? '<p class="err">密钥错误，请重试</p>' : ""}
+        <input type="password" name="password" placeholder="管理密钥" autofocus>
+        <button type="submit">登录</button></form></body></html>`;
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+        res.end(html);
         return;
       }
       const db = readDb();
