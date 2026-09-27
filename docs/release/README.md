@@ -87,12 +87,16 @@ ZCODE_ENV=production node scripts/bundle.mjs --os win --arch x64
   `netstat -ano | grep :4173` 找 PID 杀掉再起 preview。
 - 字体走系统栈（Segoe UI Variable / PingFang / 雅黑，无网络字体依赖），
   栈定义在 `docs/.vitepress/theme/custom.css`；**未引入** @fontsource（旧文档记录有误）。
-- 设计基调（2026-09-26 二版，推翻首版墨蓝黑定稿）：**Ethereal Glass** ——
-  OLED 近黑 `#060608` + 琥珀 `#F5B453` 品牌微光（body 固定径向光斑）、双嵌套玻璃卡
-  （外壳 hairline + 内核 inset 高光、同心圆角）、不对称 Bento 特性网格、药丸 CTA
-  内嵌圆形图标、IntersectionObserver 入场 fade-up（cubic-bezier(0.32,0.72,0,1)）。
+- 设计基调（2026-09-27 三版，在二版 Ethereal Glass 基础上去模板化）：
+  暖调近黑 `#0A0908` + 琥珀 `#F0B35A` 单一强调色，灰阶统一暖灰（勿再混冷灰/紫色光斑），
+  body 固定径向光斑 + 内联 SVG 细颗粒层（`body::after`）。首页结构：左对齐 Hero +
+  右侧等宽规格表 → 纯 HTML 绘制的桌面应用界面示意窗 → 一张网关主卡 + 细线分隔的
+  编辑式特性列表 → 标题吸顶的三步安装（含 SmartScreen 提示）→ 最新版本卡。
+  小标签用等宽字 + 琥珀（不用全大写药丸）；入场 fade-up 走 IntersectionObserver
+  （cubic-bezier(0.32,0.72,0,1)），并尊重 prefers-reduced-motion。
   首页整体在 `docs/.vitepress/theme/Home.vue`（index.md 只留 `<JgHome/>` 一行），
-  版本号与下载地址是组件内 `DOWNLOAD_URL`/`VERSION` 常量，**发版必改**。
+  版本号、下载地址与最新版本摘要是组件内 `DOWNLOAD_URL`/`VERSION`/`latest` 常量，
+  **发版必改**（`latest` 需与 changelog.md 最新一节一致）。
   约束：backdrop-blur 只用于顶栏药丸；动效只用 transform/opacity/filter。
 - **坑**：md 里写含空行的 `<pre>` 块会被 Vue 编译器按空行切断报
   "Element is missing end tag" —— 复杂 HTML 抽成 `theme/` 下的 Vue 组件再用。
