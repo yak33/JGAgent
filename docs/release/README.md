@@ -1,7 +1,7 @@
 # JGAgent 发布与官网部署（交接文档）
 
 > 用途：后续 AI 会话或新同事接手发版 / 官网 / 服务器运维时的唯一入口。
-> 首发记录：2026-09-26，v0.2.0 preview 已上线 `http://82.157.149.224/`。
+> 最新发布：2026-09-27，**v0.3.3** 已上线 `http://82.157.149.224/`，应用内自动更新已启用。
 > 官网目录细节见 [website/README.md](../../website/README.md)，本文只讲流程与坑。
 
 ---
@@ -31,10 +31,13 @@
 
 ## 二、打包：命令与陷阱
 
-**唯一正确命令**（在 `packages/desktop/` 下）：
+**唯一正确命令**（在 `packages/desktop/` 下；与第一节流程一致，勿用旧文档里的裸命令）：
 
 ```bash
-ZCODE_ENV=production node scripts/bundle.mjs --os win --arch x64
+ZCODE_ENV=production \
+JGAGENT_SANITIZE_BUILD_ENV=1 \
+ZCODE_UPDATE_FEED_URL="http://82.157.149.224/downloads/latest.yml" \
+node scripts/bundle.mjs --os win --arch x64
 ```
 
 ### 陷阱 1：不带 ZCODE_ENV=production 会打出测试包
@@ -174,3 +177,49 @@ git apply --3way /tmp/v3.14.3.patch   # 用 872ad96 的 blob 做基准三方合�
 - `pnpm knip` 查悬空导出
 - `pnpm dev:desktop` 冒烟 + 网络审计（dev 日志 grep `z\.ai|bigmodel|cdn-zcode` 期望 0）
 - 重打包按第六节清单执行，作为 v0.3.0 发布
+
+---
+
+## 八、反馈收集服务（运维手册）
+
+> 2026-09-27 上线。承接客户端「问题上报 / 给产品提需求」，工单集中存官网服务器，
+> 团队在管理页统一查看。零依赖（node:http 单文件），无数据库（JSON 存储）。
+
+### 架构与位置
+
+- 服务源码：`website/feedback-service/service.cjs`（本仓维护，改后需重新部署）
+- 服务器目录：`/opt/jgagent-feedback/`（service.cjs + data/db.json 工单库 + files/ 附件 + .env 管理密钥）
+- 运行方式：docker compose 服务 `feedback`（node:22-alpine，仅内网 3300，无对外端口）
+- nginx 反代（server 内三个 location）：`/feedback-api/`→3300（工单 JSON API）、
+  `/feedback-upload`→/upload（附件二进制）、`/feedback-admin`→/admin（管理页）
+- 客户端指向：`packages/services/src/node.ts` 里 feedbackService 的 apiBaseUrl 常量
+  （打包装进应用；服务端换地址时改它并重新打包）
+
+### 管理页
+
+- 入口：官网页脚「反馈管理」→ `http://82.157.149.224/feedback-admin`
+- 登录密钥：服务器 `/opt/jgagent-feedback/.env` 的 ADMIN_KEY（登录一次 30 天免登）
+- 数据导出：`/feedback-admin?key=<KEY>&format=json`
+
+### 常用运维命令
+
+```bash
+# 重新部署（改 service.cjs 后）
+scp -i ~/.ssh/jgagent_deploy website/feedback-service/service.cjs \
+  root@82.157.149.224:/opt/jgagent-feedback/service.cjs
+ssh -i ~/.ssh/jgagent_deploy root@82.157.149.224 "docker restart jgagent-feedback"
+
+# 查看工单（服务器上）
+cat /opt/jgagent-feedback/data/db.json
+
+# 轮换管理密钥：改 .env 的 ADMIN_KEY + docker-compose.yml 里的同名环境变量，
+# 然后重启 feedback 容器与 web 容器
+```
+
+### 已知边界
+
+- 端点 HTTP 明文（HTTPS 待公司域名）；管理密钥随页脚链接暴露于前端源码——
+  仅限内部使用，对外前必须撤链接并轮换 key
+- 创建接口公网可达且无鉴权（只有 X-Device-Mid 校验），存在被刷可能；
+  出现垃圾数据时直接清理 db.json 里对应条目
+- 客户端「我的工单」列表只显示本机工单；全量查看走管理页
