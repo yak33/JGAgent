@@ -772,7 +772,7 @@ export default {
     useMultipleRangeRequest: false,
     // 新客户端运行时使用服务端 manifest provider；这里仅保留 electron-builder 必需的
     // generic publish 占位，避免打包产物继续携带可配置的旧 stable feed。
-    url: "http://localhost:8081",
+    url: "http://82.157.149.224/downloads/",
     // JGAgent 去官方化：默认缓存目录名从包名派生为 @zcodedesktop-updater，与本机安装的
     // 官方 ZCode 共用同一目录（pending 更新状态/缓存互相可见），曾把官方 3.14.3 的
     // 待更新状态恢复进 JGAgent。改用独立目录实现隔离。

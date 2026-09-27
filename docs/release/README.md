@@ -10,16 +10,24 @@
 
 ```text
 1. bump 版本    package.json + packages/desktop/package.json 两处 version
-2. 打包         ZCODE_ENV=production node scripts/bundle.mjs --os win --arch x64
-               （在 packages/desktop/ 下执行；约 10 分钟）
+2. 打包         ZCODE_ENV=production ZCODE_UPDATE_FEED_URL="http://82.157.149.224/downloads/latest.yml" \
+               JGAGENT_SANITIZE_BUILD_ENV=1 node scripts/bundle.mjs --os win --arch x64
+               （在 packages/desktop/ 下执行；约 10 分钟。ZCODE_UPDATE_FEED_URL 烧入自动更新
+               feed，缺省则该版无自动更新；JGAGENT_SANITIZE_BUILD_ENV=1 见陷阱 3）
 3. 核对产物     packages/desktop/dist/JGAgent-<ver>-win-x64.exe + latest.yml
-4. 改官网       website/docs/index.md（下载链接、版本行）+ changelog.md → npm run build
+4. 改官网       website/docs/.vitepress/theme/Home.vue（VERSION 与 DOWNLOAD_URL 常量）
+               + changelog.md → npm run build
 5. 上传官网     scp -i ~/.ssh/jgagent_deploy dist 内容 → root@82.157.149.224:/www/wwwroot/jgagent/html/
-6. 上传安装包   scp exe → /www/wwwroot/jgagent/downloads/（144MB，几分钟）
+6. 上传安装包   scp exe + latest.yml + blockmap → /www/wwwroot/jgagent/downloads/
+               ⚠️ 顺序必须 exe 在前、latest.yml 在后：客户端轮询到新 latest.yml 时 exe 必须已就位
 7. 验证         curl -sI http://82.157.149.224/downloads/<exe> 看 200 与 Content-Length；
                服务端 sha512sum | xxd -r -p | base64 与本地 latest.yml 的 sha512 比对
 8. 提交推送     版本号与 website 改动各一个 commit
 ```
+
+> 自动更新已启用（v0.3.2 起）：已安装 0.3.2+ 的客户端会轮询 `downloads/latest.yml`，
+> 发现新版本后应用内提示并差分下载（blockmap）。发版即自动推送全体用户——
+> 出问题的版本不要走此流程发布，先在本地验证。HTTPS 待公司域名就绪后补（现 HTTP 明文）。
 
 ## 二、打包：命令与陷阱
 
@@ -104,7 +112,7 @@ ZCODE_ENV=production node scripts/bundle.mjs --os win --arch x64
 
 | 项 | 状态 |
 | --- | --- |
-| 自动更新 | v2 待办：客户端走"服务端 manifest provider"，端点阶段 2 已 `.invalid` 化，需先把 manifest 端点指到自有服务器再启用；当前告知用户手动回官网下载 |
+| 自动更新 | ✅ v0.3.2 起启用：feed 指向官网静态 latest.yml（HTTP 明文，HTTPS 待公司域名）；差分下载已生效。channel 灰度（stable/preview）仍走上游 manifest API，待自建后端再启用 |
 | macOS / Linux 包 | 官网已留"稍后即来"位；mac 包必须在 mac 机器上打 |
 | 签名 | 安装包未签名，首启 SmartScreen 拦截，官网三步指引已写"仍要运行" |
 | 旧服务器 106.15.120.94 | 只跑捷关模型网关（:9527），模板 baseUrl 打包指向它，与官网服务器无关，勿混 |

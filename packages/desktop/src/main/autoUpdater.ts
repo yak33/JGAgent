@@ -1,4 +1,7 @@
 /* eslint-disable max-lines -- autoUpdater 需要集中维护 Electron 事件、菜单状态与 IPC 交互，过度拆分会让更新状态流更难追踪 */
+// 构建期注入的自动更新 feed（静态 latest.yml 地址），见 tsup.config.ts。
+// 空串/undefined = 未启用；运行时不再读取环境变量（打包版密封化，防改道）。
+declare const __ZCODE_UPDATE_FEED_URL__: string | undefined;
 import type { ISettingService } from "@zcode/services";
 import {
   DEFAULT_LOCALE,
@@ -698,17 +701,23 @@ export function resolveUpdateFeedSourceFromStartupConfig(
     env?: Record<string, string | undefined>;
   } = {},
 ): RuntimeUpdateFeedSource | undefined {
+  // 打包版：只认构建期烧入的 feed（tsup 注入 ZCODE_UPDATE_FEED_URL），生产自动更新通道。
+  // 启动参数/环境变量在打包版一律忽略——防止更新请求被外部环境改道（同密封化约束）。
+  if (app.isPackaged) {
+    const bakedFeedUrl =
+      typeof __ZCODE_UPDATE_FEED_URL__ === "undefined" ? "" : __ZCODE_UPDATE_FEED_URL__.trim();
+    if (!bakedFeedUrl) {
+      return undefined;
+    }
+    logger.info(`[auto-update] 使用构建期配置的更新 feed: ${redactUpdateFeedUrlForLog(bakedFeedUrl)}`);
+    return { url: bakedFeedUrl };
+  }
+
+  // dev 未打包构建：允许用启动参数/环境变量临时指定 feed 联调。
   const argv = options.argv ?? process.argv;
   const env = options.env ?? process.env;
   const feedUrl = readSwitchValue(argv, UPDATE_FEED_URL_SWITCH) ?? env[UPDATE_FEED_URL_ENV]?.trim();
   if (!feedUrl) {
-    return undefined;
-  }
-  // 更新源覆盖仅供开发构建联调;正式包按 isPackaged 忽略,避免更新请求被环境变量/启动参数改道
-  if (app.isPackaged) {
-    logger.warn(
-      `[auto-update] ignore update feed override in packaged app: ${redactUpdateFeedUrlForLog(feedUrl)}`,
-    );
     return undefined;
   }
   return { url: feedUrl };

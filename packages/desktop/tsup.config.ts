@@ -110,6 +110,10 @@ function createSharedDefines() {
     ),
     // 客户端只有一个 CDN 配置，与发布端 OSS 目标列表分离。
     __ZCODE_CDN_BASE_URL__: JSON.stringify(env.ZCODE_CDN_BASE_URL?.trim() || ""),
+    // 自动更新 feed（静态 latest.yml 地址）。构建期经 ZCODE_UPDATE_FEED_URL 注入，
+    // 空串 = 未启用自动更新（运行时回退 endpoint manifest 路径并静默失败）。
+    // 只认构建期注入：运行时环境变量会被密封化清除（见 sanitizeAmbientEndpointEnvForPackagedApp 同类约束）。
+    __ZCODE_UPDATE_FEED_URL__: JSON.stringify(env.ZCODE_UPDATE_FEED_URL?.trim() || ""),
   };
 }
 
