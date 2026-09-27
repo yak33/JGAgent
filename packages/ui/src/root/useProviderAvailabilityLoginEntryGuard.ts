@@ -110,6 +110,12 @@ export function useProviderAvailabilityLoginEntryGuard({
       return;
     }
 
+    // JGAgent：hasCompletedOnboarding 异步判定（undefined = 判定中）必须先于启动检查完成，
+    // 否则守卫会把"引导记录读取中"误判成"未完成"而在老用户启动时弹欢迎页。
+    if (hasCompletedOnboarding === undefined) {
+      return;
+    }
+
     // JGAgent 去官方化（阶段 3）：移除 isRestoringOAuthSession 等待输入，OAuth 会话恢复链路已摘除；
     // 启动检查只等 ModelSelectionView 水合。
     if (startupCheckCompletedRef.current || !providerAvailabilityHydrated) {
@@ -124,6 +130,7 @@ export function useProviderAvailabilityLoginEntryGuard({
     });
   }, [
     enabled,
+    hasCompletedOnboarding,
     modelSelectionError,
     providerAvailabilityHydrated,
     syncLoginEntryWithProviderAvailability,
