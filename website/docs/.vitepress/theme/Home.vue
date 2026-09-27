@@ -70,7 +70,7 @@ onBeforeUnmount(() => {
     <!-- ============ Hero：左文案 + 右规格表（非对称） ============ -->
     <header class="hero">
       <div class="hero-copy">
-        <p class="kicker reveal"><span class="kicker-dot" />捷关团队内部工具 · v{{ VERSION }}</p>
+        <p class="kicker reveal"><span class="kicker-dot" />捷关团队·荣誉出品 · v{{ VERSION }}</p>
         <h1 class="reveal" data-reveal-delay="1">
           写代码，办日常，<br />
           都交给 <span class="brand">JGAgent</span>

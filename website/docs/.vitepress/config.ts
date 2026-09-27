@@ -17,7 +17,7 @@ export default defineConfig({
     ],
     outline: { level: [2, 3] },
     footer: {
-      message: "捷关公司内部工具 · 仅限内部员工使用",
+      message: "捷关团队·荣誉出品",
       copyright: "基于开源项目 ZCode（Apache-2.0）二次开发",
     },
   },
