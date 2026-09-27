@@ -1,46 +1,132 @@
-/* JGAgent 官网全局定制：Ethereal Glass 基调（OLED 近黑 + 琥珀微光）。
- * 首页主体样式在 Home.vue 内 scoped；本文件只覆盖 VitePress 框架层
- * （字体栈、导航玻璃药丸、页脚），保证内容页与首页基调一致。 */
+/* JGAgent 官网全局定制：暖调双主题 + 琥珀单一强调色 + 细颗粒质感。
+ * 首页主体样式在 Home.vue 内 scoped；本文件只覆盖 VitePress 框架层。
+ * 颜色令牌与画布稿「JGAgent 官网重设计」的 JGSite 变量集一一对应：
+ * :root = 浅色（暖纸白），html.dark = 深色（暖调近黑）。 */
 
 :root {
-  --jg-bg: #060608;
-  --jg-text: #f2f4f8;
-  --jg-text-dim: #98a0ad;
-  --jg-amber: #f5b453;
-  --jg-hairline: rgba(255, 255, 255, 0.08);
+  /* 浅色主题：同色相暖纸白，琥珀文字加深保证对比度 */
+  --jg-bg: #faf7f2;
+  --jg-bg-deep: #e9e1d2;
+  --jg-surface: #ffffff;
+  --jg-surface-soft: #fbf8f2;
+  --jg-text: #1c1917;
+  --jg-text-dim: #6e665c;
+  --jg-text-faint: #a39c8c;
+  --jg-hairline: rgba(70, 58, 40, 0.12);
+  --jg-amber: #e39e38;
+  --jg-amber-text: #a66e1a;
+  --jg-amber-text-hover: #8f5d14;
+  --jg-amber-text-active: #c98a2e;
+  --jg-amber-soft: rgba(184, 120, 41, 0.14);
+  --jg-on-amber: #1a1206;
+  --jg-add: #2e7d3b;
+  --jg-del: #bf4a42;
+  --jg-add-bg: rgba(46, 125, 59, 0.1);
+  --jg-del-bg: rgba(191, 74, 66, 0.09);
+  --jg-nav-bg: rgba(255, 255, 255, 0.72);
+  --jg-glow-a: rgba(201, 138, 46, 0.1);
+  --jg-glow-b: rgba(201, 138, 46, 0.04);
+  --jg-bubble: #fbf8f2;
+
   /* 刻意避开 Inter/Roboto 等网络字体：中文站点以系统黑体为主，
    * 西文回退 Segoe UI Variable / SF，视觉上仍是 geometric grotesk 家族。 */
   --vp-font-family-base: "Segoe UI Variable Display", "SF Pro Display", -apple-system,
     "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
   --vp-font-family-mono: ui-monospace, "SF Mono", "Cascadia Mono", "JetBrains Mono",
     Consolas, monospace;
+
+  /* VitePress 框架层变量映射（内容页与首页共用） */
   --vp-c-bg: var(--jg-bg);
-  --vp-c-bg-alt: #0a0a0e;
+  --vp-c-bg-alt: var(--jg-bg-deep);
+  --vp-c-bg-soft: var(--jg-surface-soft);
   --vp-c-text-1: var(--jg-text);
   --vp-c-text-2: var(--jg-text-dim);
-  --vp-c-text-3: #6b7280;
+  --vp-c-text-3: var(--jg-text-faint);
   --vp-c-divider: var(--jg-hairline);
-  --vp-c-brand-1: var(--jg-amber);
-  --vp-c-brand-2: #f7c67a;
-  --vp-c-brand-3: #d99a35;
+  --vp-c-gutter: var(--jg-hairline);
+  --vp-c-brand-1: var(--jg-amber-text);
+  --vp-c-brand-2: var(--jg-amber-text-hover);
+  --vp-c-brand-3: var(--jg-amber-text-active);
+  --vp-c-brand-soft: var(--jg-amber-soft);
   --vp-button-brand-bg: var(--jg-amber);
-  --vp-button-brand-text: #171003;
+  --vp-button-brand-text: var(--jg-on-amber);
+  --vp-c-bg-elv: var(--jg-surface);
+  --vp-c-border: var(--jg-hairline);
 }
 
-/* 站点画布：统一近黑底，避免默认主题的灰阶底色在首页边界露出来。 */
+/* 深色主题：暖调近黑 + 琥珀（沿用 2026-09 三版基调，不混冷灰） */
+.dark {
+  --jg-bg: #0a0908;
+  --jg-bg-deep: #080706;
+  --jg-surface: #121110;
+  --jg-surface-soft: #1c1a17;
+  --jg-text: #f4f1ec;
+  --jg-text-dim: #a8a298;
+  --jg-text-faint: #6f6a62;
+  --jg-hairline: rgba(255, 244, 228, 0.09);
+  --jg-amber: #f0b35a;
+  --jg-amber-text: #f0b35a;
+  --jg-amber-text-hover: #f4c47d;
+  --jg-amber-text-active: #d6983d;
+  --jg-amber-soft: rgba(240, 179, 90, 0.14);
+  --jg-on-amber: #1a1206;
+  --jg-add: #8fd694;
+  --jg-del: #f0908a;
+  --jg-add-bg: rgba(143, 214, 148, 0.08);
+  --jg-del-bg: rgba(240, 144, 138, 0.08);
+  --jg-nav-bg: rgba(16, 14, 12, 0.6);
+  --jg-glow-a: rgba(240, 179, 90, 0.1);
+  --jg-glow-b: rgba(240, 179, 90, 0.04);
+  --jg-bubble: #1c1a17;
+
+  --vp-c-bg: var(--jg-bg);
+  --vp-c-bg-alt: var(--jg-bg-deep);
+  --vp-c-bg-soft: var(--jg-surface-soft);
+  --vp-c-text-1: var(--jg-text);
+  --vp-c-text-2: var(--jg-text-dim);
+  --vp-c-text-3: var(--jg-text-faint);
+  --vp-c-divider: var(--jg-hairline);
+  --vp-c-gutter: var(--jg-hairline);
+  --vp-c-brand-1: var(--jg-amber-text);
+  --vp-c-brand-2: var(--jg-amber-text-hover);
+  --vp-c-brand-3: var(--jg-amber-text-active);
+  --vp-c-brand-soft: var(--jg-amber-soft);
+  --vp-c-bg-elv: var(--jg-surface);
+  --vp-c-border: var(--jg-hairline);
+}
+
+/* 站点画布：底色随主题切换 */
 html {
   background: var(--jg-bg);
+  scroll-behavior: smooth;
 }
 
+/* 只保留琥珀一种光源：顶部主光 + 左下弱反光，颜色随主题走 */
 body {
   background:
-    radial-gradient(1100px 520px at 50% -160px, rgba(245, 180, 83, 0.09), transparent 68%),
-    radial-gradient(900px 460px at 85% 12%, rgba(99, 102, 241, 0.06), transparent 70%),
+    radial-gradient(1200px 560px at 30% -200px, var(--jg-glow-a), transparent 68%),
+    radial-gradient(800px 500px at 0% 100%, var(--jg-glow-b), transparent 70%),
     var(--jg-bg);
   background-attachment: fixed;
 }
 
-/* 顶栏：脱离边缘的玻璃药丸（仅此一处使用 backdrop-blur，符合性能约束）。 */
+/* 细颗粒噪点层：打破纯色平面的"数码感"。固定定位 + pointer-events:none，
+ * 不参与布局与交互；SVG 内联，无额外网络请求。 */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+::selection {
+  background: var(--jg-amber-soft);
+}
+
+/* ---------- 顶栏：合并为单枚玻璃药丸 ---------- */
 .VPNav {
   position: fixed;
   top: 20px;
@@ -51,37 +137,98 @@ body {
 .VPNavBar {
   pointer-events: auto;
   background: transparent;
+  border-top: 0;
 }
 .VPNavBar .wrapper .container {
-  max-width: 1080px;
+  max-width: 1160px;
   margin: 0 auto;
-  padding: 0 24px;
-}
-.VPNavBar.has-sidebar .container {
-  max-width: 1080px;
-}
-.VPNavBar .container > .title,
-.VPNavBar .container > .content {
-  background: rgba(12, 12, 16, 0.55);
+  padding: 6px 8px 6px 20px;
+  background: var(--jg-nav-bg);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border: 1px solid var(--jg-hairline);
   border-radius: 999px;
+  align-items: center;
 }
-.VPNavBar .container {
-  gap: 8px;
+/* 旧版是"标题+内容"两枚药丸，现合并为整枚：内层去掉各自的底 */
+.VPNavBar .container > .title,
+.VPNavBar .container > .content {
+  background: transparent;
+  border: 0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 .VPNavBarTitle a {
-  padding: 8px 4px 8px 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--jg-text);
 }
+/* 琥珀方标 JG，代替图片 logo */
+.VPNavBarTitle a::before {
+  content: "JG";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: var(--jg-amber);
+  color: var(--jg-on-amber);
+  font-family: var(--vp-font-family-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+/* 链接组居中：品牌在左、动作在右，菜单吃两侧剩余空间 */
 .VPNavBar .content-body {
-  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 8px;
+}
+.VPNavBar .VPNavBarMenu {
+  display: flex;
+  margin-inline: auto;
+  background: transparent;
+}
+.VPNavBarMenuLink {
+  font-size: 13.5px;
+  color: var(--jg-text-dim);
+  border-radius: 999px;
+  transition: color 0.3s ease, background 0.3s ease;
+}
+.VPNavBarMenuLink:hover {
+  color: var(--jg-text);
+}
+/* 导航里的下载入口做成琥珀主按钮 */
+.VPNavBarMenuLink[href$=".exe"] {
+  background: var(--jg-amber);
+  color: var(--jg-on-amber);
+  font-weight: 600;
+  padding: 0 16px;
+  line-height: 30px;
+  border-radius: 999px;
+}
+.VPNavBarMenuLink[href$=".exe"]:hover {
+  color: var(--jg-on-amber);
+  filter: brightness(1.05);
+}
+.VPNavBarAppearance {
+  border: 1px solid var(--jg-hairline);
+  border-radius: 999px;
 }
 .Divider {
   display: none;
 }
+.VPNavBar:hover {
+  background: transparent;
+  border-bottom-color: transparent;
+}
 
-/* 内容页与首页共用的大留白节奏。 */
+/* ---------- 内容页与首页共用的大留白节奏 ---------- */
 .VPContent {
   padding-top: 40px;
 }
@@ -89,16 +236,20 @@ body {
   padding-top: 0;
 }
 
-/* 页脚收窄到与内容同宽，弱化边框感。 */
+/* ---------- 页脚 ---------- */
 .VPFooter {
   border-top: 1px solid var(--jg-hairline);
   background: transparent;
-  color: var(--vp-c-text-3);
+  color: var(--jg-text-faint);
   font-size: 13px;
   letter-spacing: 0.02em;
 }
+.VPFooter .message,
+.VPFooter .copyright {
+  color: var(--jg-text-faint);
+}
 
-/* 内容页标题与正文微调，贴近编辑式排版。 */
+/* 内容页标题与正文微调，贴近编辑式排版 */
 .vp-doc h1,
 .vp-doc h2 {
   letter-spacing: -0.015em;
@@ -108,11 +259,14 @@ body {
   .VPNav {
     top: 10px;
   }
-  .VPNavBar .container > .title {
-    background: rgba(12, 12, 16, 0.55);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid var(--jg-hairline);
-    border-radius: 999px;
+  .VPNavBar .wrapper .container {
+    padding: 4px 6px 4px 14px;
+  }
+  /* 小屏只保留下载主按钮，次要链接与主题切换收起 */
+  .VPNavBarMenuLink:not([href$=".exe"]) {
+    display: none;
+  }
+  .VPNavBarTitle a {
+    font-size: 15px;
   }
 }
