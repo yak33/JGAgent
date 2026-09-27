@@ -9,6 +9,8 @@ export default defineConfig({
     "捷关团队 AI 工作台：编程模式深入终端、Git 与代码变更，办公模式聚焦摘要与结果。基于开源 ZCode 二次开发。",
   // 明暗双主题：跟随系统 + 导航栏手动切换。两套令牌值见 theme/custom.css，
   // 对应画布稿「JGAgent 官网重设计」的 JGSite 变量集（Dark/Light）。
+  // 无后缀 URL（/docs 而非 /docs.html）：需要 nginx try_files $uri.html 配合，见 docs/release 第三节
+  cleanUrls: true,
   appearance: true,
   themeConfig: {
     nav: [
