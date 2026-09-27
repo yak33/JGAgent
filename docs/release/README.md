@@ -120,6 +120,7 @@ ZCODE_ENV=production node scripts/bundle.mjs --os win --arch x64
 | macOS / Linux 包 | 官网已留"稍后即来"位；mac 包必须在 mac 机器上打 |
 | 签名 | 安装包未签名，首启 SmartScreen 拦截，官网三步指引已写"仍要运行" |
 | 旧服务器 106.15.120.94 | 只跑捷关模型网关（:9527），模板 baseUrl 打包指向它，与官网服务器无关，勿混 |
+| 反馈收集服务 | 官网服务器 Docker 服务 jgagent-feedback（/opt/jgagent-feedback，端口 3300 仅内网），nginx 反代 /feedback-api 与 /feedback-upload。客户端问题上报/提需求集中落到这里；管理查看页 /feedback-admin?key=<见服务器 /opt/jgagent-feedback/.env> |
 | **上游 v3.14.3 同步** | **待办（建议作为 v0.3.0 主项）**：评估结论与合并预案见**第七节**。⚠️ 本仓无官方 git 历史（快照导入），`git merge upstream/main` 不可行，必须走 `git apply --3way`（2026-09-26 复核修正） |
 
 ## 六、发版验证清单

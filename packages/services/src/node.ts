@@ -2228,6 +2228,12 @@ export function createLocalServices(options: {
         ...options?.feedback,
         apiClient,
         credentialService,
+        // JGAgent 反馈收集服务（官网服务器上的集中收集端点）：
+        // 问题上报/提需求统一落到这里，团队在 /feedback-admin?key=<KEY> 查看。
+        // 可用 ZCODE_FEEDBACK_API_BASE 覆盖；公司正式反馈后端就绪后改此常量。
+        apiBaseUrl:
+          process.env.ZCODE_FEEDBACK_API_BASE?.trim() ||
+          "http://82.157.149.224/feedback-api",
       }),
     )
     .register(IPromptAttachmentTransferService, createLocalPromptAttachmentTransferService());
