@@ -23,9 +23,15 @@ export default defineConfig({
     outline: { level: [2, 3] },
     footer: {
       message: "捷关团队·荣誉出品",
-      // v-html 渲染：可直接放反馈管理入口（进入后需输入管理密钥登录，30 天免登录）
+      // v-html 渲染：可直接放反馈管理入口（进入后需输入管理密钥登录，30 天免登录）。
+      // ⚠️ target="_blank" 不能删：/feedback-admin 是 nginx 反代到反馈服务的另一个应用，
+      // 不是 VitePress 的页面。VitePress 的全局 click 处理器对「同源且无扩展名」的链接
+      // 会 preventDefault 并走客户端路由（treatAsHtml），找不到页面模块就渲染自带 404，
+      // 全程不发 HTTP 请求 —— 表现为「点链接 404、刷新才进得来」。
+      // 带 target 的链接会被该处理器直接放行，走真实请求命中 nginx 反代。
+      // 同理，以后新增任何指向非 VitePress 路由的站内链接，都必须带 target。
       copyright:
-        '基于开源项目 ZCode（Apache-2.0）二次开发 · <a href="/feedback-admin">反馈管理</a>',
+        '基于开源项目 ZCode（Apache-2.0）二次开发 · <a href="/feedback-admin" target="_blank" rel="noopener">反馈管理</a>',
     },
   },
 });
