@@ -318,7 +318,7 @@ const server = http.createServer(async (req, res) => {
       <p>JSON: <code>?format=json</code> · 共 ${db.tickets.length} 条</p>
       <div class="tabs">${filterTab("全部", "")}${filterTab("待处理", "已提交")}${filterTab("已解决", "已解决")}${filterTab("不予解决", "已拒绝")}</div>
       <table><tr><th>时间</th><th>ID</th><th>标题</th><th>类型</th><th>级别</th><th>联系方式</th><th>描述</th><th>状态</th><th>操作</th></tr>${rows}</table>
-      <script>function setStatus(id,status){fetch('/admin/ticket/'+encodeURIComponent(id)+'/status?'+location.search.slice(1),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:status})}).then(function(){location.reload()})}</script></body></html>`;
+      <script>function setStatus(id,status){fetch('/feedback-api/admin/ticket/'+encodeURIComponent(id)+'/status',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin'},body:JSON.stringify({status:status})}).then(function(r){if(!r.ok){alert('操作失败：HTTP '+r.status)}location.reload()})}</script></body></html>`;
       res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
       res.end(html);
       return;
