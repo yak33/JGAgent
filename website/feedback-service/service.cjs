@@ -166,7 +166,8 @@ function createTicket(body, deviceMid) {
   const ticket = {
     ticket_id: id,
     title: String(body.title || "(无标题)").slice(0, 200),
-    status: "submitted",
+    // 状态统一中文枚举（与管理页筛选、客户端 mapFeedbackStatus 兼容）
+    status: "已提交",
     created_at: now,
     updated_at: now,
     device_mid: deviceMid || null,
@@ -263,9 +264,36 @@ const server = http.createServer(async (req, res) => {
         sendJson(res, 200, db);
         return;
       }
-      const rows = db.tickets
-        .map(
-          (ticket) => `<tr>
+      // 状态筛选（全部/已提交/已解决/已拒绝），保留 key 以维持登录态。
+      const statusFilter = url.searchParams.get("status") || "";
+      const keepKey = url.searchParams.get("key")
+        ? "&key=" + encodeURIComponent(url.searchParams.get("key"))
+        : "";
+      const filteredTickets = statusFilter
+        ? db.tickets.filter((ticket) => ticket.status === statusFilter)
+        : db.tickets;
+      const filterTab = (label, value) => {
+        const active = statusFilter === value || (value === "" && !statusFilter);
+        const href =
+          "/feedback-admin?status=" + encodeURIComponent(value) + keepKey + "&format=";
+        return `<a class="tab${active ? " active" : ""}" href="${href}html">${label}</a>`;
+      };
+      const rows = filteredTickets
+        .map((ticket) => {
+          const actions = ["已解决", "已拒绝", "已提交"]
+            .filter((status) => status !== ticket.status)
+            .map(
+              (status) =>
+                `<button onclick="setStatus('${escapeHtml(ticket.ticket_id)}','${status}')">${status}</button>`,
+            )
+            .join("");
+          const statusClass =
+            ticket.status === "已解决"
+              ? "st-ok"
+              : ticket.status === "已拒绝"
+                ? "st-no"
+                : "st-open";
+          return `<tr>
         <td>${escapeHtml(ticket.created_at)}</td>
         <td>${escapeHtml(ticket.ticket_id)}</td>
         <td>${escapeHtml(ticket.title)}</td>
@@ -273,16 +301,53 @@ const server = http.createServer(async (req, res) => {
         <td>${escapeHtml(ticket.content?.severity ?? "")}</td>
         <td>${escapeHtml(ticket.contact ?? "")}</td>
         <td style="max-width:480px;white-space:pre-wrap;">${escapeHtml(ticket.content?.description ?? "")}</td>
-      </tr>`,
-        )
+        <td><span class="${statusClass}">${escapeHtml(ticket.status)}</span></td>
+        <td class="row-actions">${actions}</td>
+      </tr>`;
+        })
         .join("\n");
       const html = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><title>JGAgent 反馈收集</title>
-      <style>body{font-family:system-ui,sans-serif;margin:24px;background:#fafafa}table{border-collapse:collapse;width:100%;background:#fff}td,th{border:1px solid #ddd;padding:8px;vertical-align:top;font-size:13px}th{background:#f0f0f0}</style>
+      <style>body{font-family:system-ui,sans-serif;margin:24px;background:#fafafa}
+      table{border-collapse:collapse;width:100%;background:#fff}td,th{border:1px solid #ddd;padding:8px;vertical-align:top;font-size:13px}th{background:#f0f0f0}
+      .tabs{margin:12px 0}.tabs a{display:inline-block;padding:4px 14px;margin-right:6px;border:1px solid #ddd;border-radius:999px;background:#fff;color:#333;text-decoration:none;font-size:13px}
+      .tabs a.active{background:#d97706;border-color:#d97706;color:#fff}
+      .st-open{color:#c0392b;font-weight:600}.st-ok{color:#1e7e34;font-weight:600}.st-no{color:#888}
+      .row-actions button{display:block;width:100%;margin:2px 0;padding:3px 8px;font-size:12px;cursor:pointer;border:1px solid #ccc;border-radius:6px;background:#fff}
+      .row-actions button:hover{background:#f0f0f0}</style>
       </head><body><h1>JGAgent 反馈收集（${db.tickets.length}）</h1>
       <p>JSON: <code>?format=json</code> · 共 ${db.tickets.length} 条</p>
-      <table><tr><th>时间</th><th>ID</th><th>标题</th><th>类型</th><th>级别</th><th>联系方式</th><th>描述</th></tr>${rows}</table></body></html>`;
+      <div class="tabs">${filterTab("全部", "")}${filterTab("待处理", "已提交")}${filterTab("已解决", "已解决")}${filterTab("不予解决", "已拒绝")}</div>
+      <table><tr><th>时间</th><th>ID</th><th>标题</th><th>类型</th><th>级别</th><th>联系方式</th><th>描述</th><th>状态</th><th>操作</th></tr>${rows}</table>
+      <script>function setStatus(id,status){fetch('/admin/ticket/'+encodeURIComponent(id)+'/status?'+location.search.slice(1),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:status})}).then(function(){location.reload()})}</script></body></html>`;
       res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
       res.end(html);
+      return;
+    }
+
+    // ---- 管理动作：更新工单状态（已解决/已拒绝/重新打开）----
+    const statusMatch = /^\/admin\/ticket\/([^/]+)\/status$/.exec(pathname);
+    if (statusMatch && req.method === "POST") {
+      if (!checkAdminKey(url) && getAdminCookie(req) !== ADMIN_KEY) {
+        sendJson(res, 403, { code: 403, msg: "forbidden" });
+        return;
+      }
+      const id = decodeURIComponent(statusMatch[1]);
+      const body = await readJsonBody(req);
+      const allowed = ["已提交", "已解决", "已拒绝"];
+      if (!allowed.includes(body.status)) {
+        sendJson(res, 400, { code: 400, msg: "invalid status: " + String(body.status) });
+        return;
+      }
+      const db = readDb();
+      const ticket = findTicket(db, id);
+      if (!ticket) {
+        sendJson(res, 404, { code: 404, msg: "ticket not found: " + id });
+        return;
+      }
+      ticket.status = body.status;
+      ticket.updated_at = new Date().toISOString();
+      writeDb(db);
+      sendEnvelope(res, { ticket_id: ticket.ticket_id, status: ticket.status });
       return;
     }
 
