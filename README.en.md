@@ -94,6 +94,10 @@ pnpm --filter @zcode/cli... build
 node apps/zcode-cli/packages/cli/dist/zcode.cjs --help
 ```
 
+### UI Plugin development
+
+See the [UI Plugin guide](UI_PLUGIN.en.md) for the Excalidraw workflow, supported APIs, plugin installation and updates, and host debugging.
+
 ## Configuration
 
 See [.env.example](.env.example) for service endpoints and build configuration; copy to `.env` for local overrides (`.env.local` for private overrides). Built-in defaults shipped with the client are documented in [config/README.md](config/README.md).

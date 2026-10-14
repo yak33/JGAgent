@@ -95,3 +95,16 @@ export function buildLoginApiKeyDefaultModelPreferenceFromSelection(
     ?.models[0]?.modelId;
   return firstModel ? encodeCustomModelValue(providerId, firstModel) : null;
 }
+
+export function resolveHydratedLoginApiKeyValue({
+  savedApiKey,
+  userEdited,
+}: {
+  savedApiKey: string;
+  userEdited: boolean;
+}): string | null {
+  if (userEdited) {
+    return null;
+  }
+  return savedApiKey.trim();
+}

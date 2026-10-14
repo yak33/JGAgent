@@ -282,6 +282,8 @@ export function CodingPlanStatusPanel({
       id: "settings.modelProvider.planCard.codingPlan",
     }),
   });
+  // JGAgent 去官方化（阶段 3）：账单折扣徽章随订阅域移除。
+  const titleBillingDiscountVisible = false;
   const notPurchasedStatusLabel = isNotPurchased ? (
     <span className="flex w-fit items-center gap-1.5 text-foreground-subtle">
       <InfoIcon className="size-3 shrink-0" aria-hidden="true" />
@@ -401,6 +403,7 @@ export function CodingPlanStatusPanel({
           <PlanStatusCardSurface
             key="current-plan"
             planTitle={planTitle}
+            titleAccessory={undefined}
             statusMeta={statusContent}
             trailingAction={trailingAction}
             // JGAgent 去官方化（阶段 3）：Start Plan 余额卡与 Coding Plan 额度汇总卡随订阅域移除。
@@ -416,7 +419,7 @@ export function CodingPlanStatusPanel({
   );
 }
 
-function hasStartPlanEntitlementQuota(
+export function hasStartPlanEntitlementQuota(
   entitlements: UsageEntitlementSubscriptionDetail["entitlements"],
   limits: readonly UsageQuotaLimit[],
 ): boolean {
@@ -431,7 +434,7 @@ function hasStartPlanEntitlementQuota(
   return limits.some((limit) => entitlementIds.has(limit.type.trim().toLowerCase()));
 }
 
-function resolveCodingPlanStatusCardTitle({
+export function resolveCodingPlanStatusCardTitle({
   isPurchased,
   // JGAgent 去官方化（阶段 3）：isUnavailable 形参随额度展示分支移除。
   isStartPlanProvider,
