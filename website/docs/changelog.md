@@ -1,5 +1,15 @@
 # 更新日志
 
+## v0.4.0 <Badge type="tip">Preview</Badge>
+
+2026-10-14 · [下载 Windows 版](/downloads/JGAgent-0.4.0-win-x64.exe)
+
+- 同步上游 ZCode v3.15.1：插件交互页面（UI Plugin）与内联 Gen UI 体验上线
+- 手机远控增强：扫码连接状态可视化，会话恢复链路更稳定
+- 动态工作流引擎支持用户模式选择，Agent 运行时能力更新
+- 自动更新优化：检查频率提升（15 分钟），下载失败自动重试
+- 反馈与账号体系保持捷关自建方案不变
+
 ## v0.3.3 <Badge type="tip">Preview</Badge>
 
 2026-09-27 · [下载 Windows 版](/downloads/JGAgent-0.3.3-win-x64.exe)

@@ -3,12 +3,13 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 
 // 版本与下载地址单点维护：发版时只改这里与 latest（需与 changelog.md 最新一节一致）。
 const DOWNLOAD_URL = "/downloads/JGAgent-latest-win-x64.exe";
-const VERSION = "0.3.3";
+const VERSION = "0.4.0";
 const RELEASE_DATE = "2026-09-27";
 
 const latest = [
-  "应用内自动更新上线：新版本应用内提示，差分下载只拉变化部分",
-  "发版即推送全体客户端；官网始终提供最新安装包",
+  "同步上游 v3.15.1：插件可交互页面（UI Plugin）与 Gen UI 问答体验",
+  "手机扫码远程控制桌面工作区；动态工作流引擎与 Agent 能力更新",
+  "自动更新体验优化：轮询更快、下载失败自动重试",
 ];
 
 // Hero 规格表：macOS / Linux 与 Windows 并列，仅以"稍后即来"弱化展示。
