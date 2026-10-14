@@ -122,5 +122,5 @@
     "webdriverio": "^9.27.0"
   },
   "productName": "JGAgent",
-  "version": "0.3.3"
+  "version": "0.4.0"
 }
