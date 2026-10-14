@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- 零依赖单文件服务（docs/release/README.md 第八节），拆分会破坏单文件部署约定 */
 /**
  * JGAgent 反馈收集服务（零依赖，node:http 实现）。
  *

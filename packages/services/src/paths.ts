@@ -4,20 +4,23 @@ import { cp } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { basename, join, win32 } from "node:path";
 import { homedir } from "node:os";
-import { DATA_BASE_DIR_FORBIDDEN_WINDOWS_INSTALL_DIR_ERROR_CODE } from "@zcode/shared";
+import {
+  DATA_BASE_DIR_FORBIDDEN_WINDOWS_INSTALL_DIR_ERROR_CODE,
+  ZCODE_AGENT_RUNTIME,
+} from "@zcode/shared";
 
 let _dataBaseDir: string | null = null;
 export const ZCODE_WINDOWS_APP_INSTALL_DIR_ENV = "ZCODE_WINDOWS_APP_INSTALL_DIR";
 const envDataBaseDir = process.env.ZCODE_DATA_BASE_DIR?.trim() || null;
 const defaultDataBaseDir = process.env.HOME?.trim() || homedir();
 
-interface DataBaseDirTargetValidationOptions {
+export interface DataBaseDirTargetValidationOptions {
   platform?: NodeJS.Platform | string;
   env?: Record<string, string | undefined>;
   appInstallDir?: string | null;
 }
 
-type DataBaseDirTargetValidationResult =
+export type DataBaseDirTargetValidationResult =
   | { ok: true }
   | {
       ok: false;
@@ -224,12 +227,20 @@ export function getLegacyDeletedTaskSessionSnapshotPath(
 }
 
 /**
- * Copy the .zcode data subdirectories from one base dir to another.
- * - v2: task snapshots and provider config; excludes setting.json and its transient
- *   atomic-write siblings — bootstrap state must only live at the default homedir location.
- * - cli/db: session store database and its wal/shm/backup siblings. Agent 侧会话库
- *   现已跟随 ZCODE_DATA_BASE_DIR（与 ZCode 原版共机隔离），切换数据目录时若不迁移，
- *   重启后 Agent 会在新目录打开空库，历史会话全部不可见。
+ * GLM（唯一 agent provider）的配置目录：~/.jgagent/cli。
+ * Bugfix：GLM 配置改为直接读写新版 zcode-cli 的全局配置目录，不做 workspace 隔离，
+ * 避免同机不同工作区配置漂移。
+ */
+export function getProviderWorkspaceConfigDir(): string {
+  return ZCODE_AGENT_RUNTIME.nativeConfigDir
+    ? join(getDataBaseDir(), ZCODE_AGENT_RUNTIME.nativeConfigDir)
+    : join(getDataBaseDir(), ".jgagent", "cli");
+}
+
+/**
+ * Copy the .zcode/v2 data directory from one base dir to another.
+ * Excludes setting.json and its transient atomic-write siblings — bootstrap
+ * state must only live at the default homedir location.
  */
 export async function copyDataDirectory(oldBaseDir: string, newBaseDir: string): Promise<void> {
   for (const relativeDir of ["v2", join("cli", "db")]) {

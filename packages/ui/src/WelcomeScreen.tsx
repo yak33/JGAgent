@@ -4,6 +4,7 @@
  * JGAgent 去官方化（阶段 3）：移除 OAuth 渠道登录，仅保留 API Key 直连与跳过路径。
  */
 import type { ReactNode } from "react";
+import { DesktopOverlayWindowControls } from "@/DesktopOverlayWindowControls.js";
 import { ZCodeAboutLogo } from "@/components/ui/ZCodeAboutLogo.js";
 import { useZCodeIntl } from "./i18n/IntlProvider.js";
 import { LoginApiKeyForm } from "./login/LoginApiKeyForm.js";
@@ -21,7 +22,9 @@ export function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   return (
     <main className="relative flex h-full min-h-dvh items-center justify-center overflow-hidden bg-background px-4 py-6 text-foreground sm:px-6">
       <ThemeHeroVisual className="absolute inset-0" />
-      <div className="pointer-events-none absolute left-0 top-0 right-0 z-10 flex h-12 w-full items-center [app-region:drag]" />
+      {/* 原生拖拽命中不受 pointer-events/z-index 约束；拖拽层必须避开窗控，且先于 no-drag 区声明。 */}
+      <div className="pointer-events-none absolute left-0 top-0 right-0 z-10 flex h-12 items-center [app-region:drag] platform-windows-desktop:right-[134px] platform-linux-desktop:right-[134px]" />
+      <DesktopOverlayWindowControls />
       <section className="relative z-10 w-full flex flex-col gap-10 max-w-sm rounded-2xl border border-popover-border bg-background p-8 text-ui-base/relaxed shadow-md sm:p-10">
         <LoginPanelHeader
           title={intl.formatMessage({ id: "login.title" })}

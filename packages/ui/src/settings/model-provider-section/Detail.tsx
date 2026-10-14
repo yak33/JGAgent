@@ -85,7 +85,7 @@ function resolveTeamScopedPlanNavItem(
   return item;
 }
 
-function resolveTeamPlanInspectionAccess(
+export function resolveTeamPlanInspectionAccess(
   item: Extract<ModelProviderNavItem, { type: "teamPlan" }>,
 ) {
   // 不可用套餐仍需查询失效原因；组织/项目身份来自团队导航，不能被执行可用性门禁清空。
@@ -104,7 +104,7 @@ function resolveTeamPlanInspectionAccess(
   };
 }
 
-function resolvePlanSettingsProvider({
+export function resolvePlanSettingsProvider({
   view,
   providerId,
   fallback,

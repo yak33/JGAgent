@@ -6,6 +6,8 @@ import { createServiceDescriptor } from "../descriptors.js";
 // （读取 agent 数据库的 model/turn/tool 用量）。Coding Plan 订阅配额、额度重置与
 // entitlement 快照等方法随订阅体系一并移除。
 export interface IUsageStatsService {
+  // 上游 v3.15.1 可选方法：Highspeed 节省时间基准 TPS；JGAgent 无订阅域恒不实现。
+  getCodingPlanRegularTps?(_request: unknown): Promise<number | undefined>;
   getAppUsageSnapshot(request: AppUsageRequest): Promise<AppUsageSnapshot>;
 }
 

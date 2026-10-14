@@ -130,7 +130,7 @@ node scripts/bundle.mjs --os win --arch x64
 | 签名 | 安装包未签名，首启 SmartScreen 拦截，官网三步指引已写"仍要运行" |
 | 旧服务器 106.15.120.94 | 只跑捷关模型网关（:9527），模板 baseUrl 打包指向它，与官网服务器无关，勿混 |
 | 反馈收集服务 | 官网服务器 Docker 服务 jgagent-feedback（/opt/jgagent-feedback，端口 3300 仅内网），nginx 反代 /feedback-api 与 /feedback-upload。客户端问题上报/提需求集中落到这里；管理查看页 /feedback-admin?key=<见服务器 /opt/jgagent-feedback/.env> |
-| **上游 v3.14.3 同步** | **待办（建议作为 v0.3.0 主项）**：评估结论与合并预案见**第七节**。⚠️ 本仓无官方 git 历史（快照导入），`git merge upstream/main` 不可行，必须走 `git apply --3way`（2026-09-26 复核修正） |
+| **上游 v3.15.1 同步** | **已完成（sync/upstream-v3.15.1 分支，2026-10-14，待合并 main 作为 v0.4.0 主项）**：同步记录与流程见**第七节**。⚠️ 本仓无官方 git 历史（快照导入），`git merge upstream/main` 不可行，必须走 `git apply --3way`（2026-09-26 复核修正） |
 
 ## 六、发版验证清单
 
@@ -140,7 +140,49 @@ node scripts/bundle.mjs --os win --arch x64
 - [ ] 线上 `/downloads/<exe>` 200 且 sha512 与本地一致
 - [ ] 本机装一遍冒烟：网关连通、左下角本地身份、模型设置页、中文显示
 
-## 七、上游同步预案（v3.14.3，2026-09-26 复核）
+## 七、上游同步记录（v3.15.1，2026-10-14 完成）
+
+### 本次同步概况
+
+官方从 v3.14.3 更新到 **v3.15.1**（2026-10-10 tag，单一 squash 提交）。主题：UI Plugin 与内联 Gen UI、Desktop/远程工作区/Agent 能力更新、内置插件与回归测试扩充。总规模 11,736 文件（+194 万行，大头是测试与文档），生产代码新增集中在 `packages/ui/src`（322 个）、`services`、`desktop`、`shared`，另有新包 `packages/android`（手机远控壳，官方域白名单指向 zcode.z.ai，**未自建 relay 前不发布**）。
+
+### 与 v3.14.3 流程的差异（重要经验）
+
+1. **patch 必须带 `--binary --full-index`**：官方 diff 含二进制文件（如 workflow-git-world-read-real.test.ts），普通 patch 应用时报 "cannot apply binary patch without full index line" 且原子回滚。
+2. **官方改动了我们已摘除的商业化文件**（69 个 not-exist：coding-plan、oauth、offPeak、highspeed 服务域等）：这些文件的 patch 段必须**剔除后再应用**（`git diff ... :(exclude)`），保持阶段 3 摘除状态。
+3. 官方**删除**的文件（deviceMid.ts、armsRumShared js/d.ts）：跟随删除，注意 `desktop/src/main/desktopDeviceMid.ts` 是它的继任者。
+
+### 冲突面（81 文件，173 块）
+
+解冲突原则同上次：**敏感区保我方，协议与 runtime 取官方，品牌文案保我方**。重点：
+
+- 品牌四件套（README ×2、根 package.json、.gitignore）：保我方；README 合入官方 UI Plugin 文档段（去官方 PR 流程）
+- `zcodeEndpoint.ts`：官方新增 TEST_* 常量与 Web 远控 relay WS 端点，全部**补占位 `.invalid` 定义**（引用点在干净合入区，漏定义会编译错）
+- `env.ts`：遥测保我方运行时变量模式；官方新增 `ZCODE_AUTO_UPDATE_ENABLED`（构建期注入，官方默认 false）会**静默关闭自动更新**——已在 `scripts/build-time-config.mjs` 把默认改为启用（不设 ZCODE_AUTO_UPDATE 即开启）
+- `tsup.config.ts`：我方 `__ZCODE_UPDATE_FEED_URL__`/`__ZCODE_CDN_BASE_URL__` 与官方 `__ZCODE_REMOTE_CDN_RELEASE_ROOTS__`/`createMainDefines` 并存
+- `remoteCdn.ts`：官方双源 CDN 结构合入，域名占位化 `cdn.jgagent.invalid`
+- i18n：官方 Web 远控（手机扫码）文案集合入；migration 等品牌条目保我方
+
+### 反馈功能（用户决策：不同步，保持自建）
+
+官方 v3.15.1 大幅扩展反馈 UI（工单详情/时间线/补充编写器，+1,689 行），**全部回滚为我方版本**：`packages/ui/src/feedback/` 9 个官方新文件删除、8 个修改文件 checkout HEAD、`services/src/feedback/feedbackLogArchive.ts` 回滚、官方 feedback 文档删除。我方自建反馈链路（`website/feedback-service` + `packages/services/src/node.ts` 端点）不变。
+
+### 商业化新增的清理（官方作为新文件带入）
+
+删除：services 的 `cloud-content/`、`marketing-touch/`、`highspeed/` 服务域，`ui/src/components/marketing-touch/`、`ui/src/rewards/`，`CodingPlanBillingDiscount`、`oauthActions`、Web OAuth 登录页（WebLoginPage/WebLoggedInWaitingPage 及 main.tsx 登录路由）等。
+保留（死配置/纯类型，无行为）：`zcode-builtin.json` 的 account: provider 条目、`shared/highspeed.ts` 类型、`ui/src/highspeed/` 展示组件（无卡时不渲染，SessionPane 用本地 no-op stub 接线）、`preload/rewardsWebview`（与 codingPlanWebview 同类死文件惯例）。
+
+### 同步后验证（2026-10-14 实测）
+
+- ✅ `pnpm typecheck` exit 0（0 错误）
+- ✅ `pnpm lint` exit 0（0 error；102 warnings 主要来自官方新增测试代码，属官方基线）
+- ✅ `pnpm architecture:check -- --changed` OK（violations 0）
+- ✅ 端点审计：新增 TEST_*/relay/CDN/网关路由全部 `.invalid` 占位；`zcode.z.ai` 残留仅存于 `zcode-builtin.json` 存量死配置与 android 壳（未发布）
+- ✅ 存储根：`getAppConfigDir()` 链路验证落 `~/.jgagent/v2`；遥测 `ZCODE_TELEMETRY_ENABLED=false` 不变
+- ⬜ `pnpm dev:desktop` 冒烟 + 网络审计（待合并前执行）
+- ⬜ 按第六节清单打包发 v0.4.0（待用户确认发版时机）
+
+### 历史记录（v3.14.3，2026-09-26 复核）
 
 ### 上游更新现状
 
