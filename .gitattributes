@@ -14,3 +14,7 @@ third-party/runtime/*.txt -text -whitespace
 docs/knip/docs/LICENSE -text -whitespace
 docs/knip/docs/licenses/** -text -whitespace
 third-party/inventory.json linguist-generated=true
+
+# Gen UI 离线运行时资产按字节保存：构建期做 sha256 校验（gen-ui-runtime-assets.mjs），
+# Windows autocrlf 的行尾转换会破坏哈希。
+apps/zcode-cli/packages/visualize-plugin/skills/visualize/assets/** -text
