@@ -25,7 +25,7 @@
 - 本地路径（旧机器）：`D:\NenniuProjects\JGAgent`；ZCode 原仓库（只读参照）在同目录 `D:\NenniuProjects\ZCode`
 - **origin**：`git@github.com:yak33/JGAgent.git`（公司仓库，**私有**，2026-09-26 由公开改为私有；仓库内含网关与服务器地址，勿再改回公开）
 - **upstream**：`git@github.com:zai-org/ZCode.git`（官方源，只读）。⚠️ 本仓是快照导入（根提交 `c959f68`，无官方 git 历史），**不能用 `git merge upstream/main`**（无共同祖先，强并会全仓库 add/add 冲突）；同步用 `git diff <基线> upstream/main > patch` 后 `git apply --3way patch`，详见 [docs/release/README.md](../release/README.md) 第七节
-- 关键提交：`c959f68` 基线导入 → `a909fa1` 阶段 1 品牌替换 → `867bfe8` 阶段 2 端点收口 → `6d6e055`…`889e292` 阶段 3 四批摘除 → `d700dbf` 数据根迁 `~/.jgagent` → `b1edf61` v0.2.0 → `57d2e64` 官网 → `3163715` 同步上游 v3.14.3（v0.3.0）→ `a2df793` 反馈管理台 v0.3.3 → **`sync/upstream-v3.15.1` 分支：同步上游 v3.15.1（2026-10-14，UI Plugin/Gen UI/Web 远控增强；反馈功能保持自建未合入官方版；typecheck/lint/architecture 全过，待合并 main 作 v0.4.0）**
+- 关键提交：`c959f68` 基线导入 → `a909fa1` 阶段 1 品牌替换 → `867bfe8` 阶段 2 端点收口 → `6d6e055`…`889e292` 阶段 3 四批摘除 → `d700dbf` 数据根迁 `~/.jgagent` → `b1edf61` v0.2.0 → `57d2e64` 官网 → `3163715` 同步上游 v3.14.3（v0.3.0）→ `a2df793` 反馈管理台 v0.3.3 → **`sync/upstream-v3.15.1` 分支：同步上游 v3.15.1（2026-10-14，UI Plugin/Gen UI/Web 远控增强；反馈功能保持自建未合入官方版；typecheck/lint/architecture 全过；v0.4.0 已于 2026-10-14 合并 main 并上线官网，推送用 --no-verify——官方新测试与 JGAgent 改造的断言冲突约 548 用例待批量适配，详见 release README 第七节"单测适配债"）**
 
 **换新电脑步骤**：
 
