@@ -1,13 +1,12 @@
 import type {
   createCodingPlanApiKeyResolver,
-  createCliOAuthClient,
-  BrowserOpenResult,
-  CliOAuthInitData,
-  CliOAuthPollData,
-  CliOAuthUser,
   SharedZCodeCredentialStore,
 } from "@zcode/adapters";
 import type { EnvRecord } from "@zcode/adapters/model";
+
+// JGAgent 去官方化（阶段 3）：OAuth 登录客户端（cli-oauth.js）与浏览器轮询登录类型
+// （CliOAuthInitData/PollData/User、createCliOAuthClient）已随账号域移除；
+// 本契约只保留 API Key 配置、登出与共享凭据存储的类型面。
 
 export type CodingPlanProviderId = "bigmodel" | "zai";
 
@@ -18,29 +17,20 @@ export interface LoginZCodeCliOptions {
   baseUrl?: string;
   credentialStore?: SharedZCodeCredentialStore;
   env?: EnvRecord;
-  httpClient?: Parameters<typeof createCliOAuthClient>[0]["httpClient"];
   noBrowser?: boolean;
   now?: () => number;
-  onAuthorizeUrl?: (data: CliOAuthInitData) => void | Promise<void>;
-  onBrowserOpen?: (result: BrowserOpenResult) => void | Promise<void>;
-  onPollStatus?: (data: CliOAuthPollData) => void | Promise<void>;
-  openBrowser?: (url: string) => Promise<BrowserOpenResult>;
-  pollToken?: string;
   sleep?: (ms: number) => Promise<void>;
   timeoutMs?: number;
   personalProviderConfigPath?: string;
 }
 
 export interface LoginZCodeCliResult {
-  browser?: BrowserOpenResult;
   configPath: string;
   credentialsPath: string;
   model: string;
   providerId: CodingPlanProviderId;
-  user: CliOAuthUser;
 }
 
-// BigModel 与 Z.ai 共用服务端轮询登录，只是 providerId 固定为 bigmodel。
 export type LoginBigmodelCodingPlanOptions = Omit<LoginZCodeCliOptions, "providerId">;
 export type LoginBigmodelCodingPlanResult = LoginZCodeCliResult & { providerId: "bigmodel" };
 
