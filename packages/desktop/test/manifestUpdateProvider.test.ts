@@ -53,6 +53,39 @@ describe("ManifestUpdateProvider helpers", () => {
     expect(url.searchParams.get("device_mid")).toBe("mid-1");
     expect(url.searchParams.get("channel")).toBe("1");
   });
+
+  // JGAgent 回归（2026-10-15 v0.4.0 更新失败事故）：自定义 feed（静态 latest.yml）时
+  // 下载 base 必须取 feed 所在目录；此前取 origin 根，把下载 URL 打到站点根路径，
+  // 被官网 SPA fallback 成 index.html，客户端报 sha512 mismatch。
+  it("resolves download files against the custom feed directory, not the origin root", async () => {
+    const provider = new ManifestUpdateProvider(
+      {
+        provider: "custom",
+        manifestUrl: "http://updates.example.test/downloads/latest.yml",
+        endpointOrigin: "https://zcode.example.test",
+        releasePlatform: "windows-x86_64",
+      },
+      Object.create(NsisUpdater.prototype),
+      { platform: "win32", isUseMultipleRangeRequest: false, executor: {} as never },
+    );
+    provider.resolveEndpointOrigin = async () => "https://zcode.example.test";
+    provider.resolveReleaseChannel = async () => "stable";
+    provider.httpRequest = (async () => {
+      const manifestYaml = [
+        "version: 0.4.0",
+        "files:",
+        "  - url: JGAgent-0.4.0-win-x64.exe",
+        "    sha512: checksum",
+      ].join("\n");
+      return manifestYaml;
+    }) as never;
+
+    const updateInfo = await provider.getLatestVersion();
+    const resolved = await provider.resolveFiles(updateInfo as never);
+    expect(resolved[0]!.url.href).toBe(
+      "http://updates.example.test/downloads/JGAgent-0.4.0-win-x64.exe",
+    );
+  });
 });
 
 const linuxUpdaters = [

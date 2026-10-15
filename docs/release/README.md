@@ -229,6 +229,30 @@ git apply --3way /tmp/v3.14.3.patch   # 用 872ad96 的 blob 做基准三方合�
 
 ---
 
+## 七·五、v0.4.0 自动更新失败事故（2026-10-15，已修复）
+
+**现象**：v0.3.3 客户端手动检查更新报 sha512 mismatch；不弹自动更新。
+
+**根因**（两层）：
+1. **客户端 URL 语义错配**（v0.3.2 起存在）：静态 latest.yml feed 被传给官方语义的
+   `ManifestUpdateProvider`，其 `resolveBaseUrl = new URL("/", manifestUrl)` 把下载文件
+   （`JGAgent-x.exe`、`.blockmap`）解析到 **origin 根路径** 而非 feed 所在的 `/downloads/`；
+2. 根路径请求被官网 nginx SPA fallback（`try_files ... /index.html`）返回 200 + 22KB 的
+   index.html——客户端把 HTML 当安装包拼装，必然校验失败（"got"哈希即垃圾内容）。
+   latest.yml 本身路径正确（轮询/手动检查都能拿到版本信息）。
+
+**修复**：
+- **服务器止血**（当日生效，救活 v0.3.2~v0.4.0 全部存量客户端）：nginx 增加根路径
+  `JGAgent-*.exe(.blockmap)` → `/downloads/` 的 rewrite 规则（配置已备份
+  `nginx.conf.bak-0.4.0`）。已验证根路径 200/206 与真文件、完整下载 sha512 一致。
+- **客户端根治**（随下一版生效）：`manifestUpdateProvider.ts` 自定义 feed 时
+  `resolveBaseUrl = new URL("./", manifestUrl)`（feed 目录），含回归单测。
+  **客户端修复版发布后，如无存量旧版可移除 nginx 兼容规则。**
+
+**排查时的两个干扰项**（记录避免重蹈）：服务器上 `sha512sum` 输出异常（256 位 hex，
+疑被主机安全 agent 包装，不可信——用 md5sum 或 sha256sum 对照）；服务器带宽 ~3.6Mbps，
+148MB 全量下载需 5-6 分钟且连接偶发闪断（curl exit 18），带重试可完成，差分下载影响小。
+
 ## 八、反馈收集服务（运维手册）
 
 > 2026-09-27 上线。承接客户端「问题上报 / 给产品提需求」，工单集中存官网服务器，

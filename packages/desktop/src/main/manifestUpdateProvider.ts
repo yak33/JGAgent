@@ -212,7 +212,13 @@ export class ManifestUpdateProvider extends Provider<UpdateInfo> {
       deviceMid: this.options.deviceMid,
       channel: releaseChannel,
     });
-    this.resolveBaseUrl = new URL("/", manifestUrl);
+    // JGAgent 修复（2026-10-15 v0.4.0 更新失败事故）：自定义 feed（静态 latest.yml，
+    // electron-builder 语义——文件名相对 feed 所在目录）必须以 feed 目录为下载 base；
+    // 官方 manifest 语义才是相对 endpoint origin。此前统一用 origin 根，把下载 URL
+    // 打到站点根路径，被官网 SPA fallback 成 index.html，客户端报 sha512 mismatch。
+    this.resolveBaseUrl = this.options.manifestUrl
+      ? new URL("./", manifestUrl)
+      : new URL("/", manifestUrl);
     const releaseChannelApiValue = mapReleaseChannelToApiValue(releaseChannel);
 
     const raw = await this.httpRequest(manifestUrl, {
