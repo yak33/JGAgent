@@ -1,7 +1,8 @@
 /* oxlint-disable eslint(max-lines) -- footer 聚合主题、模式和快捷键菜单。 */
 import type { Locale } from "@zcode/shared";
 import { memo, useCallback, useEffect, useState, type ReactNode } from "react";
-import { DesktopCommandIds, TID_TASK_SETTINGS_BUTTON } from "@zcode/shared";
+import { DesktopCommandIds } from "@zcode/shared";
+import { TID_TASK_SETTINGS_BUTTON } from "@zcode/shared/test-ids";
 import { ControlHintTooltip } from "@/ControlHintTooltip.js";
 import { cn } from "@/components/lib/utils.js";
 import { Button } from "@/components/ui/button.js";

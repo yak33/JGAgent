@@ -1,5 +1,9 @@
-// JGAgent 去官方化（阶段 3）：删除账号与商业化服务域——accessor 移除
-// oauthService、codingPlanSubscriptionService、offPeakTaskService 三个服务面。
+// JGAgent 去官方化（阶段 3）：账号与商业化服务域（oauthService、codingPlanSubscriptionService、
+// offPeakTaskService）保持移除；官方新功能域（remote-projects、task-groups、project 等）正常合入。
+import type { IRemoteProjectService } from "#src/remote-projects/contract.js";
+import type { ITaskGroupService } from "#src/task-groups/contract.js";
+import type { WindowProjectDirectoryServices } from "#src/window-project-directory/contract.js";
+import type { IProjectService } from "#src/project/contract.js";
 import type { IFileService } from "./file/file.js";
 import type { IMediaPreviewService } from "./media-preview/mediaPreview.js";
 import type { IGenUiService } from "./gen-ui/contract.js";
@@ -41,11 +45,17 @@ import type { ISettingsSyncService } from "./settings-sync/settingsSync.js";
 import type { IFeedbackService } from "./feedback/feedback.js";
 import type { IPromptAttachmentTransferService } from "./prompt-attachment-transfer/promptAttachmentTransfer.js";
 import type { IWindowControllerService } from "./window-controller/windowController.js";
+import type { ISourceServerWorkspaceService } from "./source-server-workspace/sourceServerWorkspace.js";
+import type { ISourceServerManagementService } from "./source-server-management/sourceServerManagement.js";
 import type { IOnboardingRecordService } from "./onboarding/onboardingRecord.js";
 import type { IConversationShareService } from "./conversation-share/conversationShare.js";
 
 /** UI 层消费的统一服务接口 */
 export interface IServiceAccessor {
+  readonly taskGroupService?: ITaskGroupService;
+  readonly projectService?: IProjectService;
+  readonly remoteProjectService?: IRemoteProjectService;
+  readonly windowProjectDirectory?: WindowProjectDirectoryServices;
   readonly fileService: IFileService;
   readonly mediaPreviewService?: IMediaPreviewService;
   readonly gitService: IGitService;
@@ -71,6 +81,10 @@ export interface IServiceAccessor {
   readonly providerSettingsService: IProviderSettingsService;
   /** 当前 Environment Registry 发布的唯一模型选择 View。 */
   readonly modelSelectionService: IModelSelectionService;
+  /** Source Server 端 workspace 身份解析；本地 Host 也注册一份以保持合同一致。 */
+  readonly sourceServerWorkspaceService: ISourceServerWorkspaceService;
+  /** 仅桌面窗口 Host 的 base attachment 注册；远端 / Web 不提供。 */
+  readonly sourceServerManagementService?: ISourceServerManagementService;
   readonly usageStatsService: IUsageStatsService;
   readonly clientConfigService: IClientConfigService;
   readonly clientScenesService: IClientScenesService;

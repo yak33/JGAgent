@@ -1,7 +1,5 @@
-import { existsSync, mkdirSync } from "node:fs";
 import { homedir } from "node:os";
-import { dirname, join } from "node:path";
-import { maybeThrowStorageFsFault } from "../fs-fault-injection.js";
+import { join } from "node:path";
 
 /**
  * 解析 .jgagent 数据根的基准目录。
@@ -16,12 +14,4 @@ export function resolveZCodeStorageBaseDir(env: NodeJS.ProcessEnv = process.env)
 
 export function getDefaultSessionDbPath(): string {
   return join(resolveZCodeStorageBaseDir(), ".jgagent", "cli", "db", "db.sqlite");
-}
-
-export function ensureParentDir(filePath: string): void {
-  const parent = dirname(filePath);
-  if (!existsSync(parent)) {
-    maybeThrowStorageFsFault({ operation: "mkdir", path: parent });
-    mkdirSync(parent, { recursive: true });
-  }
 }

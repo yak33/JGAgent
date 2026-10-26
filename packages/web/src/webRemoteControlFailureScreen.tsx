@@ -15,6 +15,28 @@ interface WebRemoteControlScreenCopy {
 
 const WEB_REMOTE_CONTROL_SCREEN_COPY = {
   "zh-CN": {
+    // JGAgent：官方 V2 账号域 reason，JGAgent V1 链路不触发；补齐 Record 完整性。
+    "device-not-owned": {
+      tone: "warning",
+      badge: "设备未授权",
+      title: "此设备无权访问",
+      description: "当前账号不拥有该桌面设备。",
+      detailLabel: "Relay 返回",
+      nextStepsTitle: "下一步",
+      nextSteps: ["确认使用生成二维码的账号。"],
+      action: "重新加载",
+    },
+    "auth-required": {
+      tone: "warning",
+      badge: "需要登录",
+      title: "需要先完成登录",
+      description: "该连接需要登录后才能继续。",
+      detailLabel: "Relay 返回",
+      nextStepsTitle: "下一步",
+      nextSteps: ["完成登录后重新扫码。"],
+      action: "重新加载",
+    },
+
     "session-not-found": {
       tone: "warning",
       badge: "链接不可用",
@@ -127,6 +149,28 @@ const WEB_REMOTE_CONTROL_SCREEN_COPY = {
     },
   },
   "en-US": {
+    // JGAgent：官方 V2 账号域 reason，JGAgent V1 链路不触发；补齐 Record 完整性。
+    "device-not-owned": {
+      tone: "warning",
+      badge: "Device not owned",
+      title: "This device is not authorized",
+      description: "The current account does not own this desktop device.",
+      detailLabel: "Relay 返回",
+      nextStepsTitle: "下一步",
+      nextSteps: ["Make sure you use the account that generated the QR code."],
+      action: "重新加载",
+    },
+    "auth-required": {
+      tone: "warning",
+      badge: "Sign-in required",
+      title: "Sign in to continue",
+      description: "This connection requires signing in first.",
+      detailLabel: "Relay 返回",
+      nextStepsTitle: "下一步",
+      nextSteps: ["Sign in and scan the QR code again."],
+      action: "重新加载",
+    },
+
     "session-not-found": {
       tone: "warning",
       badge: "Link unavailable",

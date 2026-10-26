@@ -10,7 +10,9 @@ export const TEST_ZCODE_ENDPOINT_ORIGIN = "https://zcode-test.jgagent.invalid";
 export const CODING_PLAN_LOCAL_WEBVIEW_ORIGIN = "http://localhost:3000";
 // Web 远控外部 relay 的 WS 地址：JGAgent 未自建 relay，占位化保证不外发；
 // 自建后替换为公司 relay 域名（test 分支同样占位）。
-export const DEFAULT_WEB_REMOTE_CONTROL_RELAY_WS_URL = "wss://relay.jgagent.invalid/ws";
+// v3.16.2 起官方 relay 解析改为跟随 endpoint origin 动态构造（见 resolveWebRemoteControlRelayWsUrl），
+// 此常量仅作占位声明保留。
+export const DEFAULT_WEB_REMOTE_CONTROL_RELAY_WS_URL = "wss://relay.jgagent.invalid/api/v1/remote/ws2";
 export const DEFAULT_BIGMODEL_API_ORIGIN = "https://bigmodel.invalid";
 export const DEFAULT_ZAI_OAUTH_ORIGIN = "https://zai-oauth.invalid";
 export const DEFAULT_ZAI_BUSINESS_BASE_URL = "https://zai-business.invalid";
@@ -251,14 +253,15 @@ export function resolveWebRemoteControlRelayWsUrl(options?: {
     return overrideUrl;
   }
 
-  // Bugfix：标准 test endpoint 已部署独立 relay；继续固定到生产 relay 会让测试环境跨环境配对。
-  // 仅识别规范 test origin，避免改变 production、localhost 和其他自定义 endpoint 的既有行为。
-  // JGAgent：test relay 同样占位化，自建 relay 后按环境替换。
-  if (options?.endpointOrigin?.trim() === TEST_ZCODE_ENDPOINT_ORIGIN) {
-    return "wss://relay-test.jgagent.invalid/ws";
-  }
-
-  return DEFAULT_WEB_REMOTE_CONTROL_RELAY_WS_URL;
+  // JGAgent：官方 v3.16.2 起 relay 地址改为跟随 endpoint origin 动态构造。
+  // 我方默认 origin 为 .invalid 占位，构造结果同样是不解析的占位地址，不外发；
+  // 自建 relay 后替换 DEFAULT_ZCODE_ENDPOINT_ORIGIN 即自动生效。
+  const origin = new URL(
+    normalizeZCodeEndpointOrigin(options?.endpointOrigin?.trim() || DEFAULT_ZCODE_ENDPOINT_ORIGIN),
+  );
+  origin.protocol = origin.protocol === "https:" ? "wss:" : "ws:";
+  origin.pathname = "/api/v1/remote/ws2";
+  return origin.toString();
 }
 
 export function resolveBigModelApiOrigin(env: RuntimeBigModelApiEnv = {}): string {
@@ -387,9 +390,9 @@ export function buildZCodeEndpointUrls(
     origin: normalizedOrigin,
     apiBaseUrl: `${normalizedOrigin}/api/v1`,
     remoteUrl: `${normalizedOrigin}/remote/${remoteVersion}`,
-    webRemoteCallbackUrl: `${normalizedOrigin}/web-remote/callback`,
+    webRemoteCallbackUrl: `${normalizedOrigin}/remote/v4`,
     webShareCallbackUrl: `${normalizedOrigin}/cn/share/callback`,
-    relayWsUrl: `${wsOrigin}/ws`,
+    relayWsUrl: `${wsOrigin}/api/v1/remote/ws2`,
     zcodePlanOpenAiBaseUrl: `${normalizedOrigin}/api/v1/zcode-plan`,
     zcodePlanAnthropicBaseUrl: `${normalizedOrigin}/api/v1/zcode-plan/anthropic`,
     zcodePlanBillingCurrentUrl: `${normalizedOrigin}/api/v1/zcode-plan/billing/current`,

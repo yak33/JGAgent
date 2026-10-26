@@ -131,6 +131,7 @@ node scripts/bundle.mjs --os win --arch x64
 | 旧服务器 106.15.120.94 | 只跑捷关模型网关（:9527），模板 baseUrl 打包指向它，与官网服务器无关，勿混 |
 | 反馈收集服务 | 官网服务器 Docker 服务 jgagent-feedback（/opt/jgagent-feedback，端口 3300 仅内网），nginx 反代 /feedback-api 与 /feedback-upload。客户端问题上报/提需求集中落到这里；管理查看页 /feedback-admin?key=<见服务器 /opt/jgagent-feedback/.env> |
 | **上游 v3.15.1 同步** | **已完成（sync/upstream-v3.15.1 分支，2026-10-14，待合并 main 作为 v0.4.0 主项）**：同步记录与流程见**第七节**。⚠️ 本仓无官方 git 历史（快照导入），`git merge upstream/main` 不可行，必须走 `git apply --3way`（2026-09-26 复核修正） |
+| **上游 v3.16.2 同步** | **已完成（sync/upstream-v3.16.2 分支，2026-10-25，待合并 main 作为下一版主项）**：同步记录见**第七·六节**。含 Web 远控 V1/V2 协议分叉的关键决策 |
 
 ## 六、发版验证清单
 
@@ -226,6 +227,58 @@ git apply --3way /tmp/v3.14.3.patch   # 用 872ad96 的 blob 做基准三方合�
 - `pnpm knip` 查悬空导出
 - `pnpm dev:desktop` 冒烟 + 网络审计（dev 日志 grep `z\.ai|bigmodel|cdn-zcode` 期望 0）
 - 重打包按第六节清单执行，作为 v0.3.0 发布
+
+---
+
+## 七·六、上游同步记录（v3.16.2，2026-10-25 完成）
+
+### 本次同步概况
+
+官方从 v3.15.1 更新到 **v3.16.2**（两个提交：0a1fc56d=v3.16.1 主体 4502 文件 +35.6万行，3c5b2276=v3.16.2 修复 263 文件）。主题：**项目管理体系**（project-storage SQLite/迁移、project-catalog、remote-projects、bot-project-runtime、task-groups、window-project-directory）、会话分享增强、provider-endpoint-routing、onboarding 多证据源资格判定、CLI 使用指南文档。总 diff 4579 文件。
+
+### 冲突面与解法（52 文件 145 块）
+
+沿用第七节原则（敏感区保我方、协议与 runtime 取官方、品牌文案保我方）。本次新经验：
+
+1. **官方删除了我方改过的 5 个文件**（does-not-apply 类）：remoteConnectionServiceCollection（被 windowRemoteConnectionRegistry 替代）、botRemoteWorkspaceBridge（被 bot-project-runtime 替代）、WorkspaceSidebarCollapsedRail、useActiveTaskSnapshotMeta、prepare-prebuilds.mjs——全部**跟随删除**（`git ls-tree 3c5b2276` 确认官方已删）。
+2. **WorkspaceSidebar.tsx 缩为 3 行转发文件**（官方 project-tree 新架构替代旧 sidebar），取官方；WorkspaceShellLayout 布局重构取官方后品牌标题回填。
+3. **node.ts / Root.tsx / SettingsPage.tsx 三个千行文件的混合拼装**：官方新功能域（source-server-workspace、project 域、onboarding 证据链、TaskIndexRepo 构造参数、CUA helper 重构、botProjectRuntime）合入；订阅/账号域（codingPlanSubscriptionService、OAuth repo/JWT 链、offPeak 全家、HighspeedCardService 注册、accountRequestAuthService 实装）按阶段 3 摘除，官方引用点改 no-account stub（`noAccountRequestAuthService`）或恒 false/空数组。
+4. **官方 onboarding 老用户判定重构**（索引+会话库+旧版快照多证据源，2026-10 官方线上误弹修复）**保留合入**，仅 `loadUserId` 改回恒 null。
+
+### ⚠️ Web 远控 V1/V2 协议分叉（本次最重要决策）
+
+官方 v3.16.2 把 Web 远控整体升级 **V2 协议**：relay 迁 `wss://zcode.z.ai/api/v1/remote/ws2`（token 门禁，实测无 token 返回 401）、二维码不再带 hash/t、`WebRemoteControlV2QrParams` 类型体系、`web-remote-control/` 新目录（Entry/V2 transport）、`WebRemoteControlIpcManager.notifyAuthStateChanged`。**V2 的 token 依赖官方账号体系 JWT——JGAgent 已摘除账号域，V2 链路在本仓不可用**。
+
+实测旧 relay `wss://zcode.z.ai/ws` **仍存活**（HTTP 101），JGAgent v0.4.0 自建 V1 直连链路（passHash 配对）继续可用。因此：
+
+- **保 V1 全链**：桌面端 `webRemoteControlManager.ts` + 3 个本地支撑文件、shared 的 V1 类型/常量/心跳函数（`web-remote-control-heartbeat.ts` 整文件恢复）、`WebRemoteControlExternalQrParams` 与 build/parse（我方协议覆盖官方版，官方 V2 装配不实例化）、`WebRemoteControlTaskTarget` 我方扩展字段（displayStatus/hasBackgroundWork/workflowActivity/pinned/archived）+ 官方 hostId 合并、`ResetWebRemoteControlPairing` IPC 通道、`syncWebRemoteControlTasks` platform 方法、`Root.tsx` 的 `WebRemoteControlTaskSync` 组件与 `webRemoteControlTaskSync.ts`/`webRemoteControlTaskIndex.ts` lib（官方删除，从 HEAD 恢复）、web 端 11 个本地支撑文件与 main.tsx 全量、我方 `WebRemoteControlDialog.tsx`（官方目录版含 auth-required 依赖已删）。
+- **V2 文件保留可编译**：`packages/web/src/web-remote-control/` 目录与 `packages/ui/src/web-remote-control/` 目录保留（部分被干净区引用），仅剔除其中 OAuth 依赖（contract.ts 内联最小 auth 端口类型；useWebRemoteControlAuthSync.ts 删除）；`WebRemoteControlFailureReason` 保留官方全集联合，我方 FailureScreen 补 device-not-owned/auth-required 两条中文/英文回落文案。
+- **旧 relay 存活是快照事实**（2026-10-25 实测）：官方停掉 `/ws` 之日即本链路失效之时，届時必须自建 relay（endpoint 常量已占位 `relay.jgagent.invalid`，见 `zcodeEndpoint.ts` 注释）。
+
+### 商业化新增清理
+
+删除官方新带入：`marketing-touch-contract/` 目录（4 文件）、`core/src/runtime/off-peak/` 4 文件 + 5 个 core 测试、3 个 highspeed e2e + 6 个 fixture、offpeak-host-faults.cjs、oauthSessionEvents/offPeakResidentExecutions/offPeakTicketHandoff 测试、docs/off-peak-task。保留被新功能引用的 `offPeakWorkspaceIdentityMigration.ts`（source-server 域依赖）与 `shared/off-peak-execution.ts`（协议 import 依赖，死类型惯例）。
+
+### 端点与品牌审计（同步后）
+
+- 官方域（z.ai/bigmodel/cdn-zcode）：源码 0 残留；`zcodeEndpoint.ts` relay 解析跟随官方重写（动态构造），占位 origin 产出占位地址不外发
+- 官方新文件硬编码 `~/.zcode` 全局路径 3 处品牌化为 `.jgagent`（sourceServerDirectory/sourceServerWorkspaceAliasRepo/localUsageEvidence）；workspace 级 `.zcode/` 目录语义与 HEAD 基线一致保留
+- `ZCode Protocol` 日志文案 7 处品牌化；feedback 自建链路适配官方 `FeedbackLogSource` 新字段（includeFileNames/onlyCurrentDay/contentPolicy，白名单归档已实现）
+- `config/provider/zcode-builtin.json`：官方 revision 33 全量合入（xiaomi mimo v2.6 等新模板），我方 `jgagent-gateway` 模板保留首位，revision 抬至 35 触发客户端配置刷新
+
+### 架构治理调整
+
+- `architecture-policy.yaml` 新登记 `feedback` 模块（managed，JGAgent 自建反馈域，不采用五件套骨架）+ 3 条例外补录（feedbackHttpClient max-lines/disable、官方 mirror contract 方法数超限）
+- 官方 mirror `web/web-remote-control/contract.ts` 的内联 auth 端口方法签名改为属性签名形式（规避 max-public-methods 误报）
+
+### 同步后验证（2026-10-25 实测）
+
+- ✅ `pnpm typecheck` exit 0（历经 10 轮修复：shared/client dist 需 `tsc -b --force` 全量重建，删除 dist 后必须重建否则 TS6305 连锁）
+- ✅ `pnpm lint` 0 error（168 warnings 属官方测试基线）
+- ✅ `pnpm architecture:check -- --changed` violations 0
+- ✅ desktop 打包验证：`pnpm --filter @zcode/desktop build` exit 0（新依赖 @fontsource/noto-sans-sc 需 pnpm install；产物端点抽查全 .invalid 占位）
+- ⬜ `pnpm dev:desktop` 冒烟 + 网络审计（待执行）
+- ⚠️ **单测适配债合并**：v3.15.1 的 ~548 例 + 本次官方新增约 470 个测试文件变更，须在下一版前一次性批量适配（本次仍以三检+打包为门禁）
 
 ---
 

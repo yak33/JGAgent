@@ -118,6 +118,25 @@ export async function openStartupSessionStore(
   return store;
 }
 
+export async function openStartupZCodeProtocolSessionStore(
+  configResult: ConfigResult,
+  startupTimer: StartupTimer,
+): Promise<SqliteSessionStore> {
+  const dbPath = getSessionDbPath(configResult);
+  startupTimer.start("JGAgent Protocol SQLite migration started", {
+    context: { dbPath },
+    event: "zcode_protocol.startup.sqlite_migration.started",
+    stage: "migrate_session_db",
+  });
+  const store = await SqliteSessionStore.openStartup({ dbPath });
+  startupTimer.mark("JGAgent Protocol SQLite migration completed", {
+    context: { dbPath },
+    event: "zcode_protocol.startup.sqlite_migration.completed",
+    stage: "migrate_session_db",
+  });
+  return store;
+}
+
 export function getSessionDbPath(configResult: ConfigResult, workingDirectory?: string): string {
   const configured = configResult.config.storage.sessionDbPath;
   // 默认 sessionDbPath 是 "~/.zcode/cli/db/db.sqlite" 字面量，resolvePath 会把 ~ 展开成 homedir()。

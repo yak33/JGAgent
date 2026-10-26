@@ -577,7 +577,7 @@ function createWebPlatform(options?: {
           : Promise.reject(new Error("Temporary text attachments require a desktop host")),
     onRemoteConnectionLog: () => () => {},
     onRemoteSessionClosed: () => () => {},
-    onBotRemoteWorkspaceReconnected: () => () => {},
+    // JGAgent：onBotRemoteWorkspaceReconnected 随官方 V2 bot 链路移除。
     // Web 端无多窗口管理
     activateOrSetWorkspace: () => Promise.resolve({ activated: false }),
     // Bugfix: Web 远程控制模式虽然复用了 web UI，但它背后其实挂着 desktop。
@@ -1031,7 +1031,7 @@ export function createHomeOnlyWebRemoteControlServices(): RootServices {
     }),
     update: async () => {},
     updateDataBaseDir: async () => {},
-    ensureDefaultProject: async (path: string) => ({ path, created: false }),
+    // JGAgent：ensureDefaultProject 随 project 域接管移除。
   };
 
   const emptyGitSummary = (workspacePath: string) => ({
@@ -1253,6 +1253,12 @@ export function createHomeOnlyWebRemoteControlServices(): RootServices {
       createUnsupportedHomeOnlyService<RootServices["feedbackService"]>("feedbackService"),
     settingsSyncService:
       createUnsupportedHomeOnlyService<RootServices["settingsSyncService"]>("settingsSyncService"),
+    // JGAgent：source-server 域为上游 v3.16.x 新增必填服务；Web 端无 SSH source server 场景，
+    // 以 unsupported stub 满足 IServiceAccessor 形状。
+    sourceServerWorkspaceService:
+      createUnsupportedHomeOnlyService<RootServices["sourceServerWorkspaceService"]>(
+        "sourceServerWorkspaceService",
+      ),
   };
 }
 

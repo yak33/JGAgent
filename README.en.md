@@ -87,6 +87,10 @@ Web mode uses the current directory as workspace, listens on `127.0.0.1`, picks 
 
 ### CLI source development
 
+See the [CLI usage guide (Chinese)](apps/zcode-cli/docs/usage/README.md) for model configuration, non-interactive runs, tools and extensions, batch evaluation, and trajectory capture.
+
+Use the source entry when developing the TUI or Agent:
+
 ```bash
 pnpm --filter @zcode/cli dev --help
 pnpm --filter @zcode/cli dev

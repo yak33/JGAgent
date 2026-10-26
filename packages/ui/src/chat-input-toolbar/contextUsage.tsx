@@ -1,6 +1,18 @@
-import { useCallback, useMemo, useRef, useState, type CSSProperties } from "react";
-import type { ZCodeContextUsageBreakdownItem, ZCodeProvider } from "@zcode/shared";
-import { TID_CHAT_CONTEXT_USAGE_TRIGGER } from "@zcode/shared";
+/* eslint-disable max-lines -- context 面板聚合 Context windows、Coding Plan 和 Start Plan 三段紧耦合展示；后续拆分需要单独梳理弹层状态边界。 */
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type CSSProperties,
+} from "react";
+import {
+  type ZCodeContextUsageBreakdownItem,
+  type ZCodeProvider,
+} from "@zcode/shared";
+import { TID_CHAT_CONTEXT_USAGE_TRIGGER } from "@zcode/shared/test-ids";
 import {
   Context,
   ContextContent,

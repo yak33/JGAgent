@@ -1,0 +1,10 @@
+Research Paper
+
+Abstract: we study the effect of caching on latency.
+Results show a 40 percent reduction in p95 latency.
+
+https://example.com/paper
+Method
+
+We replay production traces against three cache sizes.
+

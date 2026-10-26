@@ -13,6 +13,12 @@ interface FeedbackLogSource {
   directory: string;
   archivePrefix: string;
   exitLogsOnly?: boolean;
+  /** JGAgent：上游 v3.16.x exportLogs 传入的白名单字段；命中时按文件名精确归档（如 config.json）。 */
+  includeFileNames?: readonly string[];
+  /** 上游语义：默认仅归档当天文件；false 时放宽 mtime 限制（cli-config 等长期有效的文件）。 */
+  onlyCurrentDay?: boolean;
+  /** 上游内容策略标记；JGAgent 归档全程经 redactFeedbackText 脱敏，无需分支处理。 */
+  contentPolicy?: "cli-config";
 }
 
 function decodeDiagnosticLog(buffer: Buffer): string | null {
@@ -72,15 +78,20 @@ export async function createFeedbackDiagnosticArchive(options: {
           if (entry.isSymbolicLink()) continue;
           const absolutePath = join(directory, entry.name);
           const name = posix.join(prefix, entry.name);
-          if (entry.isDirectory() && !source.exitLogsOnly) {
+          if (entry.isDirectory() && !source.exitLogsOnly && !source.includeFileNames) {
             await walk(absolutePath, name, depth + 1);
             continue;
           }
+          // includeFileNames 白名单模式：只精确归档名单内文件，不做扩展名猜测。
+          const whitelisted =
+            source.includeFileNames !== undefined && source.includeFileNames.includes(entry.name);
           if (
             !entry.isFile() ||
-            !(source.exitLogsOnly
-              ? entry.name.endsWith(".exit.log")
-              : /(?:\.log(?:\.\d+)?|\.jsonl|\.ndjson)$/i.test(entry.name))
+            (source.includeFileNames !== undefined && !whitelisted) ||
+            (!whitelisted &&
+              !(source.exitLogsOnly
+                ? entry.name.endsWith(".exit.log")
+                : /(?:\.log(?:\.\d+)?|\.jsonl|\.ndjson)$/i.test(entry.name)))
           )
             continue;
           if ((await realpath(absolutePath).catch(() => null)) !== absolutePath) {
@@ -93,7 +104,7 @@ export async function createFeedbackDiagnosticArchive(options: {
             info.nlink !== 1 ||
             info.size > MAX_FILE_BYTES ||
             totalBytes + info.size > budget ||
-            !isToday(info.mtimeMs)
+            (source.onlyCurrentDay !== false && !isToday(info.mtimeMs))
           ) {
             skipLogFile("metadata-policy");
             continue;
