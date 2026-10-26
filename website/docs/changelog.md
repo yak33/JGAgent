@@ -1,5 +1,16 @@
 # 更新日志
 
+## v0.5.0 <Badge type="tip">Preview</Badge>
+
+2026-10-26 · [下载 Windows 版](/downloads/JGAgent-0.5.0-win-x64.exe)
+
+- 同步上游 ZCode v3.16.2：全新项目管理体系（多项目目录、项目归档、任务分组）
+- 会话分享增强：分享落地页体验更新，只读时间线国际化
+- 模型供应商端点路由（provider-endpoint-routing）能力更新
+- 首次使用引导改进：老用户判定多证据源，不再误弹新手引导
+- Web 远控保持 v0.4.0 直连链路（上游 V2 协议依赖官方账号体系，暂不跟随）
+- 反馈与账号体系保持捷关自建方案不变
+
 ## v0.4.0 <Badge type="tip">Preview</Badge>
 
 2026-10-14 · [下载 Windows 版](/downloads/JGAgent-0.4.0-win-x64.exe)
