@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue";
 
-// 版本与下载地址单点维护：发版时只改这里与 latest（需与 changelog.md 最新一节一致）。
+// 版本与下载地址单点维护：发版时改 VERSION、RELEASE_DATE、latest 三处（需与 changelog.md 最新一节一致）。
+// ⚠️ v0.4.0/v0.5.0 连续两版只改了 VERSION，漏了 RELEASE_DATE 与 latest——首页页脚会停在旧日期。
 const DOWNLOAD_URL = "/downloads/JGAgent-latest-win-x64.exe";
 const VERSION = "0.6.0";
-const RELEASE_DATE = "2026-09-27";
+const RELEASE_DATE = "2026-11-23";
 
 const latest = [
-  "同步上游 v3.15.1：插件可交互页面（UI Plugin）与 Gen UI 问答体验",
-  "手机扫码远程控制桌面工作区；动态工作流引擎与 Agent 能力更新",
-  "自动更新体验优化：轮询更快、下载失败自动重试",
+  "同步上游 v3.18.2：终端会话与工作区桥接重构，断线恢复更稳定",
+  "MCP 安全增强与多语言界面；手机远控面板支持一键拉取手机日志",
+  "凭据存储损坏恢复：凭据文件损坏时可从备份恢复，无需重装",
 ];
 
 // Hero 规格表：macOS / Linux 与 Windows 并列，仅以"稍后即来"弱化展示。
