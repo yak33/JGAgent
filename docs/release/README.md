@@ -16,8 +16,8 @@
                （在 packages/desktop/ 下执行；约 10 分钟。ZCODE_UPDATE_FEED_URL 烧入自动更新
                feed，缺省则该版无自动更新；JGAGENT_SANITIZE_BUILD_ENV=1 见陷阱 3）
 3. 核对产物     packages/desktop/dist/JGAgent-<ver>-win-x64.exe + latest.yml
-4. 改官网       website/docs/.vitepress/theme/Home.vue（VERSION 与 DOWNLOAD_URL 常量）
-               + changelog.md → npm run build
+4. 改官网       website/docs/.vitepress/theme/Home.vue 三处常量（VERSION、RELEASE_DATE、latest 亮点数组
+               ——v0.4.0/v0.5.0 连续漏改 RELEASE_DATE 与 latest，页脚停在旧日期）+ changelog.md → npm run build
 5. 上传官网     scp -i ~/.ssh/jgagent_deploy dist 内容 → root@82.157.149.224:/www/wwwroot/jgagent/html/
 6. 上传安装包   scp exe + latest.yml + blockmap → /www/wwwroot/jgagent/downloads/
                ⚠️ 顺序必须 exe 在前、latest.yml 在后：客户端轮询到新 latest.yml 时 exe 必须已就位
