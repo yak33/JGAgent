@@ -2,16 +2,16 @@
 
 > 用途：后续 AI 会话或新同事接手发版 / 官网 / 服务器运维时的唯一入口。
 > 最新发布：2026-11-23，**v0.6.0** 已上线 `https://jg-agent.vercel.app/`（上游 v3.18.2 同步版）。
-> ⚠️ 架构变更（2026-11-23 起）：官网/下载走 **Vercel + 公开下载仓**（见第 一·A 节）；82 服务器当日完全不可达（宕机待查），旧流程（第一、四节）暂不可用，存量 v0.5.0 客户端的自动更新（feed 烧在 82）在服务器恢复前收不到推送。
+> ⚠️ 架构变更（2026-11-23 起）：官网/下载走 **Vercel + 公开下载仓**（见第 一·A 节）。原腾讯云服务器 82.157.149.224 **未续费已被回收**（用户 2026-11-23 确认），第一、四、八节的服务器流程整体作废、仅作历史记录；存量 v0.5.0 及更早客户端的自动更新 feed 烧在该服务器，**永久断供**，只能手动到官网下载新版。
 > 官网目录细节见 [website/README.md](../../website/README.md)，本文只讲流程与坑。
 
 ---
 
-## 一、发一版新版的全流程（约 15 分钟）
+## 一、发一版新版的全流程（约 15 分钟）【已废弃：82 服务器回收，现行流程见一·A】
 
 ```text
 1. bump 版本    package.json + packages/desktop/package.json 两处 version
-2. 打包         ZCODE_ENV=production ZCODE_UPDATE_FEED_URL="http://82.157.149.224/downloads/latest.yml" \
+2. 打包         ZCODE_ENV=production ZCODE_UPDATE_FEED_URL="https://jg-agent.vercel.app/downloads/latest.yml" \
                JGAGENT_SANITIZE_BUILD_ENV=1 node scripts/bundle.mjs --os win --arch x64
                （在 packages/desktop/ 下执行；约 10 分钟。ZCODE_UPDATE_FEED_URL 烧入自动更新
                feed，缺省则该版无自动更新；JGAGENT_SANITIZE_BUILD_ENV=1 见陷阱 3）
@@ -49,7 +49,7 @@
 - 主仓保持私有；安装包只进公开下载仓（主仓单文件 100MB 硬限装不下 exe）。
 - ⚠️ 下载仓的两个坑（v0.6.0 实测）：① 空仓库 `gh release create` 报 HTTP 422 "Repository is empty"，先推一个初始提交；② 中途被杀的 create 进程会留下 **draft release**（draft 资产匿名下载 404），补传后须 `gh release edit v<ver> --draft=false`；draft 期间的 404 会被 CDN/代理负缓存几分钟，验证加 `-H "Cache-Control: no-cache"`。
 - ⚠️ exe 上传极慢（本机上行 ~100KB/s，204MB×2 约 1 小时）：直连与 VPN 代理速度相近，属本机出口带宽瓶颈；gh 进程 CPU 缓慢增长即健康，勿误判卡死。
-- **自动更新 feed 语义**：v0.6.0 安装包烧入的 feed 仍是 `http://82.157.149.224/downloads/latest.yml`（打包时服务器已宕机无法预知新址）。v0.7.0 起打包应烧 `https://jg-agent.vercel.app/downloads/latest.yml`（Vercel 域名国内直连性需观察，必要时套自定义域）。82 服务器恢复后建议双挂：latest.yml 同步一份到服务器救活存量客户端。
+- **自动更新 feed 语义**：v0.6.0 安装包烧入的 feed 仍是 `http://82.157.149.224/downloads/latest.yml`（打包时服务器已被回收无法预知新址）——v0.6.0 自身也收不到后续自动更新，属已知断代。**v0.7.0 起打包必须烧 `https://jg-agent.vercel.app/downloads/latest.yml`**（Vercel 域名国内直连性需观察，必要时套自定义域）。存量 ≤v0.6.0 客户端的自动更新永久断供（82 已回收，无补救通道），只能手动下载。
 
 ## 二、打包：命令与陷阱
 
@@ -58,7 +58,7 @@
 ```bash
 ZCODE_ENV=production \
 JGAGENT_SANITIZE_BUILD_ENV=1 \
-ZCODE_UPDATE_FEED_URL="http://82.157.149.224/downloads/latest.yml" \
+ZCODE_UPDATE_FEED_URL="https://jg-agent.vercel.app/downloads/latest.yml" \
 node scripts/bundle.mjs --os win --arch x64
 ```
 
@@ -127,7 +127,7 @@ node scripts/bundle.mjs --os win --arch x64
   "Element is missing end tag" —— 复杂 HTML 抽成 `theme/` 下的 Vue 组件再用。
 - `.vitepress/cache/` 已进 .gitignore（曾误提交 2.8 万行，勿回退）。
 
-## 四、服务器（腾讯云轻量 82.157.149.224）
+## 四、服务器（腾讯云轻量 82.157.149.224）【已回收：未续费销毁，本节仅作历史记录】
 
 - 系统 OpenCloudOS 9.6，装了宝塔但**不用它管 nginx**；站点用 Docker Compose 跑
   `nginx:1.27-alpine`（80 端口，`restart: unless-stopped`）。
@@ -381,7 +381,7 @@ git apply --3way /tmp/v3.14.3.patch   # 用 872ad96 的 blob 做基准三方合�
 疑被主机安全 agent 包装，不可信——用 md5sum 或 sha256sum 对照）；服务器带宽 ~3.6Mbps，
 148MB 全量下载需 5-6 分钟且连接偶发闪断（curl exit 18），带重试可完成，差分下载影响小。
 
-## 八、反馈收集服务（运维手册）
+## 八、反馈收集服务（运维手册）【服务端随 82 服务器回收已下线：客户端提交走本地降级存 tickets.json 不丢失；管理台与工单数据已不可达，重建方案待定】
 
 > 2026-09-27 上线。承接客户端「问题上报 / 给产品提需求」，工单集中存官网服务器，
 > 团队在管理页统一查看。零依赖（node:http 单文件），无数据库（JSON 存储）。
