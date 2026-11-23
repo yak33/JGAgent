@@ -321,7 +321,7 @@ git apply --3way /tmp/v3.14.3.patch   # 用 872ad96 的 blob 做基准三方合�
 
 ### ⚠️ Windows native runtime host（新环境前置）
 
-官方 v3.18 新增 **zcode-runtime-host.exe**（CMake/MSVC C++ 工程，prepare:windows-runtime-host）。本机无 VS 2022，该步骤失败（"could not find any instance of Visual Studio"）。**发版打包前需安装 VS 2022 Build Tools（含 C++ 桌面开发工作负载）**；TS 侧构建链已全部验证（见下）。
+官方 v3.18 新增 **zcode-runtime-host.exe**（CMake/MSVC C++ 工程，prepare:windows-runtime-host），generator 写死 "Visual Studio 17 2022"。本机装的是 **VS 18 BuildTools**（CMake 找不到 17 2022 实例）。已在 scripts/build-windows-runtime-host.mjs 加 `ZCODE_WINDOWS_CMAKE_GENERATOR` 覆盖开关，设 `"Visual Studio 18 2026"` 构建成功（2026-11-23 实测，产物 PE 校验通过）。
 
 ### Windows 环境坑（本次新增）
 
@@ -335,7 +335,7 @@ git apply --3way /tmp/v3.14.3.patch   # 用 872ad96 的 blob 做基准三方合�
 - ✅ `pnpm architecture:check -- --changed` violations 0（feedbackLogArchive 归属从 cli-memory-diagnostics 模块还回 feedback 模块；3 个例外补录）
 - ✅ agent bundle：`node scripts/build-desktop-agent-cli.mjs` exit 0（zcode.cjs 14.9MB staged）
 - ✅ 渲染层：`pnpm --filter @zcode/desktop build:no-runtime-assets` exit 0（23.5s）
-- ⛔ `prepare:windows-runtime-host`：环境缺 VS 2022 未验证（见上节）
+- ✅ `prepare:windows-runtime-host`：ZCODE_WINDOWS_CMAKE_GENERATOR="Visual Studio 18 2026" 构建成功（见上节）；完整打包见下方 v0.6.0 发版记录
 - ⬜ `pnpm dev:desktop` 冒烟 + 网络审计（待执行，历次同步均欠）
 - ⚠️ 单测适配债**三版叠加**：v3.15.1 约 548 例 + v3.16.2 约 470 文件 + 本次官方新增测试（86 个 not-exist 之外还有大量干净区新测试文件），须在 v0.6.0 发版前批量还
 
