@@ -2,13 +2,13 @@ import { defineConfig } from "vitepress";
 
 export default defineConfig({
   lang: "zh-CN",
-  title: "捷关Agent",
+  title: "捷关Harness",
   // 浏览器标签图标：复用产品 JG 图标（与桌面端同源）
   head: [["link", { rel: "icon", href: "/favicon.ico", sizes: "any" }]],
   description:
     "捷关团队 AI 工作台：编程模式深入终端、Git 与代码变更，办公模式聚焦摘要与结果。基于开源 ZCode 二次开发。",
   // 明暗双主题：跟随系统 + 导航栏手动切换。两套令牌值见 theme/custom.css，
-  // 对应画布稿「JGAgent 官网重设计」的 JGSite 变量集（Dark/Light）。
+  // 对应画布稿「JGHarness 官网重设计」的 JGSite 变量集（Dark/Light）。
   // 无后缀 URL（/docs 而非 /docs.html）：需要 nginx try_files $uri.html 配合，见 docs/release 第三节
   cleanUrls: true,
   appearance: true,
@@ -23,7 +23,7 @@ export default defineConfig({
     outline: { level: [2, 3] },
     footer: {
       message: "捷关团队·荣誉出品",
-      // JGAgent：反馈服务端随 82 服务器回收已下线（2026-11-23），页脚管理入口暂时摘除，
+      // JGHarness：反馈服务端随 82 服务器回收已下线（2026-11-23），页脚管理入口暂时摘除，
       // 服务重建后再挂回。届时若仍是站内非 VitePress 路由，链接必须带 target="_blank"
       // （VitePress 全局 click 处理器对同源无扩展名链接会走客户端路由渲染自带 404，
       // 不发真实请求——详见 docs/release/README.md 第八节历史记录）。

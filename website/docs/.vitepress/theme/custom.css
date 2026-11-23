@@ -1,6 +1,6 @@
-/* JGAgent 官网全局定制：暖调双主题 + 琥珀单一强调色 + 细颗粒质感。
+/* JGHarness 官网全局定制：暖调双主题 + 琥珀单一强调色 + 细颗粒质感。
  * 首页主体样式在 Home.vue 内 scoped；本文件只覆盖 VitePress 框架层。
- * 颜色令牌与画布稿「JGAgent 官网重设计」的 JGSite 变量集一一对应：
+ * 颜色令牌与画布稿「JGHarness 官网重设计」的 JGSite 变量集一一对应：
  * :root = 浅色（暖纸白），html.dark = 深色（暖调近黑）。 */
 
 :root {

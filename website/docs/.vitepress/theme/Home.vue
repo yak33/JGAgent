@@ -3,7 +3,7 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 
 // 版本与下载地址单点维护：发版时改 VERSION、RELEASE_DATE、latest 三处（需与 changelog.md 最新一节一致）。
 // ⚠️ v0.4.0/v0.5.0 连续两版只改了 VERSION，漏了 RELEASE_DATE 与 latest——首页页脚会停在旧日期。
-const DOWNLOAD_URL = "/downloads/JGAgent-latest-win-x64.exe";
+const DOWNLOAD_URL = "/downloads/JGHarness-latest-win-x64.exe";
 const VERSION = "0.7.0";
 const RELEASE_DATE = "2026-11-24";
 
@@ -75,7 +75,7 @@ onBeforeUnmount(() => {
         <p class="kicker reveal"><span class="kicker-dot" />捷关团队·荣誉出品 · v{{ VERSION }}</p>
         <h1 class="reveal" data-reveal-delay="1">
           写代码，办日常，<br />
-          都交给 <span class="brand">JGAgent</span>
+          都交给 <span class="brand">JGHarness</span>
         </h1>
         <p class="tagline reveal" data-reveal-delay="2">
           捷关团队开发的 AI 工作台。编程模式深入终端、Git 与每一行代码变更；办公模式只看摘要与结果，
@@ -132,7 +132,7 @@ onBeforeUnmount(() => {
         <p class="kicker reveal">01 / 双模式</p>
         <h2 class="sec-title reveal" data-reveal-delay="1">两种模式，各就各位</h2>
         <p class="sec-sub reveal" data-reveal-delay="2">
-          首次启动按你的角色选择，之后随时一键切换。同一个 JGAgent，两副界面。
+          首次启动按你的角色选择，之后随时一键切换。同一个 JGHarness，两副界面。
         </p>
       </div>
 
