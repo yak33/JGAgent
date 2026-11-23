@@ -146,8 +146,8 @@ export function createFeedbackService(options: CreateFeedbackServiceOptions): IF
         if (error instanceof Error && error.name === "AbortError") {
           throw error;
         }
-        // JGAgent 离线降级：反馈服务端尚未接入（endpoint 为占位域）时，
-        // 工单降级保存到本地 ~/.jgagent（tickets.json，上限 200 条），
+        // JGHarness 离线降级：反馈服务端尚未接入（endpoint 为占位域）时，
+        // 工单降级保存到本地 ~/.jgharness（tickets.json，上限 200 条），
         // 保证反馈内容不丢失；local_only 标记让 UI 跳过附件上传并提示
         // "已保存到本地"。服务端接入后该降级分支自然不再触发。
         const localTicket: FeedbackTicketDetail = {

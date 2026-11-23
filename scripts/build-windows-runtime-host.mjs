@@ -18,7 +18,7 @@ export function resolveRuntimeHostBuild(
   return {
     configureArgs:
       hostPlatform === "win32"
-        ? // JGAgent：generator 允许用 ZCODE_WINDOWS_CMAKE_GENERATOR 覆盖（本机装的是
+        ? // JGHarness：generator 允许用 ZCODE_WINDOWS_CMAKE_GENERATOR 覆盖（本机装的是
           // VS 18 BuildTools 时设 "Visual Studio 18 2026"）；缺省保持官方的 VS 2022。
           [
             "-G",

@@ -42,17 +42,17 @@ export function getDataBaseDir(): string {
   return defaultDataBaseDir;
 }
 
-/** {dataBaseDir}/.jgagent */
+/** {dataBaseDir}/.jgharness */
 export function getZCodeDataRootDir(): string {
-  return join(getDataBaseDir(), ".jgagent");
+  return join(getDataBaseDir(), ".jgharness");
 }
 
-/** 非项目对话共享的真实工作目录；默认 ~/.jgagent/workspace/default。 */
+/** 非项目对话共享的真实工作目录；默认 ~/.jgharness/workspace/default。 */
 export function getConversationWorkspaceDir(): string {
   return join(getZCodeDataRootDir(), "workspace", "default");
 }
 
-/** {dataBaseDir}/.jgagent/v2 */
+/** {dataBaseDir}/.jgharness/v2 */
 export function getAppConfigDir(): string {
   return join(getZCodeDataRootDir(), "v2");
 }
@@ -69,9 +69,9 @@ export function resolveAgentUserInstructionsHomeDir(env: NodeJS.ProcessEnv = pro
   return envHome && envHome.length > 0 ? envHome : homedir();
 }
 
-/** `{home}/.jgagent/AGENTS.md`：用户自定义指令（个性化）的唯一事实源文件。 */
+/** `{home}/.jgharness/AGENTS.md`：用户自定义指令（个性化）的唯一事实源文件。 */
 export function getAgentUserInstructionsFilePath(env: NodeJS.ProcessEnv = process.env): string {
-  return join(resolveAgentUserInstructionsHomeDir(env), ".jgagent", "AGENTS.md");
+  return join(resolveAgentUserInstructionsHomeDir(env), ".jgharness", "AGENTS.md");
 }
 
 function readEnvValue(env: Record<string, string | undefined>, key: string): string | undefined {
@@ -202,7 +202,7 @@ export function getGitCheckpointIndexRootDir(): string {
   return join(getZCodeDataRootDir(), "git-checkpoint-index");
 }
 
-/** ~/.jgagent/v2/tasks-index.sqlite */
+/** ~/.jgharness/v2/tasks-index.sqlite */
 export function getTasksIndexDatabasePath(): string {
   return join(getAppConfigDir(), "tasks-index.sqlite");
 }
@@ -220,12 +220,12 @@ export function getWorkspaceHash(workspacePath: string, workspaceIdentity?: stri
     .slice(0, 12);
 }
 
-/** ~/.jgagent/v2/sessions/{workspaceHash} */
+/** ~/.jgharness/v2/sessions/{workspaceHash} */
 function getTaskSessionDir(workspacePath: string, workspaceIdentity?: string): string {
   return join(getAppConfigDir(), "sessions", getWorkspaceHash(workspacePath, workspaceIdentity));
 }
 
-/** ~/.jgagent/v2/sessions/{workspaceHash}/{taskId}.json */
+/** ~/.jgharness/v2/sessions/{workspaceHash}/{taskId}.json */
 export function getLegacyTaskSessionSnapshotPath(
   workspacePath: string,
   taskId: string,
@@ -234,7 +234,7 @@ export function getLegacyTaskSessionSnapshotPath(
   return join(getTaskSessionDir(workspacePath, workspaceIdentity), `${taskId}.json`);
 }
 
-/** ~/.jgagent/v2/sessions/{workspaceHash}/{taskId}.deleted.json */
+/** ~/.jgharness/v2/sessions/{workspaceHash}/{taskId}.deleted.json */
 export function getLegacyDeletedTaskSessionSnapshotPath(
   workspacePath: string,
   taskId: string,
@@ -244,14 +244,14 @@ export function getLegacyDeletedTaskSessionSnapshotPath(
 }
 
 /**
- * GLM（唯一 agent provider）的配置目录：~/.jgagent/cli。
+ * GLM（唯一 agent provider）的配置目录：~/.jgharness/cli。
  * Bugfix：GLM 配置改为直接读写新版 zcode-cli 的全局配置目录，不做 workspace 隔离，
  * 避免同机不同工作区配置漂移。
  */
 export function getProviderWorkspaceConfigDir(): string {
   return ZCODE_AGENT_RUNTIME.nativeConfigDir
     ? join(getDataBaseDir(), ZCODE_AGENT_RUNTIME.nativeConfigDir)
-    : join(getDataBaseDir(), ".jgagent", "cli");
+    : join(getDataBaseDir(), ".jgharness", "cli");
 }
 
 /**
@@ -261,8 +261,8 @@ export function getProviderWorkspaceConfigDir(): string {
  */
 export async function copyDataDirectory(oldBaseDir: string, newBaseDir: string): Promise<void> {
   for (const relativeDir of ["v2", join("cli", "db")]) {
-    const oldDir = join(oldBaseDir, ".jgagent", relativeDir);
-    const newDir = join(newBaseDir, ".jgagent", relativeDir);
+    const oldDir = join(oldBaseDir, ".jgharness", relativeDir);
+    const newDir = join(newBaseDir, ".jgharness", relativeDir);
     // cli/db 在全新安装（尚无会话）时可能不存在，跳过而不是让 cp 抛 ENOENT。
     if (!existsSync(oldDir)) continue;
     await cp(oldDir, newDir, {

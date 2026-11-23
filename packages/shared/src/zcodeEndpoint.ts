@@ -1,28 +1,28 @@
 import type { ZCodeEnv } from "./env.js";
 
-// JGAgent 去官方化：默认端点全部指向 .invalid 保留域（RFC 2606，保证不解析），
+// JGHarness 去官方化：默认端点全部指向 .invalid 保留域（RFC 2606，保证不解析），
 // DNS 层面直接失败，绝不外发。公司服务端就绪后替换为公司域名，
 // 或通过 ZCODE_BASE_URL / ZCODE_ENDPOINT_ORIGIN 等环境变量注入。
-export const DEFAULT_ZCODE_ENDPOINT_ORIGIN = "https://jgagent.invalid";
-// 上游 v3.15.1 引入 test 环境专用 origin；JGAgent 同样占位化，test 环境注入环境变量区分。
-export const TEST_ZCODE_ENDPOINT_ORIGIN = "https://zcode-test.jgagent.invalid";
+export const DEFAULT_ZCODE_ENDPOINT_ORIGIN = "https://jgharness.invalid";
+// 上游 v3.15.1 引入 test 环境专用 origin；JGHarness 同样占位化，test 环境注入环境变量区分。
+export const TEST_ZCODE_ENDPOINT_ORIGIN = "https://zcode-test.jgharness.invalid";
 // Coding Plan 本地 webview 回调 origin：仅本地回环地址，无外发风险，保留上游值。
 export const CODING_PLAN_LOCAL_WEBVIEW_ORIGIN = "http://localhost:3000";
-// Web 远控外部 relay 的 WS 地址：JGAgent 未自建 relay，占位化保证不外发；
+// Web 远控外部 relay 的 WS 地址：JGHarness 未自建 relay，占位化保证不外发；
 // 自建后替换为公司 relay 域名（test 分支同样占位）。
 // v3.16.2 起官方 relay 解析改为跟随 endpoint origin 动态构造（见 resolveWebRemoteControlRelayWsUrl），
 // 此常量仅作占位声明保留。
-export const DEFAULT_WEB_REMOTE_CONTROL_RELAY_WS_URL = "wss://relay.jgagent.invalid/api/v1/remote/ws2";
+export const DEFAULT_WEB_REMOTE_CONTROL_RELAY_WS_URL = "wss://relay.jgharness.invalid/api/v1/remote/ws2";
 export const DEFAULT_BIGMODEL_API_ORIGIN = "https://bigmodel.invalid";
 export const DEFAULT_ZAI_OAUTH_ORIGIN = "https://zai-oauth.invalid";
 export const DEFAULT_ZAI_BUSINESS_BASE_URL = "https://zai-business.invalid";
-export const DEFAULT_ZAI_OAUTH_CLIENT_ID = "jgagent-oauth-placeholder";
+export const DEFAULT_ZAI_OAUTH_CLIENT_ID = "jgharness-oauth-placeholder";
 // 以下 TEST_* 与远控 V4 版本常量为上游 v3.15.1 新增，引用点在干净合入区；
-// JGAgent 全部占位化（test 环境同样不外发官方域），公司服务端就绪后替换。
+// JGHarness 全部占位化（test 环境同样不外发官方域），公司服务端就绪后替换。
 export const TEST_BIGMODEL_API_ORIGIN = "https://bigmodel-test.invalid";
 export const TEST_ZAI_OAUTH_ORIGIN = "https://zai-oauth-test.invalid";
 export const TEST_ZAI_BUSINESS_BASE_URL = "https://zai-business-test.invalid";
-export const TEST_ZAI_OAUTH_CLIENT_ID = "jgagent-oauth-test-placeholder";
+export const TEST_ZAI_OAUTH_CLIENT_ID = "jgharness-oauth-test-placeholder";
 /** Web 远控 V4 协议的最低 app 版本（上游语义：低于此版本走 legacy 远控链路）。 */
 export const WEB_REMOTE_CONTROL_V4_MIN_APP_VERSION = "3.4.0";
 
@@ -150,12 +150,12 @@ function readRuntimeZCodeEnvScopedValue(
 export function normalizeZCodeEndpointOrigin(value: string): string {
   const trimmed = value.trim();
   if (!trimmed) {
-    throw new Error("JGAgent endpoint origin is empty");
+    throw new Error("JGHarness endpoint origin is empty");
   }
 
   const parsed = new URL(trimmed);
   if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-    throw new Error("JGAgent endpoint origin must use http or https");
+    throw new Error("JGHarness endpoint origin must use http or https");
   }
   return parsed.origin;
 }
@@ -253,7 +253,7 @@ export function resolveWebRemoteControlRelayWsUrl(options?: {
     return overrideUrl;
   }
 
-  // JGAgent：官方 v3.16.2 起 relay 地址改为跟随 endpoint origin 动态构造。
+  // JGHarness：官方 v3.16.2 起 relay 地址改为跟随 endpoint origin 动态构造。
   // 我方默认 origin 为 .invalid 占位，构造结果同样是不解析的占位地址，不外发；
   // 自建 relay 后替换 DEFAULT_ZCODE_ENDPOINT_ORIGIN 即自动生效。
   const origin = new URL(

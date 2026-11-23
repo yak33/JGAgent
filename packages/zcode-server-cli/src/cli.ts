@@ -189,7 +189,7 @@ export async function runServerCli(
         // 或卸载接管的服务。锁被占用时直接失败（不等待、不停止现有服务），沿用 uninstall 的冲突输出。
         const restartLock = await acquireLifecycleCommandLock(
           layout,
-          "A JGAgent Server update is already running",
+          "A JGHarness Server update is already running",
         );
         try {
           return await runRestart(io, json, layout, runtimeOptions);
@@ -203,7 +203,7 @@ export async function runServerCli(
       case "update": {
         const updateLock = await acquireLifecycleCommandLock(
           layout,
-          "Another JGAgent Server update is already running",
+          "Another JGHarness Server update is already running",
         );
         const updateDaemonHandoff =
           runtimeOptions.updateDaemonHandoff ?? createUpdateDaemonHandoff();
@@ -233,7 +233,7 @@ export async function runServerCli(
       case "uninstall": {
         const uninstallLock = await acquireLifecycleCommandLock(
           layout,
-          "A JGAgent Server update is already running",
+          "A JGHarness Server update is already running",
         );
         try {
           return await runUninstall(io, json, layout);
@@ -321,7 +321,7 @@ async function runServe(
         const reused = existing.state === "ready" ? existing : await waitForControlReady(layout);
         if (json) stdout(io, reused);
         else
-          stdout(io, `JGAgent Server ${reused.state} at ${reused.host ?? ""}:${reused.port ?? ""}`);
+          stdout(io, `JGHarness Server ${reused.state} at ${reused.host ?? ""}:${reused.port ?? ""}`);
         return 0;
       }
       if (existing.runningTaskCount > 0) {
@@ -382,7 +382,7 @@ async function runServe(
         if (!isServiceLoadFailure(error)) throw error;
         serviceFallbackReason = (error as Error).message.trim();
         if (!json)
-          stderr(io, `Starting JGAgent Server in detached fallback mode: ${serviceFallbackReason}`);
+          stderr(io, `Starting JGHarness Server in detached fallback mode: ${serviceFallbackReason}`);
       }
     }
     if (!serviceStarted) {
@@ -448,7 +448,7 @@ async function runServe(
         baselineUpdatedAt,
         () =>
           childEarlyExit
-            ? `JGAgent Server daemon exited before ready (code=${childEarlyExit.code ?? "null"} signal=${childEarlyExit.signal ?? "none"})`
+            ? `JGHarness Server daemon exited before ready (code=${childEarlyExit.code ?? "null"} signal=${childEarlyExit.signal ?? "none"})`
             : undefined,
         serviceStarted,
         readStartupFailureFacts,
@@ -463,7 +463,7 @@ async function runServe(
     }
     // 回退原因只属于本次启动结果，不写入 status.json。
     if (json) stdout(io, serviceFallbackReason ? { ...started, serviceFallbackReason } : started);
-    else stdout(io, `JGAgent Server ${started.state} at ${started.host ?? ""}:${started.port ?? ""}`);
+    else stdout(io, `JGHarness Server ${started.state} at ${started.host ?? ""}:${started.port ?? ""}`);
     process.stdin.pause();
     process.stdin.destroy();
     return 0;
@@ -547,7 +547,7 @@ async function runServe(
     throw error;
   }
   if (json) stdout(io, status);
-  else stdout(io, `JGAgent Server ${status.state} at ${status.host ?? ""}:${status.port ?? ""}`);
+  else stdout(io, `JGHarness Server ${status.state} at ${status.host ?? ""}:${status.port ?? ""}`);
   await new Promise<void>((resolve) => {
     foregroundStopped = resolve;
     if (!daemon) {
@@ -659,7 +659,7 @@ async function runUninstall(
   json: boolean,
   layout: ReturnType<typeof resolveServerLayout>,
 ): Promise<number> {
-  const first = await (io.confirm?.("Type DELETE to uninstall JGAgent Server: ") ??
+  const first = await (io.confirm?.("Type DELETE to uninstall JGHarness Server: ") ??
     Promise.resolve(""));
   if (first !== "DELETE") throw new Error("Uninstall cancelled");
   const second = await (io.confirm?.("Type DELETE again to confirm: ") ?? Promise.resolve(""));
@@ -736,7 +736,7 @@ async function finishUninstall(
       .filter((entry) => entry !== "run")
       .sort();
     // server root 允许用户显式指定，不能递归删除未知内容。卸载只清理上面的
-    // JGAgent allowlist，并把保留项写入结果供用户审计。先落盘 marker，再释放 lock，
+    // JGHarness allowlist，并把保留项写入结果供用户审计。先落盘 marker，再释放 lock，
     // 让并发 Supervisor 在删除 run 目录的最后窗口也会 fail-closed。
     await writeFile(
       layout.uninstalledFile,
@@ -910,7 +910,7 @@ async function delegateLegacyCli(argv: readonly string[], io: CliIO): Promise<nu
   try {
     await access(candidate);
   } catch {
-    stdout(io, argv.length ? `Unknown command: ${argv[0]}` : "JGAgent TUI");
+    stdout(io, argv.length ? `Unknown command: ${argv[0]}` : "JGHarness TUI");
     return argv.length ? 1 : 0;
   }
   const child = fork(candidate, [...argv], { stdio: "inherit" });

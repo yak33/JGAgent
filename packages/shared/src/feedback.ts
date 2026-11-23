@@ -58,7 +58,7 @@ export interface FeedbackDeviceInfo {
   osRelease?: string;
   osVersion?: string;
   osArch?: string;
-  /** 提交反馈时的当前 Agent。单 JGAgent Agent 模式下固定为 JGAgent Agent。 */
+  /** 提交反馈时的当前 Agent。单 JGHarness Agent 模式下固定为 JGHarness Agent。 */
   agentProvider?: string;
   /** 提交反馈时归一到反馈平台的框架标识，当前固定为 zcode-agent。 */
   agentFramework?: FeedbackTicketFramework;
@@ -169,7 +169,7 @@ export interface FeedbackTicketDetail extends FeedbackTicketSummary {
   comments: FeedbackComment[];
   events: FeedbackTicketEvent[];
   lark_record_id?: string | null;
-  /** JGAgent 离线降级：true 表示该工单仅保存在本地（反馈服务端未接入），跳过附件上传。 */
+  /** JGHarness 离线降级：true 表示该工单仅保存在本地（反馈服务端未接入），跳过附件上传。 */
   local_only?: boolean,
 }
 
@@ -215,7 +215,7 @@ export const DEFAULT_FEEDBACK_TICKET_FRAMEWORK: FeedbackTicketFramework = "zcode
 export const FEEDBACK_TICKET_FRAMEWORK_OPTIONS: {
   value: FeedbackTicketFramework;
   label: string;
-}[] = [{ value: "zcode-agent", label: "JGAgent Agent" }];
+}[] = [{ value: "zcode-agent", label: "JGHarness Agent" }];
 
 /** 含「未指定」的完整列表，供管理端等场景使用。 */
 export const FEEDBACK_TICKET_FRAMEWORKS: {

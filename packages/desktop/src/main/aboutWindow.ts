@@ -179,7 +179,7 @@ export function createCustomAboutDialogHtml(input: CustomAboutDialogHtmlInput): 
               aria-hidden="true"
               focusable="false"
             >
-              {/* JGAgent 去官方化：Z 闪电标替换为 JG 斜体字标 */}
+              {/* JGHarness 去官方化：Z 闪电标替换为 JG 斜体字标 */}
               <text x="128" y="118" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="120" font-weight="800" font-style="italic" fill="currentColor">JG</text>
             </svg>
           </div>

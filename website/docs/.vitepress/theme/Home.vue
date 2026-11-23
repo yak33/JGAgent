@@ -4,8 +4,8 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 // 版本与下载地址单点维护：发版时改 VERSION、RELEASE_DATE、latest 三处（需与 changelog.md 最新一节一致）。
 // ⚠️ v0.4.0/v0.5.0 连续两版只改了 VERSION，漏了 RELEASE_DATE 与 latest——首页页脚会停在旧日期。
 const DOWNLOAD_URL = "/downloads/JGAgent-latest-win-x64.exe";
-const VERSION = "0.6.0";
-const RELEASE_DATE = "2026-11-23";
+const VERSION = "0.7.0";
+const RELEASE_DATE = "2026-11-24";
 
 const latest = [
   "同步上游 v3.18.2：终端会话与工作区桥接重构，断线恢复更稳定",

@@ -1,6 +1,6 @@
 import { Button } from "@zcode/ui";
 
-// JGAgent 去官方化（阶段 3）：OAuth 登录服务域删除后，/share/callback 不再执行
+// JGHarness 去官方化（阶段 3）：OAuth 登录服务域删除后，/share/callback 不再执行
 // token 交换；页面保留渲染，统一提示登录不可用，仅提供返回入口。
 interface WebCallbackPageProps {
   onBack: () => void;
@@ -19,8 +19,8 @@ export function WebCallbackPage({ onBack }: WebCallbackPageProps) {
         </h1>
         <p className="mt-2 text-ui-xs leading-6 text-foreground-subtle">
           {isChinese
-            ? "JGAgent 已移除账号登录体系，此回调页面不再可用。"
-            : "Account sign-in was removed in JGAgent; this callback page is no longer available."}
+            ? "JGHarness 已移除账号登录体系，此回调页面不再可用。"
+            : "Account sign-in was removed in JGHarness; this callback page is no longer available."}
         </p>
         <Button
           type="button"

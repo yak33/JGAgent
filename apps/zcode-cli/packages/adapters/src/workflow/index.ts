@@ -32,7 +32,7 @@ interface WorkflowIndexFile {
   runs: WorkflowRunListItem[];
 }
 
-const DEFAULT_WORKFLOW_ROOT = join(homedir(), ".jgagent", "cli", "workflows");
+const DEFAULT_WORKFLOW_ROOT = join(homedir(), ".jgharness", "cli", "workflows");
 const WORKFLOW_DEFINITION_FILE_EXTENSION = ".json";
 
 export class NodeWorkflowStore implements WorkflowStorePort {

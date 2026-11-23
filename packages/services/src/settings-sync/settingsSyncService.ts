@@ -417,7 +417,7 @@ function getWorkspaceZcodeSkillRoot(workspacePath: string): string {
 }
 
 function getUserZcodeSkillRoot(): string {
-  return join(resolveUserHomeDir(), ".jgagent", "skills");
+  return join(resolveUserHomeDir(), ".jgharness", "skills");
 }
 
 function getWorkspaceZcodeCommandRoot(workspacePath: string): string {
@@ -425,7 +425,7 @@ function getWorkspaceZcodeCommandRoot(workspacePath: string): string {
 }
 
 function getUserZcodeCommandRoot(): string {
-  return join(resolveUserHomeDir(), ".jgagent", "commands");
+  return join(resolveUserHomeDir(), ".jgharness", "commands");
 }
 
 function getWorkspaceZcodePluginRoot(workspacePath: string): string {
@@ -433,11 +433,11 @@ function getWorkspaceZcodePluginRoot(workspacePath: string): string {
 }
 
 function getUserZcodePluginRoot(): string {
-  return join(resolveUserHomeDir(), ".jgagent", "plugins");
+  return join(resolveUserHomeDir(), ".jgharness", "plugins");
 }
 
 function getUserZcodeCliConfigPath(): string {
-  return join(resolveUserHomeDir(), ".jgagent", "cli", "config.json");
+  return join(resolveUserHomeDir(), ".jgharness", "cli", "config.json");
 }
 
 function getWorkspaceZcodeConfigPath(workspacePath: string): string {
@@ -449,7 +449,7 @@ function getClaudeUserAgentsFileSourcePath(): string {
 }
 
 function getUserZcodeAgentsFilePath(): string {
-  return join(resolveUserHomeDir(), ".jgagent", "AGENTS.md");
+  return join(resolveUserHomeDir(), ".jgharness", "AGENTS.md");
 }
 
 function resolveTargetRootForScope(

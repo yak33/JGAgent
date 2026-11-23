@@ -4,7 +4,7 @@ import { formatRemoteConnectionError } from "@/lib/remoteConnectionPresentation.
 /**
  * ChatErrorBanner — 错误提示组件
  *
- * 显示 JGAgent Agent 链路中的错误，带 traceId 方便排查。
+ * 显示 JGHarness Agent 链路中的错误，带 traceId 方便排查。
  */
 import { useState } from "react";
 import {
@@ -314,7 +314,7 @@ export function ChatErrorBanner({
           </div>
         </div>
 
-        {/* JGAgent 去官方化（阶段 3）：移除套餐升级按钮（CodingPlanEntryButton 随订阅域摘除），
+        {/* JGHarness 去官方化（阶段 3）：移除套餐升级按钮（CodingPlanEntryButton 随订阅域摘除），
             onOpenUpgrade prop 仅保留接口兼容，模型缺失时只保留「设置模型」入口。 */}
         {modelConfigMissing ? (
           <>

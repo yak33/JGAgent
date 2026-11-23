@@ -18,7 +18,7 @@ const ALGORITHM = "aes-256-gcm";
 const KEY_BYTES = 32;
 const IV_BYTES = 12;
 const TAG_BYTES = 16;
-const SYSTEM_SERVICE = "JGAgent Credential Encryption";
+const SYSTEM_SERVICE = "JGHarness Credential Encryption";
 /** 与凭据文件同目录的来源标记；内容只能是 OS_SOURCE_MARKER，不含密钥。 */
 const CREDENTIAL_SOURCE_FILE = "credential-source";
 const OS_SOURCE_MARKER = "os\n";

@@ -41,7 +41,7 @@ export async function resolveBuildTimeConfig(
   return {
     armsRumEndpoint: pickValue(env, defaults, "ZCODE_ARMS_RUM_ENDPOINT"),
     telemetryReportEndpoint: pickValue(env, defaults, "ZCODE_TELEMETRY_REPORT_ENDPOINT"),
-    // JGAgent：自动更新默认启用（feed 由官网静态 latest.yml 提供，见 docs/release/README.md），
+    // JGHarness：自动更新默认启用（feed 由官网静态 latest.yml 提供，见 docs/release/README.md），
     // 保持 v0.3.2 起的自动更新链路；上游默认关闭。需要关闭时显式设 ZCODE_AUTO_UPDATE=0。
     autoUpdateEnabled: ENABLED_VALUES.has(
       (pickValue(env, defaults, "ZCODE_AUTO_UPDATE") || "1").toLowerCase(),

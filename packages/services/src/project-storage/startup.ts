@@ -102,7 +102,7 @@ export async function prepareTasksIndexStorage(
   const repos = [
     new TaskIndexRepo(settings, undefined, path, LOCK_WAIT_MS),
     new AutomationRepo(path, LOCK_WAIT_MS),
-    // JGAgent 去官方化（阶段 3）：OffPeakTaskRepo 维护移除（闲时任务域删除）；
+    // JGHarness 去官方化（阶段 3）：OffPeakTaskRepo 维护移除（闲时任务域删除）；
     // off_peak_tasks 表的建表迁移 SQL 保留在 migrations.ts，存量数据不受影响。
   ];
   let preparationFailure: unknown;

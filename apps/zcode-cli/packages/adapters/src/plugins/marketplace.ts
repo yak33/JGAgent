@@ -52,9 +52,9 @@ const INSTALLED_PLUGINS_FILE = "installed_plugins.json";
 const MARKETPLACE_FILE = "marketplace.json";
 const CLAUDE_OFFICIAL_MARKETPLACE = "claude-plugins-official";
 const PLUGIN_ICON_SOURCES_FILE = "icon-sources.json";
-// JGAgent 去官方化：官方插件图标 CDN 占位化（不解析域），图标回退本地占位资源；
+// JGHarness 去官方化：官方插件图标 CDN 占位化（不解析域），图标回退本地占位资源；
 // 公司插件源就绪后替换为公司 CDN。
-const PLUGIN_ICON_ASSETS_BASE_URL = "https://cdn.jgagent.invalid/zcode/official-plugin/assets/";
+const PLUGIN_ICON_ASSETS_BASE_URL = "https://cdn.jgharness.invalid/zcode/official-plugin/assets/";
 const PLUGIN_ICON_SOURCES_URL = `${PLUGIN_ICON_ASSETS_BASE_URL}${PLUGIN_ICON_SOURCES_FILE}`;
 const MARKETPLACE_JSON_MAX_BYTES = 10 * 1024 * 1024;
 const MARKETPLACE_JSON_MAX_REDIRECTS = 5;
@@ -199,7 +199,7 @@ export function buildMarketplaceGitEnv(
 ): Record<string, string> {
   const env = sanitizeZCodeRuntimeEnv(sourceEnv);
   // marketplace 安装会启动 Git 子进程，不能只依赖父进程继承的 shell 代理。
-  // 这里统一从 JGAgent 显式网络环境恢复 HTTP(S)/NO_PROXY/CA，避免安装按钮卡到协议超时。
+  // 这里统一从 JGHarness 显式网络环境恢复 HTTP(S)/NO_PROXY/CA，避免安装按钮卡到协议超时。
   return applyNetworkEgressEnv(env, { sourceEnv });
 }
 
@@ -2523,7 +2523,7 @@ function pushManifestCompatibilityDiagnostics(input: {
     if (key in input.manifest) {
       input.diagnostics.push({
         code: "plugin_unsupported_component",
-        message: `Plugin component is diagnostic-only in this JGAgent runtime: ${key}`,
+        message: `Plugin component is diagnostic-only in this JGHarness runtime: ${key}`,
         path: input.manifestPath,
         pluginId: input.pluginId,
         severity: "warning",

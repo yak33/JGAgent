@@ -347,7 +347,7 @@ export * from "./streaming-tool-input-preview.js";
 export * from "./tool-plan-adapter.js";
 export * from "./permission-request-preview.js";
 export * from "./web-remote-control.js";
-// JGAgent：V1 relay 心跳节奏符号为 v0.4.0 自建链路依赖；具名导出并覆盖 V2 同名符号。jg
+// JGHarness：V1 relay 心跳节奏符号为 v0.4.0 自建链路依赖；具名导出并覆盖 V2 同名符号。jg
 export {
   WEB_REMOTE_CONTROL_HEARTBEAT_INTERVAL_MS,
   WEB_REMOTE_CONTROL_HEARTBEAT_JITTER_MS,
@@ -375,10 +375,10 @@ export * from "./workspaceSessionRestore.js";
 export * from "./skill-scan-policy.js";
 export * from "./browser-use/index.js";
 
-// JGAgent：highspeed.ts 为纯类型/常量（无服务依赖），保留官方导出供 UI 组件类型引用；
+// JGHarness：highspeed.ts 为纯类型/常量（无服务依赖），保留官方导出供 UI 组件类型引用；
 // coding-plan-reset.js（额度重置协议类型）仍保持删除（零引用）。
 export * from "./highspeed.js";
-// JGAgent 去官方化（阶段 3）：删除 coding-plan-reset.js（额度重置协议类型，零引用）。
+// JGHarness 去官方化（阶段 3）：删除 coding-plan-reset.js（额度重置协议类型，零引用）。
 export {
   parseSubagentMarkdownSelection,
   formatSubagentMarkdownModel,

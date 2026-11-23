@@ -54,9 +54,9 @@ export const ZCODE_CLIENT_LANGUAGE_ENV = "ZCODE_CLIENT_LANGUAGE" as const;
 export const RUNTIME_ZCODE_DEBUG =
   typeof process !== "undefined" ? process.env.ZCODE_DEBUG : undefined;
 
-// JGAgent 去官方化：遥测保持禁用——ZCODE_TELEMETRY_ENABLED 写死 false，事件与
+// JGHarness 去官方化：遥测保持禁用——ZCODE_TELEMETRY_ENABLED 写死 false，事件与
 // ARMS 上报全部停用。上报端点走运行时环境变量（上游 v3.15.1 改为构建期 define 注入，
-// JGAgent 维持运行时模式，产物不内嵌端点，未配置即停用，公司自建遥测时改读取配置即可恢复）。
+// JGHarness 维持运行时模式，产物不内嵌端点，未配置即停用，公司自建遥测时改读取配置即可恢复）。
 export const ZCODE_TELEMETRY_ENABLED: boolean = false;
 
 /** 数仓事件上报端点：由运行时环境变量提供，未配置即停用，构建产物不内嵌。 */
@@ -67,7 +67,7 @@ export const ZCODE_TELEMETRY_REPORT_ENDPOINT =
 export const ZCODE_ARMS_RUM_ENDPOINT =
   typeof process !== "undefined" ? (process.env.ZCODE_ARMS_RUM_ENDPOINT ?? "") : "";
 
-/** 桌面自动更新开关（上游 v3.15.1 新增构建期注入）。JGAgent 构建脚本默认启用
+/** 桌面自动更新开关（上游 v3.15.1 新增构建期注入）。JGHarness 构建脚本默认启用
  *  （见 scripts/build-time-config.mjs：不设 ZCODE_AUTO_UPDATE 即视为开启），
  *  保持 v0.3.2 起的官网静态 feed 自动更新链路；需要关闭时构建期注入 false。 */
 export const ZCODE_AUTO_UPDATE_ENABLED: boolean =

@@ -75,7 +75,7 @@ const BUSY_TOOLTIP_MESSAGE_ID = "chat.toolbar.computerUse.tooltip.sessionBusy";
  * 四层可见性门。任一不过 → 不渲染 DOM，而不是渲染成 disabled 按钮：
  * 不可用场景下留一个灰按钮会误导用户以为「装了就能用」。
  */
-// JGAgent：电脑控制（CUA）的完整实现依赖官方闭源插件 computer-use@zcode-plugins-official，
+// JGHarness：电脑控制（CUA）的完整实现依赖官方闭源插件 computer-use@zcode-plugins-official，
 // 官方开源基线仅保留占位包（packages/zcode-cua）并隐藏了设置页 computerUse 分区
 // （settingsNavigation.ts 的 HIDDEN_SETTINGS_SECTIONS）。插件市场端点已收口为 .invalid、
 // 本地种子亦无该插件，功能当前整体不可用——输入框入口一并隐藏，避免出现

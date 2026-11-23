@@ -28,7 +28,7 @@ import { stampMacosUpdateManifests } from "./macos-update-manifest.mjs";
 const desktopRoot = resolve(import.meta.dirname, "..");
 const workspaceRoot = resolve(desktopRoot, "../..");
 
-// JGAgent 防污染守卫：tsup 会把 process.env 里影响产品行为的端点/配置路径经
+// JGHarness 防污染守卫：tsup 会把 process.env 里影响产品行为的端点/配置路径经
 // __ZCODE_ENDPOINT_ENV__ 等常量烧进产物。若在宿主 ZCode 会话（或其它带官方端点
 // 环境变量的 shell）里打包，官方地址会被打进安装包，导致启动即外发官方域名、
 // 甚至被官方强制升级配置拦停（2026-09-26 v0.3.0 首版事故）。这里在打包入口直接拒绝。

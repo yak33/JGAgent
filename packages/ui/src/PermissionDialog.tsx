@@ -193,7 +193,7 @@ const PROVIDER_PERMISSION_OPTION_NAME_LABELS: Partial<
   Record<ZCodeProvider, Record<string, string>>
 > = {
   glm: {
-    // GLM/JGAgent Agent 通过 JGAgent Agent 发来的项目级记忆授权文案是英文原文。
+    // GLM/JGHarness Agent 通过 JGHarness Agent 发来的项目级记忆授权文案是英文原文。
     // 这里把已知 provider-native 权限文案统一归一到 i18n，避免被当成自定义选项直出英文。
     "always allow in this project": "chat.permission.allowForProject",
   },
@@ -997,7 +997,7 @@ export function PermissionDialog({
                 const knownNameLabel = nameMessageIds
                   ? intl.formatMessage({ id: nameMessageIds.label })
                   : null;
-                // JGAgent Agent 协议里 option.name 才是给用户看的真实选项文案，kind 只表示按钮语义。
+                // JGHarness Agent 协议里 option.name 才是给用户看的真实选项文案，kind 只表示按钮语义。
                 // 之前这里一律按 kind 本地化，像 switch_mode 这类不同语义但同属 allow_always 的选项，
                 // 会被错误压成两条一模一样的“始终允许”。
                 const preferOptionName = shouldPreferPermissionOptionName(option);

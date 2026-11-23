@@ -1,7 +1,7 @@
 /**
  * WelcomeScreen —— API Key 配置入口
  *
- * JGAgent 去官方化（阶段 3）：移除 OAuth 渠道登录，仅保留 API Key 直连与跳过路径。
+ * JGHarness 去官方化（阶段 3）：移除 OAuth 渠道登录，仅保留 API Key 直连与跳过路径。
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { DesktopOverlayWindowControls } from "@/DesktopOverlayWindowControls.js";
@@ -31,7 +31,7 @@ interface WelcomeScreenProps {
   onComplete: (reason: LoginCompleteReason) => void | Promise<void>;
 }
 
-// JGAgent 去官方化（阶段 3）：登录完成原因收窄为 apiKey / skip，OAuth 渠道已摘除。
+// JGHarness 去官方化（阶段 3）：登录完成原因收窄为 apiKey / skip，OAuth 渠道已摘除。
 export type LoginCompleteReason = "apiKey" | "skip";
 
 /** 登录页区域展示态；真实区域路由等 Z.ai 国内一方登录 provider 就绪后再接入。 */
@@ -94,7 +94,7 @@ function LoginPanelLogo() {
     // 登录 logo 壳是固定深色底，边框不能跟随浅色主题 token，否则浅色主题下边框过重。
     <div
       className="relative mb-1 flex size-16 items-center justify-center rounded-2xl bg-[linear-gradient(180deg,#000000_0%,#151718_100%)] text-[#ffffff] shadow-lg/20 before:pointer-events-none before:absolute before:inset-0 before:rounded-2xl before:border before:border-[rgba(255,255,255,0.1)]"
-      aria-label="JGAgent"
+      aria-label="JGHarness"
       role="img"
     >
       <ZCodeAboutLogo className="h-auto w-10" />

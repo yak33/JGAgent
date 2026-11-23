@@ -2,13 +2,13 @@ import { spawn } from "node:child_process";
 import { resolve } from "node:path";
 import { toZhOrEnLocale, type Locale } from "@zcode/shared";
 
-const MENU_KEY_NAME = "JGAgent.OpenInJGAgent";
+const MENU_KEY_NAME = "JGHarness.OpenInJGHarness";
 const DIRECTORY_MENU_KEY = `HKCU\\Software\\Classes\\Directory\\shell\\${MENU_KEY_NAME}`;
 const DRIVE_MENU_KEY = `HKCU\\Software\\Classes\\Drive\\shell\\${MENU_KEY_NAME}`;
 // 系统右键菜单只内置中英；其它界面语言用英文。
 const MENU_LABELS: Record<"zh-CN" | "en-US", string> = {
-  "zh-CN": "在JGAgent中打开",
-  "en-US": "Open in JGAgent",
+  "zh-CN": "在JGHarness中打开",
+  "en-US": "Open in JGHarness",
 };
 
 type Logger = {

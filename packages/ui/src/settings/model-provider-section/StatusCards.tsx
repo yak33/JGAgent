@@ -1,5 +1,5 @@
 /* eslint-disable max-lines -- Coding Plan/Start Plan 状态卡集中编排状态、动作和套餐区块，当前先保持同一文件避免拆散状态语义。 */
-// JGAgent 去官方化（阶段 3）：移除升级/续期/订阅按钮（CodingPlanUpgradeAction / CodingPlanEntryButton buyAction）
+// JGHarness 去官方化（阶段 3）：移除升级/续期/订阅按钮（CodingPlanUpgradeAction / CodingPlanEntryButton buyAction）
 // 与配套 upgradePlansVisible 受控状态、BigModel 注册失败 hint（authError 输入已移除），保留连接状态与额度展示。
 import {
   isStartPlanModelProviderId,
@@ -29,13 +29,13 @@ import {
 import type { CodingPlanStatusPanelViewState } from "./codingPlanStatusPanelViewState.js";
 import { CodingPlanStatusMeta, StartPlanStatusMeta } from "./CodingPlanStatusMeta.js";
 import { formatQuotaModelDisplayName } from "./quotaModelDisplayName.js";
-// JGAgent 去官方化（阶段 3）：formatQuotaModelDisplayName 仅剩通用额度卡在用，import 恢复。
+// JGHarness 去官方化（阶段 3）：formatQuotaModelDisplayName 仅剩通用额度卡在用，import 恢复。
 import { CodingPlanStatusActions } from "./CodingPlanStatusActions.js";
 
 
 
 
-// JGAgent 去官方化（阶段 3）：额度汇总卡配色常量随订阅域移除。
+// JGHarness 去官方化（阶段 3）：额度汇总卡配色常量随订阅域移除。
 
 function PlanStatusCardSurface({
   planTitle,
@@ -124,7 +124,7 @@ export function CodingPlanStatusPanel({
   subscriptionExpireTime,
   subscriptionDetails,
   quotaLimits = [],
-  // JGAgent 去官方化（阶段 3）：mcpQuotaLimit / usageDetailsVisible / quotaReset* 解构随额度展示移除。
+  // JGHarness 去官方化（阶段 3）：mcpQuotaLimit / usageDetailsVisible / quotaReset* 解构随额度展示移除。
   onLogin,
   onRetry,
   onOpenPurchase,
@@ -210,7 +210,7 @@ export function CodingPlanStatusPanel({
     !isChecking &&
     !isUnavailable &&
     !isUnsupported;
-  // JGAgent 去官方化（阶段 3）：移除不可用态的“重新登录”专属文案，统一回落普通登录标签。
+  // JGHarness 去官方化（阶段 3）：移除不可用态的“重新登录”专属文案，统一回落普通登录标签。
   const loginButtonId = isStartPlanProvider
     ? "settings.modelProvider.startPlan.login"
     : "settings.modelProvider.codingPlan.connect";
@@ -242,7 +242,7 @@ export function CodingPlanStatusPanel({
   const teamPlanWarningVisible = !isChecking && teamPlanAvailabilityReason !== undefined;
   const recoverableUnavailable =
     effectiveViewState.actionStatus === "unavailable" && !teamPlanUnavailableStatusVisible;
-  // JGAgent 去官方化（阶段 3）：移除凭据失败后的“重新登录”按钮，恢复入口统一走重试/普通登录。
+  // JGHarness 去官方化（阶段 3）：移除凭据失败后的“重新登录”按钮，恢复入口统一走重试/普通登录。
   const retryVisible =
     (recoverableUnavailable ||
       statusLabelId === "settings.modelProvider.codingPlan.status.unavailable") &&
@@ -265,7 +265,7 @@ export function CodingPlanStatusPanel({
     isPurchased &&
     Boolean(purchaseUrl) &&
     Boolean(onOpenPurchase);
-  // JGAgent 去官方化（阶段 3）：移除未开通态的 Start Plan 预览营销卡及其远端 preview 拉取，
+  // JGHarness 去官方化（阶段 3）：移除未开通态的 Start Plan 预览营销卡及其远端 preview 拉取，
   // 以及 BigModel 未注册 hint（authError 输入已随 oauthError store 字段移除）。
   const inlineDisconnectVisible = canDisconnectProvider && !isPurchased;
   const planTitle = resolveCodingPlanStatusCardTitle({
@@ -282,7 +282,7 @@ export function CodingPlanStatusPanel({
       id: "settings.modelProvider.planCard.codingPlan",
     }),
   });
-  // JGAgent 去官方化（阶段 3）：账单折扣徽章随订阅域移除。
+  // JGHarness 去官方化（阶段 3）：账单折扣徽章随订阅域移除。
   const titleBillingDiscountVisible = false;
   const notPurchasedStatusLabel = isNotPurchased ? (
     <span className="flex w-fit items-center gap-1.5 text-foreground-subtle">
@@ -290,7 +290,7 @@ export function CodingPlanStatusPanel({
       <span>{intl.formatMessage({ id: statusBadgeId })}</span>
     </span>
   ) : null;
-  // JGAgent 去官方化（阶段 3）：Start Plan 余额卡数据源随订阅域删除，套餐卡恒为空。
+  // JGHarness 去官方化（阶段 3）：Start Plan 余额卡数据源随订阅域删除，套餐卡恒为空。
   const startPlanEntries: readonly { plan: never; limits: readonly never[] }[] = [];
   const statusMeta =
     isPurchased && isStartPlanProvider ? (
@@ -356,9 +356,9 @@ export function CodingPlanStatusPanel({
         {statusBadgeMessage || intl.formatMessage({ id: statusBadgeId })}
       </span>
     );
-  // JGAgent 去官方化（阶段 3）：额度汇总卡随订阅域移除，用量卡区域不再展示。
+  // JGHarness 去官方化（阶段 3）：额度汇总卡随订阅域移除，用量卡区域不再展示。
 
-  // JGAgent 去官方化（阶段 3）：移除“重新登录”分支（原凭据失败强制 forceOAuth 恢复），
+  // JGHarness 去官方化（阶段 3）：移除“重新登录”分支（原凭据失败强制 forceOAuth 恢复），
   // 恢复入口优先级为 重试 > 尾部登录（升级/订阅按钮已随购买面板摘除）。
   const trailingAction = retryVisible ? (
     <Button type="button" size="lg" onClick={onRetry} disabled={effectiveViewState.loginLoading}>
@@ -398,7 +398,7 @@ export function CodingPlanStatusPanel({
       />
     </>
   );
-  // JGAgent 去官方化（阶段 3）：Start Plan 多卡分支随订阅域删除（startPlanEntries 恒空）。
+  // JGHarness 去官方化（阶段 3）：Start Plan 多卡分支随订阅域删除（startPlanEntries 恒空）。
   const planCards = [
           <PlanStatusCardSurface
             key="current-plan"
@@ -406,7 +406,7 @@ export function CodingPlanStatusPanel({
             titleAccessory={undefined}
             statusMeta={statusContent}
             trailingAction={trailingAction}
-            // JGAgent 去官方化（阶段 3）：Start Plan 余额卡与 Coding Plan 额度汇总卡随订阅域移除。
+            // JGHarness 去官方化（阶段 3）：Start Plan 余额卡与 Coding Plan 额度汇总卡随订阅域移除。
             usageContent={undefined}
           />,
         ];
@@ -414,7 +414,7 @@ export function CodingPlanStatusPanel({
   return (
     <div className="space-y-3">
       {planCards}
-      {/* JGAgent 去官方化（阶段 3）：移除未开通态的 StartPlanCard 预览营销卡渲染。 */}
+      {/* JGHarness 去官方化（阶段 3）：移除未开通态的 StartPlanCard 预览营销卡渲染。 */}
     </div>
   );
 }
@@ -436,7 +436,7 @@ export function hasStartPlanEntitlementQuota(
 
 export function resolveCodingPlanStatusCardTitle({
   isPurchased,
-  // JGAgent 去官方化（阶段 3）：isUnavailable 形参随额度展示分支移除。
+  // JGHarness 去官方化（阶段 3）：isUnavailable 形参随额度展示分支移除。
   isStartPlanProvider,
   inactivePlanTitle,
   rawPlanLevel,
@@ -475,4 +475,4 @@ function isStartPlanEntitlementName(planLevel: string): boolean {
   );
 }
 
-// JGAgent 去官方化（阶段 3）：CodingPlanUsageSummaryCards 桩随订阅域移除（无渲染点）。
+// JGHarness 去官方化（阶段 3）：CodingPlanUsageSummaryCards 桩随订阅域移除（无渲染点）。

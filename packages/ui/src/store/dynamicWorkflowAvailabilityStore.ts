@@ -5,7 +5,7 @@ import type { DynamicWorkflowClientConfig } from "@zcode/shared";
 // 动态工作流灰度快照在 renderer 的唯一副本
 // ============================================================
 //
-// JGAgent 去官方化（阶段 3）：灰度配置原先由 CodingPlanSubscriptionService 下发；
+// JGHarness 去官方化（阶段 3）：灰度配置原先由 CodingPlanSubscriptionService 下发；
 // 订阅服务域删除后没有服务端灰度来源，快照固定为 disabled（fail-closed，
 // 与「Host 判定一次、renderer 只读」的原语义一致）。保留 store 与 hook 形状，
 // 消费方（自动化页、run 面板）无需感知来源移除；后续接公司自有灰度时只需

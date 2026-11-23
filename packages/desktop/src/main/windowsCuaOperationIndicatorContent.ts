@@ -13,8 +13,8 @@ export const INDICATOR_SHADOW_INSET = { top: 6, right: 8, bottom: 12, left: 8 } 
 
 export function indicatorCopy(locale: Locale): { text: string; width: number } {
   return locale === "zh-CN"
-    ? { text: "JGAgent 正在操作电脑", width: 234 }
-    : { text: "JGAgent is controlling your computer", width: 308 };
+    ? { text: "JGHarness 正在操作电脑", width: 234 }
+    : { text: "JGHarness is controlling your computer", width: 308 };
 }
 
 export function indicatorWindowSize(locale: Locale): { width: number; height: number } {

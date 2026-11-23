@@ -458,7 +458,7 @@ export function createWebRemoteControlManager(dependencies: WebRemoteControlMana
   function endTerminalOwner(runtime: WindowControlRuntime): void {
     const hadOwner = runtime.terminalOwner !== undefined;
     runtime.terminalOwner = undefined;
-    // JGAgent V1：无 V2 的 bridgeOpen/pendingBridgeInvalidation admission 结构；
+    // JGHarness V1：无 V2 的 bridgeOpen/pendingBridgeInvalidation admission 结构；
     // 结束 owner 只需处置当前 bridge 资源并回收终端归属。
     disposeRuntimeBridgeResources(runtime);
     if (hadOwner) dependencies.setTerminalOwner(runtime.windowId, null);
@@ -1480,7 +1480,7 @@ export function createWebRemoteControlManager(dependencies: WebRemoteControlMana
   }
 
   return {
-    // JGAgent V1：官方通知推送连接（MobilePushConnection）依赖账号 JWT，链路不可用；
+    // JGHarness V1：官方通知推送连接（MobilePushConnection）依赖账号 JWT，链路不可用；
     // 保留接口占位为 no-op，main 侧调用无效果。
     startNotifications: () => {},
     refreshNotifications: () => {},
@@ -1708,7 +1708,7 @@ export function createWebRemoteControlManager(dependencies: WebRemoteControlMana
 
     async suspend(windowId: number, reason: string): Promise<void> {
       clearStartAuthorizationsForWindow(windowId);
-      // JGAgent V1：通知连接不存在，endpoint 变化只需停掉窗口运行时。
+      // JGHarness V1：通知连接不存在，endpoint 变化只需停掉窗口运行时。
       await stopWindowRuntime(windowId, reason);
     },
 

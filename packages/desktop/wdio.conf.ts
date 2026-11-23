@@ -1277,7 +1277,7 @@ async function startCodingPlanTeamMockIfNeeded(specs: string[] = []) {
     specs,
     "conversation-session-start-plan-independent.test.ts",
   );
-  // JGAgent 去官方化（阶段 3）：闲时任务 Team mock 网关随订阅域移除。
+  // JGHarness 去官方化（阶段 3）：闲时任务 Team mock 网关随订阅域移除。
   let providerResponsive = startIndependent;
   let faultMode:
     | "none"
@@ -1332,7 +1332,7 @@ async function startCodingPlanTeamMockIfNeeded(specs: string[] = []) {
   codingPlanTeamMockServer = createServer(async (request, response) => {
     if (await shareMockRoute(request, response)) return;
     const url = new URL(request.url ?? "/", "http://127.0.0.1");
-    // JGAgent 去官方化（阶段 3）：闲时任务 mock 网关代理段随订阅域移除。
+    // JGHarness 去官方化（阶段 3）：闲时任务 mock 网关代理段随订阅域移除。
     if (url.pathname === "/__e2e/coding-plan/case-mode" && request.method === "POST") {
       presentation = undefined;
       const body = await readRequestJson<{ mode?: typeof caseMode }>(request);
@@ -1786,7 +1786,7 @@ async function startCodingPlanTeamMockIfNeeded(specs: string[] = []) {
         data: {
           configs: {
             ...requestSecurityClientConfig(),
-            // JGAgent 去官方化（阶段 3）：offPeak 配置随闲时任务域移除。
+            // JGHarness 去官方化（阶段 3）：offPeak 配置随闲时任务域移除。
           },
         },
       });

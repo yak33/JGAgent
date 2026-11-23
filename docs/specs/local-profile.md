@@ -4,9 +4,9 @@
 
 ## 行为定义
 
-1. **数据**：`{ name: string, colorIndex: number }`，存 localStorage（key `jgagent-local-profile`）。**不复用**阶段 3 置空保留的账号 store 字段（`user`/`loginEntryRequest` 等，那是给上游 merge 留的），两者互不相干。
+1. **数据**：`{ name: string, colorIndex: number }`，存 localStorage（key `jgharness-local-profile`）。**不复用**阶段 3 置空保留的账号 store 字段（`user`/`loginEntryRequest` 等，那是给上游 merge 留的），两者互不相干。
 2. **首启默认**：未存储时按当前 locale 生成一个随机用户名（形容词+名词词表），`colorIndex` 由名字哈希取模固定色板（8 色）。即左下角永远有内容，不会出现空名。
-3. **左下角 chip**：`[首字母头像] [用户名]`，替代原 "JGAgent" 字样（品牌标保留在窗口左上角）。点击弹出原偏好菜单。
+3. **左下角 chip**：`[首字母头像] [用户名]`，替代原 "JGHarness" 字样（品牌标保留在窗口左上角）。点击弹出原偏好菜单。
 4. **弹出菜单顶部"个性化"区块**：
    - 头像颜色：8 个色点单选，即时生效
    - 用户名：输入框（长度 1~16，去首尾空白）+ 筛子按钮（按当前 locale 随机重掷）

@@ -33,7 +33,7 @@ const OAUTH_CREDENTIAL_KEYS = new Set<string>(PROVIDER_PROVISIONING_OAUTH_CREDEN
 export interface ProviderProvisioningTargetOptions {
   readonly providerRuntime: ProviderRuntime;
   readonly personalRepository: PersonalProviderConfigRepository;
-  // JGAgent 去官方化（阶段 3）：账号 Provider 事实源删除后 target 不再刷新账号层；
+  // JGHarness 去官方化（阶段 3）：账号 Provider 事实源删除后 target 不再刷新账号层；
   // Personal 配置写入后的 Registry 刷新仍保留（apiKey/Personal 路径在用）。
   readonly credentialService: LocalCredentialService;
   readonly settingService: ISettingService;

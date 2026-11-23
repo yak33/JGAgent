@@ -14,7 +14,7 @@ import { ZAI_PROVIDER_ID, BIGMODEL_PROVIDER_ID } from "@zcode/shared";
 import { ConversationShareReadonlyTimeline } from "@zcode/ui/conversation-share-readonly";
 import { applyTheme, resolveTheme, type Theme } from "@zcode/ui/useTheme";
 import "./conversationShareLandingPage.css";
-// JGAgent 去官方化（阶段 3）：WebOAuthProviderId 原定义于 browserOAuthCredentialRepo（已随 OAuth 登录域删除），
+// JGHarness 去官方化（阶段 3）：WebOAuthProviderId 原定义于 browserOAuthCredentialRepo（已随 OAuth 登录域删除），
 // 此处保留本地联合类型供登录回调签名使用（登录按钮组件本身随 OAuth 域摘除）。
 type WebOAuthProviderId = typeof ZAI_PROVIDER_ID | typeof BIGMODEL_PROVIDER_ID;
 import {
@@ -98,12 +98,12 @@ interface Copy {
   artifactCountOther: string;
 }
 
-// JGAgent：下载入口指向官网首页（/downloads 提供安装包分发）；公司域名就绪后替换为正式地址。
+// JGHarness：下载入口指向官网首页（/downloads 提供安装包分发）；公司域名就绪后替换为正式地址。
 const ZCODE_DOWNLOAD_URL = "http://82.157.149.224/downloads";
 
 const COPY: Record<ConversationShareLandingLocale, Copy> = {
   "zh-CN": {
-    brand: "JGAgent 会话分享",
+    brand: "JGHarness 会话分享",
     loading: "正在加载分享内容",
     loadingDescription: "请稍候，我们正在验证分享链接。",
     loginTitle: "登录后查看分享",
@@ -131,22 +131,22 @@ const COPY: Record<ConversationShareLandingLocale, Copy> = {
     networkDescription: "请检查网络后重试。",
     invalidTitle: "无法读取分享内容",
     invalidDescription: "分享服务返回了无法识别的数据，请提供错误详情。",
-    outdatedTitle: "需要更新 JGAgent",
-    outdatedDescription: "这个分享由更新版本的 JGAgent 创建，请升级后再查看。",
+    outdatedTitle: "需要更新 JGHarness",
+    outdatedDescription: "这个分享由更新版本的 JGHarness 创建，请升级后再查看。",
     unavailableTitle: "分享不可访问",
     unavailableDescription: "当前账号没有权限，或者分享内容已不存在。",
     retry: "重试",
-    continueInZCode: "去 JGAgent 继续",
+    continueInZCode: "去 JGHarness 继续",
     switchToDarkTheme: "切换到深色主题",
     switchToLightTheme: "切换到浅色主题",
-    continueHelp: "如果没有自动打开 JGAgent，请先下载客户端，或再次尝试打开。",
-    downloadZCode: "下载 JGAgent",
+    continueHelp: "如果没有自动打开 JGHarness，请先下载客户端，或再次尝试打开。",
+    downloadZCode: "下载 JGHarness",
     artifactCountOne: "{count} 个结果物",
     artifactCountOther: "{count} 个结果物",
     retryOpen: "再次打开",
   },
   "en-US": {
-    brand: "JGAgent Conversation Share",
+    brand: "JGHarness Conversation Share",
     loading: "Loading shared conversation",
     loadingDescription: "Please wait while we verify this share link.",
     loginTitle: "Sign in to view this share",
@@ -177,18 +177,18 @@ const COPY: Record<ConversationShareLandingLocale, Copy> = {
     invalidTitle: "Unable to read shared content",
     invalidDescription:
       "The sharing service returned unrecognized data. Provide the error details.",
-    outdatedTitle: "Update JGAgent to continue",
+    outdatedTitle: "Update JGHarness to continue",
     outdatedDescription:
-      "This share was created by a newer version of JGAgent. Please update to view it.",
+      "This share was created by a newer version of JGHarness. Please update to view it.",
     unavailableTitle: "Share unavailable",
     unavailableDescription:
       "This account is not allowed to view the share, or it no longer exists.",
     retry: "Try again",
-    continueInZCode: "Continue in JGAgent",
+    continueInZCode: "Continue in JGHarness",
     switchToDarkTheme: "Switch to dark theme",
     switchToLightTheme: "Switch to light theme",
-    continueHelp: "If JGAgent did not open, download the app or try opening it again.",
-    downloadZCode: "Download JGAgent",
+    continueHelp: "If JGHarness did not open, download the app or try opening it again.",
+    downloadZCode: "Download JGHarness",
     artifactCountOne: "{count} artifact",
     artifactCountOther: "{count} artifacts",
     retryOpen: "Try again",
@@ -482,9 +482,9 @@ export function ConversationShareLandingPage({
                   ref={brandRef}
                   data-share-brand="true"
                   className="shrink-0 text-ui-lg font-semibold text-foreground"
-                  aria-label="JGAgent"
+                  aria-label="JGHarness"
                 >
-                  JGAgent
+                  JGHarness
                 </div>
                 <h1
                   ref={titleRef}
@@ -672,7 +672,7 @@ export function ConversationShareLandingStatus({
 }: {
   state: Exclude<ConversationShareLandingState, { kind: "ready" }>;
   locale?: ConversationShareLandingLocale;
-  // JGAgent 去官方化（阶段 3）：登录按钮组件随 OAuth 域摘除；类型内联保持回调签名。
+  // JGHarness 去官方化（阶段 3）：登录按钮组件随 OAuth 域摘除；类型内联保持回调签名。
   onLogin?: (provider: WebOAuthProviderId, signal: AbortSignal) => Promise<void> | void;
   onRetry?: () => void;
   /** 管理页复用同一登录卡片，只替换标题与说明。 */
@@ -758,7 +758,7 @@ export function ConversationShareLandingStatus({
             {copy.notFoundAccountHint}
           </p>
         ) : null}
-        {/* JGAgent 去官方化（阶段 3）：分享页登录按钮随 OAuth 域摘除（onLogin 恒不传）。 */}
+        {/* JGHarness 去官方化（阶段 3）：分享页登录按钮随 OAuth 域摘除（onLogin 恒不传）。 */}
         {canRetry || isNotFound ? (
           <div className="mt-5 flex flex-wrap gap-2">
             {canRetry ? (
@@ -800,7 +800,7 @@ export function ConversationShareLandingLoader({
     getPreview: (shareCode: string, accessToken?: string) => Promise<ConversationSharePreview>;
   };
   getAccessToken?: () => string | null;
-  // JGAgent 去官方化（阶段 3）：登录按钮组件随 OAuth 域摘除；类型内联保持回调签名。
+  // JGHarness 去官方化（阶段 3）：登录按钮组件随 OAuth 域摘除；类型内联保持回调签名。
   onLogin?: (provider: WebOAuthProviderId, signal: AbortSignal) => Promise<void> | void;
   onLogout?: () => void;
   locale?: ConversationShareLandingLocale;

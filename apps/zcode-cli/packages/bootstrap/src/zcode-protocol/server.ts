@@ -474,7 +474,7 @@ export class ZCodeProtocolAgentServer {
     for (const record of this.context.sessions.values()) {
       try {
         record.app.runtime.stopActiveForegroundExecution?.({
-          reason: "JGAgent Protocol owner disconnected",
+          reason: "JGHarness Protocol owner disconnected",
         });
       } catch (cause) {
         this.logger?.warn("Failed to stop foreground execution after protocol disconnect", {
@@ -503,7 +503,7 @@ export class ZCodeProtocolAgentServer {
     this.shutdownPromise = shutdown.promise;
     const closingResources = this.runtimeResources.close();
     const closingSessions: Promise<void>[] = [];
-    const error = new Error("JGAgent Protocol runtime stopping");
+    const error = new Error("JGHarness Protocol runtime stopping");
     this.disconnectClient(error);
     this.messageSink = undefined;
     this.clearPostResponseMessages();
@@ -584,7 +584,7 @@ export class ZCodeProtocolAgentServer {
         if (control.success) this.networkCapture.setCaptureId(control.data.captureId);
         return undefined;
       }
-      this.logger?.debug("JGAgent Protocol notification ignored", {
+      this.logger?.debug("JGHarness Protocol notification ignored", {
         event: "zcode_protocol.notification.ignored",
         method: message.method,
         module: "bootstrap.zcode_protocol",
@@ -1135,7 +1135,7 @@ export class ZCodeProtocolAgentServer {
     if (!this.messageSink) {
       throw new ProtocolRequestError(
         PROTOCOL_CLIENT_REQUEST_ERROR_CODES.noClientAttached,
-        `No JGAgent Protocol client is attached for ${method}`,
+        `No JGHarness Protocol client is attached for ${method}`,
       );
     }
 

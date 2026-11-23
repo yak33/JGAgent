@@ -92,7 +92,7 @@ export type {
   BroadcastMessage,
 } from "./broadcast/broadcast.js";
 
-// JGAgent task wrapper service — task 列表/置顶/归档等 app 侧包装状态入口。
+// JGHarness task wrapper service — task 列表/置顶/归档等 app 侧包装状态入口。
 export { IZCodeTaskService } from "./session/zcodeTaskService.js";
 export type {
   ZCodeArchivedTaskDeletionResult,
@@ -133,7 +133,7 @@ export type {
   WindowHostTasksRemovedSignal,
 } from "./window-controller/windowController.js";
 
-// JGAgent agent service — IZCodeAgentService is both a type (interface) and value (descriptor)
+// JGHarness agent service — IZCodeAgentService is both a type (interface) and value (descriptor)
 export {
   IZCodeAgentService,
   type ZCodeAgentLocalRuntimeChildProcesses,
@@ -182,7 +182,7 @@ export type {
   ZCodeAgentWorkspaceTarget,
 } from "./zcode-agent/zcodeAgent.js";
 
-// JGAgent session service — app-facing session facade without JGAgent Agent naming.
+// JGHarness session service — app-facing session facade without JGHarness Agent naming.
 export { IZCodeSessionService } from "./zcode-session/zcodeSession.js";
 export type {
   ZCodeSessionCreateParams,
@@ -231,17 +231,17 @@ export type { SessionRealtimePort } from "./session/sessionRealtimePort.js";
 // FileWatcher service — IFileWatcherService is both a type (interface) and value (descriptor)
 export { IFileWatcherService } from "./fileWatcher/fileWatcher.js";
 
-// JGAgent 去官方化（阶段 3）：删除 OAuth 服务域（oauth/ 目录）与 IOAuthService 出口。
+// JGHarness 去官方化（阶段 3）：删除 OAuth 服务域（oauth/ 目录）与 IOAuthService 出口。
 
 // UsageStats service — IUsageStatsService is both a type (interface) and value (descriptor)
-// JGAgent 去官方化（阶段 3）：仅保留应用级统计，订阅配额方法随账号域删除。
+// JGHarness 去官方化（阶段 3）：仅保留应用级统计，订阅配额方法随账号域删除。
 export { IUsageStatsService } from "./usage-stats/usageStats.js";
 
 // Storage（资源管理器「存储」tab）：数据类型在 @zcode/shared；这里只导出服务接口与卷分组纯函数
 // StorageRootSpec 随契约再导出：desktop 的 Worker 协议按 contract.ts 的口径只从 services 入口取类型。
 export type { IStorageService, StorageRootSpec } from "./storage/contract.js";
 
-// JGAgent 去官方化（阶段 3）：删除 CodingPlanSubscription 服务域
+// JGHarness 去官方化（阶段 3）：删除 CodingPlanSubscription 服务域
 // （coding-plan-subscription/ 目录，含 OffPeakClientConfig 类型）与闲时任务服务面
 // （session/offPeakTask.ts 的 IOffPeakTaskService），出口随实现一并移除。
 export {

@@ -92,7 +92,7 @@ export interface RootProps {
   webRemoteControlWorkspaceSwitcher?: WebRemoteControlWorkspaceSwitcherApi;
   /** Web 远控跨 workspace 点击任务后的单次移动端落点 */
   initialSidebarFileTreeOpen?: boolean;
-  /** JGAgent：Web 远控没有可 bridge workspace 时，手机首页预先拿到的 workspace/task 列表（v0.4.0 V1 链路）。 */
+  /** JGHarness：Web 远控没有可 bridge workspace 时，手机首页预先拿到的 workspace/task 列表（v0.4.0 V1 链路）。 */
   initialWebRemoteControlWorkspaceList?: import("@zcode/shared").WebRemoteControlWorkspaceListResult;
   initialWebRemoteControlMobileNavigationIntent?: WebRemoteControlMobileNavigationIntent;
   /** Web 远控手机端 relay terminal transport 状态，用于已进入页面后的轻量恢复提示 */

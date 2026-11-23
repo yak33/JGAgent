@@ -1,6 +1,6 @@
 import type { TuiSelection, TuiSubmitPrompt } from "@zcode/tui";
 import { getZCodeCopy } from "@zcode/i18n";
-// JGAgent 去官方化（阶段 3）：OAuth 登录类型与 randomUUID 引用随登录域删除。
+// JGHarness 去官方化（阶段 3）：OAuth 登录类型与 randomUUID 引用随登录域删除。
 
 export function buildLoginSelection(locale?: string): TuiSelection {
   const copy = getZCodeCopy(locale).tui.loginSetup;
@@ -9,7 +9,7 @@ export function buildLoginSelection(locale?: string): TuiSelection {
     filterable: false,
     help: copy.help,
     items: [
-      // JGAgent 去官方化（阶段 3）：zai/bigmodel OAuth 登录项删除，仅保留 API Key 登录。
+      // JGHarness 去官方化（阶段 3）：zai/bigmodel OAuth 登录项删除，仅保留 API Key 登录。
       {
         command: "/login zai-coding-plan-api-key",
         id: "zai-coding-plan-api-key",
@@ -58,7 +58,7 @@ export function loginSetupResponse(locale?: string): string {
   return getZCodeCopy(locale).tui.loginSetup.response;
 }
 
-// JGAgent 去官方化（阶段 3）：formatLoginResult 随 OAuth 登录域删除。
+// JGHarness 去官方化（阶段 3）：formatLoginResult 随 OAuth 登录域删除。
 export function formatProviderSetupResult(result: {
   configPath: string;
   model: string;
@@ -72,7 +72,7 @@ export function formatProviderSetupResult(result: {
   ].join("\n");
 }
 
-// JGAgent 去官方化（阶段 3）：emitLoginAuthorizeMessage 随 OAuth 登录域删除。
+// JGHarness 去官方化（阶段 3）：emitLoginAuthorizeMessage 随 OAuth 登录域删除。
 export function parseApiKeyLoginArgs(args: string): {
   apiKey: string;
   kind: "bigmodel-coding-plan-api-key" | "zai-coding-plan-api-key";

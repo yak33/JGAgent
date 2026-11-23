@@ -34,7 +34,7 @@ export class ProtocolRuntimeResources {
   };
 
   assertServing(): void {
-    if (this.stopping) throw new Error("JGAgent Protocol runtime is stopping");
+    if (this.stopping) throw new Error("JGHarness Protocol runtime is stopping");
   }
 
   close(): Promise<void> {

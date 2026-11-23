@@ -42,7 +42,7 @@ export function createSourceSettingsServiceCollection(
       ICredentialService,
       read(ICredentialService, (accessor) => accessor.credentialService),
     )
-    // JGAgent 去官方化（阶段 3）：IOAuthService / ICodingPlanSubscriptionService 注册随账号域移除。
+    // JGHarness 去官方化（阶段 3）：IOAuthService / ICodingPlanSubscriptionService 注册随账号域移除。
     .register(
       ISettingService,
       read(ISettingService, (accessor) => accessor.settingService),

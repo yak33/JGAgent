@@ -71,8 +71,8 @@ function resolveUserHomeDir(): string {
 function getRootDir(source: SettingsDirectorySource, workspacePath?: string): string {
   const baseDir = workspacePath ?? resolveUserHomeDir();
   if (source === "zcode") {
-    // workspace 分支是项目级 .zcode（保持）；home 分支是用户主目录级，已随存储根迁移到 .jgagent。
-    return workspacePath ? join(baseDir, ".zcode") : join(baseDir, ".jgagent", "cli");
+    // workspace 分支是项目级 .zcode（保持）；home 分支是用户主目录级，已随存储根迁移到 .jgharness。
+    return workspacePath ? join(baseDir, ".zcode") : join(baseDir, ".jgharness", "cli");
   }
   return join(baseDir, source === "agents" ? ".agents" : ".claude");
 }
@@ -181,7 +181,7 @@ async function readPersistentWorkspaceHookTrustDigests(
       : isAbsolute(configured)
         ? resolve(configured)
         : resolve(home, configured)
-    : join(home, ".jgagent");
+    : join(home, ".jgharness");
   const trustFilePath = join(storageRoot, "security", "workspace-hook-trust-v1.json");
 
   // 异步读取 + ENOENT 区分：不用 existsSync 预检——同步调用会阻塞服务

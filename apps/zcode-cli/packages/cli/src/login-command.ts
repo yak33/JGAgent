@@ -4,7 +4,7 @@ import { loadBootstrapModule } from "./bootstrap-loader.js";
 import { loadCliDotenv } from "./env.js";
 import type { RunDependencies } from "./cli-types.js";
 
-// JGAgent 去官方化（阶段 3）：OAuth 登录链路（cli-oauth / bigmodel-oauth / loginZCodeCli /
+// JGHarness 去官方化（阶段 3）：OAuth 登录链路（cli-oauth / bigmodel-oauth / loginZCodeCli /
 // loginBigmodelCodingPlan）随账号域删除；`zcode login` 仅保留 API Key 途径——
 // 从 --api-key 参数或 ZCODE_LOGIN_API_KEY 环境变量读取，写入个人 Provider 配置。
 
@@ -64,7 +64,7 @@ export async function runLoginCommand(
     const apiKey = parsedArgs.apiKey ?? env.ZCODE_LOGIN_API_KEY?.trim() ?? null;
     if (!apiKey) {
       throw new Error(
-        "OAuth login was removed in JGAgent. Provide an API key via --api-key <key> or ZCODE_LOGIN_API_KEY.",
+        "OAuth login was removed in JGHarness. Provide an API key via --api-key <key> or ZCODE_LOGIN_API_KEY.",
       );
     }
 

@@ -716,7 +716,7 @@ export function SessionPane({
     fileRewindPreview,
   } = useV4Conversation();
   const platform = useOptionalPlatform();
-  // JGAgent 去官方化（阶段 3）：Highspeed 卡服务随加速域移除；本地 no-op stub——
+  // JGHarness 去官方化（阶段 3）：Highspeed 卡服务随加速域移除；本地 no-op stub——
   // 快照恒无卡、turn 恒走普通推理路由（fallback），发送链路直连模型。
   // 官方 v3.18 新增 getCurrentOwnerKey：无卡无归属，恒返回 null。
   const highspeedCardService = {
@@ -1298,7 +1298,7 @@ export function SessionPane({
             setHighspeedOwner({ key: null, generation: current });
         });
     };
-    // JGAgent 去官方化（阶段 3）：oauthService 随账号域移除，无会话变更可订阅；仅初始刷新一次。
+    // JGHarness 去官方化（阶段 3）：oauthService 随账号域移除，无会话变更可订阅；仅初始刷新一次。
     refresh();
     return () => {
       disposed = true;
@@ -2038,7 +2038,7 @@ export function SessionPane({
     // 回收并按最新选择事实重建，已显式选择和正式会话仍保持冻结。
     useZCodeSessionStore.getState().invalidateDraftRuntime(workspacePath, workspaceIdentity);
   }, [draftConfigRef, modelSelectionView?.revision, sessionId, workspaceIdentity, workspacePath]);
-  // JGAgent 去官方化（阶段 3）：Start Plan 推荐随订阅域移除；恒原样返回（不推荐、不阻断）。
+  // JGHarness 去官方化（阶段 3）：Start Plan 推荐随订阅域移除；恒原样返回（不推荐、不阻断）。
   const recommendStartPlan = async <T,>(selection: T): Promise<T> => selection;
   const createSubmissionFromComposer = useMemo(
     () => createSubmissionConfigReader(draftConfigRef, modelSelectionView),
@@ -2064,7 +2064,7 @@ export function SessionPane({
       }),
     [composerDraft.modelSelection, modelSelectionRead.state, sessionId],
   );
-  // JGAgent 去官方化（阶段 3）：升级引导与账单折扣随订阅域移除（dialog 恒空、折扣恒无效）。
+  // JGHarness 去官方化（阶段 3）：升级引导与账单折扣随订阅域移除（dialog 恒空、折扣恒无效）。
   const codingPlanUpgradeDialog = undefined as {
     openCodingPlanUpgrade: (options: unknown) => void;
   } | undefined;
@@ -2186,7 +2186,7 @@ export function SessionPane({
     ],
   );
   const { settings: sharedSettings } = useSettings();
-  // JGAgent 去官方化（阶段 3）：计划身份快照随订阅域移除，恒 undefined（子组件按可选处理）。
+  // JGHarness 去官方化（阶段 3）：计划身份快照随订阅域移除，恒 undefined（子组件按可选处理）。
   const readPlanIdentitySnapshot = undefined;
   const appFollowupMode = resolveAppFollowupMode(sharedSettings);
   const messageStreamShowReasoning = sharedSettings?.messageStreamShowReasoning ?? true;
@@ -5772,7 +5772,7 @@ export function SessionPane({
       : null;
   // 官方 Server MCP 不可用（额度耗尽 / 无 Coding Plan）：事实来自 tool row 上的结构化标识，
   // 与模型额度是两条独立信息通道，这里只做投影。
-  // JGAgent 去官方化（阶段 3）：会话配额横幅随订阅域移除，恒不可见。
+  // JGHarness 去官方化（阶段 3）：会话配额横幅随订阅域移除，恒不可见。
   const quotaBanner = {
     state: { visible: false, blocksSubmit: false },
     dismissed: false,
@@ -6460,7 +6460,7 @@ export function SessionPane({
     ) : null
   ) : (
     <>
-      {/* JGAgent 去官方化（阶段 3）：会话配额横幅随订阅域移除（quotaBanner 恒不可见）。 */}
+      {/* JGHarness 去官方化（阶段 3）：会话配额横幅随订阅域移除（quotaBanner 恒不可见）。 */}
       {runtimeExitBanner}
       {recoverableCommand ? (
         <PendingCommandRecoveryBanner

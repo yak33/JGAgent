@@ -1,6 +1,6 @@
-# JGAgent 官网（VitePress）
+# JGHarness 官网（VitePress）
 
-现代简约官网 + 更新日志，部署在 **Vercel**（https://jg-agent.vercel.app/ ，连 GitHub main 自动部署）；安装包下载经 `vercel.json` rewrite 指向公开仓 [yak33/JGAgent-downloads](https://github.com/yak33/JGAgent-downloads) 的 Release 资产。
+现代简约官网 + 更新日志，部署在 **Vercel**（https://jg-agent.vercel.app/ ，连 GitHub main 自动部署）；安装包下载经 `vercel.json` rewrite 指向公开仓 [yak33/JGHarness-downloads](https://github.com/yak33/JGHarness-downloads) 的 Release 资产（v0.7.0 前的 JGAgent-*.exe 历史链接也经 rewrite 兼容）。
 
 > 发版全流程（Vercel 版见一·A 节）、下载通道与踩坑记录以 [docs/release/README.md](../docs/release/README.md) 为准，本文只讲官网子项目本身。
 > 旧腾讯云服务器 82.157.149.224 已回收（2026-11-23），其部署/下载/反馈服务流程仅存于 release README 的历史记录节。
@@ -43,7 +43,7 @@ npm run preview    # 本地伺服构建产物（http://localhost:4173），验�
 ```
 /www/wwwroot/jgagent/
 ├── html/                 # 上传 docs/.vitepress/dist/ 的全部内容
-├── downloads/            # 安装包，如 JGAgent-0.2.0-win-x64.exe
+├── downloads/            # 安装包（已迁 GitHub Release，此目录不再使用）
 ├── docker-compose.yml
 └── nginx.conf            # 改完执行 docker compose restart web
 ```

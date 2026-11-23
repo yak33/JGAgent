@@ -81,7 +81,7 @@ import { RemoteWorkspaceControllerProvider } from "@/remote/useRemoteWorkspaceCo
 import { useRootProviderStateRefresh } from "@/root/useRootProviderStateRefresh.js";
 import { useModelSelectionServiceView } from "@/hooks/useModelSelectionView.js";
 import { useRootProviderSettingsSnapshot } from "@/root/useRootProviderSettingsSnapshot.js";
-// JGAgent 去官方化（阶段 3）：useWebRemoteControlAuthSync / useRootOAuthEffects /
+// JGHarness 去官方化（阶段 3）：useWebRemoteControlAuthSync / useRootOAuthEffects /
 // consumeZcodeJwtInvalidRestartMarker 三个 OAuth 域 import 随账号域移除。
 import { useDesktopNativeThemeSync } from "@/root/useDesktopNativeThemeSync.js";
 import { useRootPlatformEffects } from "@/root/useRootPlatformEffects.js";
@@ -129,7 +129,7 @@ import {
   reconcileConversationTelemetryWorkspaceScopes,
 } from "@/v4/telemetry/ConversationTelemetryAttachment.js";
 import { installConversationTelemetryParityE2EBridge } from "@/v4/telemetry/conversationTelemetryParityE2E.js";
-// 凭据存储损坏恢复：组件独立成文件（上游内联于 WelcomeScreen，JGAgent 无登录页）。
+// 凭据存储损坏恢复：组件独立成文件（上游内联于 WelcomeScreen，JGHarness 无登录页）。
 import { CredentialStoreRecovery } from "@/CredentialStoreRecovery.js";
 import { useCredentialStoreRecovery } from "@/hooks/useCredentials.js";
 import { useSourceServerUpdateNotifications } from "@/root/sourceServerUpdateNotifications.js";
@@ -144,7 +144,7 @@ type WelcomeScreenOpenReason =
   | "startup-provider-required"
   | "manual-login"
   | "provider-request"
-  // JGAgent 去官方化（阶段 3）：移除 "session-expired"，OAuth JWT 失效重启链路已随 Root OAuth effects 摘除。
+  // JGHarness 去官方化（阶段 3）：移除 "session-expired"，OAuth JWT 失效重启链路已随 Root OAuth effects 摘除。
   | "logout-provider-required";
 
 /**
@@ -172,11 +172,11 @@ export function Root(props: RootProps) {
           terminalOwnerId={props.terminalOwnerId}
         >
           <PlatformProvider platform={props.platform}>
-            {/* JGAgent 去官方化（阶段 3）：移除 CodingPlanUpgradeDialogProvider 与 OAuth 会话恢复初始门禁
+            {/* JGHarness 去官方化（阶段 3）：移除 CodingPlanUpgradeDialogProvider 与 OAuth 会话恢复初始门禁
                 （initialIsRestoringOAuthSession），升级/购买与 OAuth 启动恢复链路随账号体系一并摘除。 */}
             <StoreProvider broadcastService={props.services.broadcastService}>
               <TabStoreProvider>
-                {/* JGAgent 去官方化（阶段 3）：CodingPlanUpgradeDialogProvider / RewardsProvider /
+                {/* JGHarness 去官方化（阶段 3）：CodingPlanUpgradeDialogProvider / RewardsProvider /
                     MarketingTouchProvider 三个订阅域 Provider 保持移除；
                     上游 v3.16.x 新增 ProjectDirectoryProvider / RequestSecurityHost /
                     RemoteConnectionProgressProvider（非账号依赖）跟随官方合入。 */}
@@ -369,7 +369,7 @@ function RootInner({
   // 动态工作流灰度快照的唯一取数点：
   // 放在 app 级 ServiceProvider 这一层取一次，自动化页与 run 面板只读。消费方可能位于
   // 工作区级 ServiceProvider 内（远程 Host 的 accessor），由它们取数会拿到另一台 Host 的答案。
-  // JGAgent 去官方化（阶段 3）：动态工作流灰度来源（订阅服务）删除，loader 改为无参挂载。
+  // JGHarness 去官方化（阶段 3）：动态工作流灰度来源（订阅服务）删除，loader 改为无参挂载。
   useDynamicWorkflowAvailabilityLoader();
 
   const { intl, locale, localeResolved } = useZCodeIntl();
@@ -379,7 +379,7 @@ function RootInner({
   });
   const theme = useZCodeStore((state) => state.theme);
   const user = useZCodeStore((state) => state.user);
-  // JGAgent 去官方化（阶段 3）：OAuth 会话恢复 state 接线与 useWebRemoteControlAuthSync
+  // JGHarness 去官方化（阶段 3）：OAuth 会话恢复 state 接线与 useWebRemoteControlAuthSync
   // （依赖 services.oauthService）随账号域移除；user 字段保留给干净区既有消费点。
   const {
     settings: appSettings,
@@ -388,7 +388,7 @@ function RootInner({
   } = useSettings();
   // docs/dynamic-workflow/launch.md「The user's choice」：设置里的动态工作流选择变化后，通知本窗口
   // 的 Host 重发 CLI 策略（并转发给远程 Host），再重读灰度快照。
-  // JGAgent：codingPlanSubscriptionService 随订阅域摘除，不参与灰度重载。
+  // JGHarness：codingPlanSubscriptionService 随订阅域摘除，不参与灰度重载。
   useDynamicWorkflowUserModeSync({
     settingsLoaded: Boolean(appSettings),
     userMode: appSettings?.dynamicWorkflowMode,
@@ -701,7 +701,7 @@ function RootInner({
     shouldEnableProviderAvailabilityLoginEntryGuard({
       isWebRemoteControlRoot,
     });
-  // JGAgent：欢迎页只出现一次的依据——onboarding 记录里已有决策（跳过/填 Key 均落盘）。
+  // JGHarness：欢迎页只出现一次的依据——onboarding 记录里已有决策（跳过/填 Key 均落盘）。
   // 读取失败按"未完成"处理，退回原判定（宁可多弹一次也不挡配置入口）。
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean | undefined>(
     undefined,
@@ -744,7 +744,7 @@ function RootInner({
           if (open) {
             return "startup-provider-required";
           }
-          // JGAgent 去官方化（阶段 3）：OAuth JWT 过期重启链路已移除；门禁只关闭自己拥有的
+          // JGHarness 去官方化（阶段 3）：OAuth JWT 过期重启链路已移除；门禁只关闭自己拥有的
           // 启动登录态，不能清理其它交互来源的 reason（语义保持不变）。
           return currentReason === "startup-provider-required" ? null : currentReason;
         });
@@ -757,8 +757,8 @@ function RootInner({
   });
   const isStartupProviderLoginEntryOpen = welcomeScreenOpenReason === "startup-provider-required";
   // 首次安装时 provider 登录入口判定晚于 workspace 注入，ChatView 会先 mount 并触发草稿预热。
-  // 这里把 provider 启动检查纳入 workspace 恢复门禁，避免未连接账号前启动 JGAgent session。
-  // JGAgent 去官方化（阶段 3）：OAuth 会话恢复门禁输入（isRestoringStartupAuthState）已移除，
+  // 这里把 provider 启动检查纳入 workspace 恢复门禁，避免未连接账号前启动 JGHarness session。
+  // JGHarness 去官方化（阶段 3）：OAuth 会话恢复门禁输入（isRestoringStartupAuthState）已移除，
   // 仅保留 provider 启动同步检查；workspacePersistenceGate 沿用我方恒可持久化语义
   // （登录门禁不存在，恢复失败态由既有 workspace 恢复链路自管）。
   const canRestoreWorkspaceSession = !isResolvingProviderStartupState && !isStartupProviderLoginEntryOpen;
@@ -848,7 +848,7 @@ function RootInner({
     openDirectoryBrowser: handleOpenDirectoryBrowser,
     refreshProviderState,
     updateAppSettings,
-    // JGAgent 去官方化（阶段 3）：登出流程不再回写 OAuth 错误与 user（store 字段随 OAuth 链路摘除），
+    // JGHarness 去官方化（阶段 3）：登出流程不再回写 OAuth 错误与 user（store 字段随 OAuth 链路摘除），
     // 登出末尾仍会 RelaunchApp，renderer 状态随重启自然复位。
     onProviderFamilyDomainClearedAfterLogout: () => {
       setWelcomeScreenOpenReason("logout-provider-required");
@@ -1103,7 +1103,7 @@ function RootInner({
   // 桌面没有对应 pane、web 端无应答方，headers 请求永远滞留 pending，任务永久「工作中」。
   // 应答方必须常驻桌面窗口、覆盖每个打开的 workspace tab，与展示状态解耦；
   // Web 端保持零订阅，桌面仍是唯一权威。
-  // JGAgent 去官方化（阶段 3）：移除 OAuth token 刷新 hook（原挂载点仅 void 占位）。
+  // JGHarness 去官方化（阶段 3）：移除 OAuth token 刷新 hook（原挂载点仅 void 占位）。
   const requestSecurityBridgeNode = isDesktop ? (
     <RequestSecurityWorkspaceBridge workspaceTabs={windowWorkspaceTabs} />
   ) : null;
@@ -1379,7 +1379,7 @@ function RootInner({
   const handleWelcomeScreenComplete = useCallback(
     async (reason: LoginCompleteReason) => {
       await refreshAppSettings();
-      // JGAgent：欢迎页无论以何种方式完成（填 Key、跳过）都落一条引导决策记录，
+      // JGHarness：欢迎页无论以何种方式完成（填 Key、跳过）都落一条引导决策记录，
       // 之后启动检查不再弹欢迎页，与 shouldOnboard 判定闭环（有记录即不弹）。
       // 写失败只记日志：下次启动 shouldOnboard 仍为 true 会再弹一次，不会卡死。
       const onboardingRecordService = services.onboardingRecordService;
@@ -1657,7 +1657,7 @@ function RootInner({
         {requestSecurityBridgeNode}
         {remoteConnectionDialog}
         {directoryBrowserDialog}
-        {/* HTML 启动壳已经展示 JGAgent SVG，但 React 接管 root 后旧壳会被整棵替换。
+        {/* HTML 启动壳已经展示 JGHarness SVG，但 React 接管 root 后旧壳会被整棵替换。
             之前阻塞恢复 tab / 初始 workspace 注入时重新渲染纯文字“加载中...”，所以启动被拆成两套 loading。
             这里复用同一套 SVG 启动画面，只把文案保留到 aria-label，保证视觉始终连续且不牺牲可访问性。 */}
         <RootStartupLoading label={loadingLabel} />

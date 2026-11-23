@@ -445,7 +445,7 @@ export async function createZCodeApp(options: ZCodeAppOptions): Promise<ZCodeApp
         ),
       };
     }
-    startupTimer.mark("JGAgent runtime configuration resolved", {
+    startupTimer.mark("JGHarness runtime configuration resolved", {
       context: runtimeConfigLogContext(runtimeConfig, workingDirectory),
       event: "bootstrap.app.startup.runtime_config.completed",
       stage: "resolve_runtime_config",
@@ -490,7 +490,7 @@ export async function createZCodeApp(options: ZCodeAppOptions): Promise<ZCodeApp
       ...(options.workspaceHookReviewHost
         ? {
             emitReviewEvent: async (event) => {
-              if (!runtime) throw new Error("JGAgent runtime is not initialized yet.");
+              if (!runtime) throw new Error("JGHarness runtime is not initialized yet.");
               await runtime.appendEvent(
                 createSessionEvent(event.type, sessionId, event.payload, {
                   traceId: traceContext.traceId,
@@ -499,7 +499,7 @@ export async function createZCodeApp(options: ZCodeAppOptions): Promise<ZCodeApp
               );
             },
             emitAdmissionEvent: async (event) => {
-              if (!runtime) throw new Error("JGAgent runtime is not initialized yet.");
+              if (!runtime) throw new Error("JGHarness runtime is not initialized yet.");
               await runtime.appendEvent(
                 createSessionEvent(event.type, sessionId, event.payload, {
                   traceId: traceContext.traceId,
@@ -643,7 +643,7 @@ export async function createZCodeApp(options: ZCodeAppOptions): Promise<ZCodeApp
       runtimeConfig,
     });
     const getRuntime = (): AgentRuntime => {
-      if (!runtime) throw new Error("JGAgent runtime is not initialized yet.");
+      if (!runtime) throw new Error("JGHarness runtime is not initialized yet.");
       return runtime;
     };
     let resumePrepared = false;
@@ -1662,7 +1662,7 @@ export async function createZCodeApp(options: ZCodeAppOptions): Promise<ZCodeApp
     providerModelRuntime?.dispose();
     void modelTelemetry.shutdown().catch(() => undefined);
     void ownedNodeReplBrowserBroker?.close();
-    startupTimer.fail("JGAgent app startup failed", error, {
+    startupTimer.fail("JGHarness app startup failed", error, {
       context: { sessionId, workingDirectory },
       event: "bootstrap.app.startup.failed",
       stage: "total",

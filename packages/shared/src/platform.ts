@@ -938,7 +938,7 @@ export interface IPlatformService {
   ): Promise<BindRemoteWorkspaceSessionContextResult>;
 
   /** 为当前 workspace 开启 Web 远程控制能力 */
-  /** JGAgent：v0.4.0 V1 链路的重置配对入口（官方 V2 已移除）。 */
+  /** JGHarness：v0.4.0 V1 链路的重置配对入口（官方 V2 已移除）。 */
   refreshWebRemoteControlPairing(
     context: WebRemoteControlContext,
   ): Promise<WebRemoteControlStartOperationResult>;
@@ -1017,7 +1017,7 @@ export interface IPlatformService {
   /** 使用系统默认应用打开本地文件；普通 Web 平台返回 unsupported。 */
   openExternalFile?(path: string): Promise<{ success: boolean; error?: string }>;
 
-  /** 打开 JGAgent Computer Use 的完整权限引导。Desktop only。 */
+  /** 打开 JGHarness Computer Use 的完整权限引导。Desktop only。 */
   openCuaPermissionOnboarding?(
     options?: OpenCuaPermissionOnboardingOptions,
   ): Promise<CuaAccessibilitySettingsResult>;
@@ -1098,7 +1098,7 @@ export interface IPlatformService {
   /** 同步当前窗口里 Web 远程控制允许切换的 workspace；Web fallback 可忽略 */
   syncWebRemoteControlWorkspaces?(workspaces: WebRemoteControlWorkspaceTarget[]): void;
 
-  /** JGAgent：v0.4.0 自建 Web 远控的任务快照同步（官方 V2 已移除，可选方法保持兼容）。 */
+  /** JGHarness：v0.4.0 自建 Web 远控的任务快照同步（官方 V2 已移除，可选方法保持兼容）。 */
   syncWebRemoteControlTasks?(tasks: WebRemoteControlTaskTarget[]): void;
 
   /** 注册 Web 远程控制手机端请求重连 workspace 的回调，返回 disposer */

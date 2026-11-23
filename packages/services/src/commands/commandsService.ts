@@ -53,7 +53,7 @@ const CODEX_PLUGIN_MANIFEST_PATH = join(".codex-plugin", "plugin.json");
 const ZCODE_COMMAND_DESCRIPTOR: CommandAgentSourceDescriptor = {
   agentSource: "zcodeAgent",
   directorySource: "zcode",
-  userDirectorySegments: [".jgagent", "commands"],
+  userDirectorySegments: [".jgharness", "commands"],
   workspaceDirectorySegments: [".zcode", "commands"],
   fileExtension: ".md",
   format: "markdown",
@@ -87,7 +87,7 @@ function getUserCommandsRoot(agentSource?: CommandAgentSource): string {
 }
 
 function getUserCliConfigPath(): string {
-  return join(resolveUserHomeDir(), ".jgagent", "cli", "config.json");
+  return join(resolveUserHomeDir(), ".jgharness", "cli", "config.json");
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -543,7 +543,7 @@ export function createCommandsService(_options?: CommandsServiceOptions): IComma
     const agentSources = getCommandAgentSources(params.agentSource);
     const enabledOverrides = await readCommandEnabledOverridesFromUserConfig();
 
-    // JGAgent Agent 需要先合并所有 workspace 目录，再合并所有 user 目录；
+    // JGHarness Agent 需要先合并所有 workspace 目录，再合并所有 user 目录；
     // 按每个目录交错读取 project/user 会让 user .zcode 抢在 workspace .agents 前面。
     for (const agentSource of agentSources) {
       const descriptors =

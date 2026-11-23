@@ -1,5 +1,5 @@
 /**
- * 草稿态空态问候：时间问候语 + JGAgent Logo。
+ * 草稿态空态问候：时间问候语 + JGHarness Logo。
  * 自旧版 ChatView/ChatViewEmptyState.tsx 恢复（该组件随旧 ChatView 删除，
  * i18n key `chat.empty.greeting.*` 一直保留）；边界时刻自动换档逻辑保真。
  * 手机远控复用同一组件，但继续保留 20px 紧凑标题；桌面草稿首页才按标题自身宽度适配。
@@ -234,7 +234,7 @@ function ZCodeEmptyStateLogo({ className }: { className?: string }) {
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        {/* JGAgent 去官方化：原 Z 闪电线框替换为 JG 斜体描边字标，渐隐 mask 与 currentColor 逻辑保持不变。 */}
+        {/* JGHarness 去官方化：原 Z 闪电线框替换为 JG 斜体描边字标，渐隐 mask 与 currentColor 逻辑保持不变。 */}
         <text
           x="200"
           y="230"

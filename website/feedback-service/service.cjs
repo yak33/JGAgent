@@ -1,6 +1,6 @@
 /* eslint-disable max-lines -- 零依赖单文件服务（docs/release/README.md 第八节），拆分会破坏单文件部署约定 */
 /**
- * JGAgent 反馈收集服务（零依赖，node:http 实现）。
+ * JGHarness 反馈收集服务（零依赖，node:http 实现）。
  *
  * 客户端协议契约（packages/services/src/feedback/feedbackHttpClient.ts）：
  * - POST   /feedback/ticket                      创建工单，请求体 {title, device_mid, content{description,category,function,severity}, contact, environment}
@@ -658,7 +658,7 @@ function initTheme(){
 
 function renderLoginPage(wrong) {
   return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>JGAgent 反馈管理</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>JGHarness 反馈管理</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
@@ -682,7 +682,7 @@ button:hover{filter:brightness(1.06)}
  input:focus{border-color:#f0b35a}}
 </style></head><body>
 <form method="post" action="/feedback-admin/login">
-<h2>JGAgent 反馈管理</h2><p class="sub">输入管理密钥继续</p>
+<h2>JGHarness 反馈管理</h2><p class="sub">输入管理密钥继续</p>
 ${wrong ? '<p class="err">密钥错误，请重试</p>' : ""}
 <input type="password" name="password" placeholder="管理密钥" autofocus>
 <button type="submit">登录</button></form></body></html>`;
@@ -693,7 +693,7 @@ function renderAdminPage() {
     `<button class="stat${tone ? " is-" + tone : ""}" data-v="${value}" aria-pressed="false">
       <span class="stat-n">–</span><span class="stat-l">${label}</span></button>`;
   return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>JGAgent 反馈管理</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>JGHarness 反馈管理</title>
 <style>${ADMIN_CSS}</style></head><body>
 <div class="wrap">
   <header>
@@ -1007,5 +1007,5 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, () => {
   // 监听所有接口：nginx 在另一容器里经 compose 网络反代到本服务；
   // 端口未对外发布（无 ports 映射），外部无法直达。
-  console.log("[jgagent-feedback] listening on 0.0.0.0:" + PORT);
+  console.log("[jgharness-feedback] listening on 0.0.0.0:" + PORT);
 });

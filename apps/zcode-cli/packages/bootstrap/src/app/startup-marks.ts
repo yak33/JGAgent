@@ -74,7 +74,7 @@ export async function resolveStartupPlugins(input: {
     pluginOutcome.skillRoots,
     input.options.includeVisualize,
   );
-  input.startupTimer.mark("JGAgent plugins resolved", {
+  input.startupTimer.mark("JGHarness plugins resolved", {
     context: {
       commandRootCount: pluginOutcome.commandRoots.length,
       diagnosticCount: pluginOutcome.diagnostics.length,
@@ -100,7 +100,7 @@ export function startAppStartup(input: {
   resume: boolean;
   startupTimer: StartupTimer;
 }): void {
-  input.startupTimer.start("JGAgent app startup started", {
+  input.startupTimer.start("JGHarness app startup started", {
     context: {
       hasInjectedModelAdapter: input.hasInjectedModelAdapter,
       resume: input.resume,
@@ -114,7 +114,7 @@ export function markConfigurationLoaded(input: {
   configResult: ConfigResult;
   startupTimer: StartupTimer;
 }): void {
-  input.startupTimer.mark("JGAgent app configuration loaded", {
+  input.startupTimer.mark("JGHarness app configuration loaded", {
     context: {
       configSourceEnv: input.configResult.sources.env,
       configSourceProject: input.configResult.sources.project.loaded,
@@ -132,7 +132,7 @@ export function markStorageAdaptersInitialized(input: {
   startupTimer: StartupTimer;
   storageRoot: string;
 }): void {
-  input.startupTimer.mark("JGAgent storage adapters initialized", {
+  input.startupTimer.mark("JGHarness storage adapters initialized", {
     context: {
       hasInjectedArtifactStore: input.hasInjectedArtifactStore,
       hasInjectedSessionStore: input.hasInjectedSessionStore,
@@ -151,7 +151,7 @@ export function markMcpAdapterInitialized(input: {
   startupTimer: StartupTimer;
   trustedMcpServerCount: number;
 }): void {
-  input.startupTimer.mark("JGAgent MCP adapter initialized", {
+  input.startupTimer.mark("JGHarness MCP adapter initialized", {
     context: {
       hasInjectedMcpPort: input.hasInjectedMcpPort,
       mcpEnabled: input.mcpEnabled,
@@ -168,7 +168,7 @@ export function markRuntimeConstructed(input: {
   sessionId: string;
   startupTimer: StartupTimer;
 }): void {
-  input.startupTimer.mark("JGAgent runtime constructed", {
+  input.startupTimer.mark("JGHarness runtime constructed", {
     context: {
       hasInjectedModelAdapter: input.hasInjectedModelAdapter,
       sessionId: input.sessionId,
@@ -183,7 +183,7 @@ export function completeAppStartup(input: {
   startupTimer: StartupTimer;
   workingDirectory: string;
 }): void {
-  input.startupTimer.complete("JGAgent app startup completed", {
+  input.startupTimer.complete("JGHarness app startup completed", {
     context: {
       sessionId: input.sessionId,
       workingDirectory: input.workingDirectory,

@@ -1,5 +1,5 @@
 export const OPENROUTER_ATTRIBUTION_HEADERS = {
-  "X-OpenRouter-Title": "JGAgent",
+  "X-OpenRouter-Title": "JGHarness",
   "X-OpenRouter-Categories": "programming-app",
 } as const;
 

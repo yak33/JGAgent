@@ -101,7 +101,7 @@ export class ContextBuilder {
     const midConversationSystem = this.config.midConversationSystem !== false;
 
     // 1. CLI / product prefix. Keep this as the short leading identity block.
-    // 「You are JGAgent, an interactive coding agent」对一个
+    // 「You are JGHarness, an interactive coding agent」对一个
     // 只对脚本说话、可能连读文件工具都没有的子代理是错的身份，且走在正确身份段前面。
     if (!isWorkflowActor) {
       sections.push(buildCliPrefixSection());
@@ -275,7 +275,7 @@ export class ContextBuilder {
     if (dynamicSystemContent) {
       messages.push({
         role: "system",
-        // JGAgent by design：Main Agent 的 dynamic system block 自带左边界，所有 provider 保持一致。
+        // JGHarness by design：Main Agent 的 dynamic system block 自带左边界，所有 provider 保持一致。
         content: `\n\n${dynamicSystemContent}`,
         cacheControl: EPHEMERAL_CACHE_CONTROL,
       });

@@ -111,9 +111,9 @@ function commandRootsForBase(
 ): CustomCommandRoot[] {
   // 合并而不是 fallback：兼容 `.agents` 命令和原生命令需要同时可见。
   // 同一级别先扫描主段名目录，命令同名时仍按“先到先赢”处理。
-  // JGAgent 存储根隔离（docs/specs/storage-root-isolation.md）：用户级（home）走
-  // .jgagent 段名与官方 ZCode 隔离；工作区级 .zcode 按 spec 明确不改、保持共享。
-  const zcodeDir = scope === "user" ? ".jgagent" : ZCODE_DIR;
+  // JGHarness 存储根隔离（docs/specs/storage-root-isolation.md）：用户级（home）走
+  // .jgharness 段名与官方 ZCode 隔离；工作区级 .zcode 按 spec 明确不改、保持共享。
+  const zcodeDir = scope === "user" ? ".jgharness" : ZCODE_DIR;
   return [
     root(join(baseDirectory, zcodeDir, COMMANDS_DIR), scope, "zcode", nextPriority()),
     root(join(baseDirectory, AGENTS_DIR, COMMANDS_DIR), scope, "agents", nextPriority()),

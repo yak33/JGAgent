@@ -5,7 +5,7 @@
 import type { ContextSection } from "../types.js";
 import { estimateTokens } from "../utils.js";
 
-const CLI_PREFIX_PROMPT = "你是捷关Agent（JGAgent），捷关公司的全能 AI 助手";
+const CLI_PREFIX_PROMPT = "你是捷关Harness（JGHarness），捷关公司的全能 AI 助手";
 
 export function buildCliPrefixSection(): ContextSection {
   const content = CLI_PREFIX_PROMPT;

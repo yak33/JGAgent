@@ -1,5 +1,5 @@
 interface RootStartupGateState {
-  // JGAgent 去官方化（阶段 3）：移除 isResolvingStartupAuthState 输入，OAuth 会话恢复门禁随账号体系摘除。
+  // JGHarness 去官方化（阶段 3）：移除 isResolvingStartupAuthState 输入，OAuth 会话恢复门禁随账号体系摘除。
   isResolvingProviderStartupState: boolean;
   isRestoring: boolean;
   isBootstrappingInitialWorkspace: boolean;

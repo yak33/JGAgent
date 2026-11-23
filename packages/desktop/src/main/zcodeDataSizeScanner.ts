@@ -27,7 +27,7 @@ export interface ZCodeDataSizeScanOptions extends ZCodeDataSizeScanRequest {
 }
 
 function createAbortError(): DOMException {
-  return new DOMException("JGAgent data size scan aborted", "AbortError");
+  return new DOMException("JGHarness data size scan aborted", "AbortError");
 }
 
 function isMissingPathError(error: unknown): boolean {

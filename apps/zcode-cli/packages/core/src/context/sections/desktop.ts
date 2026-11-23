@@ -5,7 +5,7 @@ import { estimateTokens } from "../utils.js";
 // 而 system 由 prompt 快照冻结到压缩。section 只作开关与用量统计，正文见 buildDesktopContextContent。
 export function buildDesktopContextSection(hasGenUiOutputDirectory = false): ContextSection {
   return createDesktopSection(
-    "JGAgent Desktop Context",
+    "JGHarness Desktop Context",
     "desktop_context",
     buildDesktopContextContent(hasGenUiOutputDirectory),
   );

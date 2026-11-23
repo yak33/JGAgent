@@ -1,20 +1,20 @@
-# JGAgent
+# JGHarness
 
 <div align="center">
-  <img src="public/logo/icons/1024x1024.png" alt="JGAgent" width="128" height="128" />
+  <img src="public/logo/icons/1024x1024.png" alt="JGHarness" width="128" height="128" />
 </div>
 <p align="center">
   简体中文 | <a href="README.en.md">English</a>
 </p>
 
-JGAgent 是捷关自研的 AI 工作台，不止写代码：**编程模式**深入终端、Git 与每一行代码变更，面向开发者；**办公模式**聚焦摘要与结果，替办公人群处理日常事务。提供桌面应用、浏览器界面和终端 Agent，直连捷关模型网关，开箱即用。本仓库包含客户端、后端服务、共享 UI，以及 Agent CLI 与运行时源码。
+JGHarness 是捷关自研的 AI 工作台，不止写代码：**编程模式**深入终端、Git 与每一行代码变更，面向开发者；**办公模式**聚焦摘要与结果，替办公人群处理日常事务。提供桌面应用、浏览器界面和终端 Agent，直连捷关模型网关，开箱即用。本仓库包含客户端、后端服务、共享 UI，以及 Agent CLI 与运行时源码。
 
 > 本项目基于开源项目 [ZCode](https://github.com/zai-org/ZCode)（Apache-2.0）二次开发，感谢上游社区的贡献。
 
 | 入口                 | 用途                                                           | 开发命令                       |
 | -------------------- | -------------------------------------------------------------- | ------------------------------ |
 | Desktop              | Electron 桌面应用                                              | `pnpm dev:desktop`             |
-| Web / JGAgent 命令行版 | 终端与浏览器工作台；将 TUI、Web、后端和 Agent 组装为独立运行包 | `pnpm dev:web`                 |
+| Web / JGHarness 命令行版 | 终端与浏览器工作台；将 TUI、Web、后端和 Agent 组装为独立运行包 | `pnpm dev:web`                 |
 | Agent CLI            | 在终端中使用 `zcode`，也为 Desktop 和 Web 提供 Agent 运行时    | `pnpm --filter @zcode/cli dev` |
 
 ## 初始化
@@ -57,7 +57,7 @@ pnpm dev:desktop:test
 需要独立开发数据目录时，可设置 `ZCODE_DATA_BASE_DIR`。例如在 macOS / Linux 中：
 
 ```bash
-ZCODE_DATA_BASE_DIR="$HOME/.jgagent-dev-home" pnpm dev:desktop:test
+ZCODE_DATA_BASE_DIR="$HOME/.jgharness-dev-home" pnpm dev:desktop:test
 ```
 
 ### 远程功能（SSH/WSL）
@@ -77,9 +77,9 @@ ZCODE_SERVER_WORKSPACE=/path/to/project pnpm dev:web
 
 该命令同时启动 Web 开发服务器（默认 `http://localhost:5173`）和后端（默认 `http://localhost:3030`）；浏览器访问前者。`/ws` 和一般 `/api` 请求代理到本地后端，`/api/v1/oauth/token` 单独代理到当前配置的产品服务。
 
-Agent 源码修改后，执行 `pnpm --filter @zcode/cli... build` 并重启服务。需要验证完整发行包时，按下方“JGAgent 命令行版”打包章节解压运行。
+Agent 源码修改后，执行 `pnpm --filter @zcode/cli... build` 并重启服务。需要验证完整发行包时，按下方“JGHarness 命令行版”打包章节解压运行。
 
-### JGAgent 命令行版
+### JGHarness 命令行版
 
 命令行发行包包含 TUI、Web 和 Agent，统一使用 `zcode` 启动：无参数进入 TUI；第一个参数为 `--web` 时启动 Web；其他参数交给现有 Agent CLI 处理。两种模式都在本机运行，无需 Electron。
 
@@ -127,7 +127,7 @@ node apps/zcode-cli/packages/cli/dist/zcode.cjs --help
 
 | 配置                                 | 用途                                             |
 | ------------------------------------ | ------------------------------------------------ |
-| `ZCODE_DATA_BASE_DIR`                | 应用数据基目录，数据写入其下的 `.jgagent/`       |
+| `ZCODE_DATA_BASE_DIR`                | 应用数据基目录，数据写入其下的 `.jgharness/`       |
 | `ZCODE_SERVER_WORKSPACE`             | Web 后端的工作区路径                             |
 | `ZCODE_BUILTIN_PROVIDER_CONFIG_FILE` | 本地 Provider 配置文件路径；未设置时使用内置配置 |
 | `ZCODE_DIST_BASE_URL`                | 命令行安装脚本使用的下载根地址                   |
@@ -151,14 +151,14 @@ pnpm bundle:desktop -- --help
 
 默认目标为 macOS arm64，默认输出目录为 `packages/desktop/dist/`。`--os` 支持 `mac`、`win`、`linux`，`--arch` 支持 `x64`、`arm64`；实际打包与签名需要目标平台对应的工具和配置。
 
-### JGAgent 命令行版
+### JGHarness 命令行版
 
 构建入口为 `pnpm build:zcode`。脚本会依次构建 CLI/TUI、后端和 Web，收集 TUI 的原生库、worker 与运行时依赖，再组装发行包；运行发行包仍需要 Node.js，版本以 `mise.toml` 为准。
 
 打包前必须设置下载根地址 `ZCODE_DIST_BASE_URL`（可放在 `.env`、`.env.local` 或环境变量中），也可以通过 `--base-url` 传入：
 
 ```bash
-pnpm build:zcode --base-url https://downloads.example.com/jgagent/
+pnpm build:zcode --base-url https://downloads.example.com/jgharness/
 ```
 
 默认版本取根目录 `package.json`，输出目录为 `dist/zcode/`：运行包、校验摘要、版本索引（`latest.json`）和安装脚本（`install.sh`）。完整目录可上传到配置的下载根地址。
@@ -181,7 +181,7 @@ pnpm build:zcode --base-url https://downloads.example.com/jgagent/
 
 ## 下载安装
 
-内部用户从官网 [jgagent 下载站](http://82.157.149.224/) 获取 Windows 安装包（v0.3.2 起支持应用内自动更新）。首次启动在引导页选择「捷关模型网关」并粘贴 API Key，模型清单自动同步；数据全部保存在本机 `~/.jgagent`。
+内部用户从官网 [jgharness 下载站](http://82.157.149.224/) 获取 Windows 安装包（v0.3.2 起支持应用内自动更新）。首次启动在引导页选择「捷关模型网关」并粘贴 API Key，模型清单自动同步；数据全部保存在本机 `~/.jgharness`。
 
 ## 项目声明
 

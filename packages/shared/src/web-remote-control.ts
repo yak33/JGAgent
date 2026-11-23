@@ -122,8 +122,8 @@ export interface WebRemoteControlV2QrParams {
   appVersion?: string;
 }
 
-// JGAgent：v0.4.0 自建配对协议的二维码参数（V1）；官方 V2 的 BuildOptions 改用
-// WebRemoteControlV2QrParams 且不生成 hash/t，与 JGAgent 直连链路不兼容，保留我方形状。
+// JGHarness：v0.4.0 自建配对协议的二维码参数（V1）；官方 V2 的 BuildOptions 改用
+// WebRemoteControlV2QrParams 且不生成 hash/t，与 JGHarness 直连链路不兼容，保留我方形状。
 export type BuildWebRemoteControlExternalQrUrlOptions = WebRemoteControlExternalQrParams & {
   baseUrl: string;
 };
@@ -167,8 +167,8 @@ export function matchesWebRemoteControlRoutePath(pathname: string, routePath: st
   return normalizeRoutePath(pathname) === normalizeRoutePath(routePath);
 }
 
-// JGAgent：二维码生成沿用 v0.4.0 自建 V1 配对协议（sid+hash+t 直连旧 relay /ws）。
-// 上游 v3.16.x 升级 V2（无 hash，token 走官方账号体系）；JGAgent 无账号体系，
+// JGHarness：二维码生成沿用 v0.4.0 自建 V1 配对协议（sid+hash+t 直连旧 relay /ws）。
+// 上游 v3.16.x 升级 V2（无 hash，token 走官方账号体系）；JGHarness 无账号体系，
 // V2 链路不可用，官方 build/parse 语义被我方版本覆盖（官方 V2 装配不实例化）。
 export function buildWebRemoteControlExternalQrUrl({
   baseUrl,
@@ -685,7 +685,7 @@ export type WebRemoteControlReconnectWorkspaceResult =
       error: string;
     };
 
-// JGAgent：v0.4.0 手机端任务行扩展字段（displayStatus/hasBackgroundWork/workflowActivity/
+// JGHarness：v0.4.0 手机端任务行扩展字段（displayStatus/hasBackgroundWork/workflowActivity/
 // pinned/archived）与官方 v3.16.x 的 hostId（project 域）合并保留。
 export type WebRemoteControlTaskDisplayStatus = "idle" | "running" | "completed" | "error";
 
@@ -715,7 +715,7 @@ export interface WebRemoteControlTaskTarget {
 
 export interface WebRemoteControlWorkspaceListResult {
   workspaces: WebRemoteControlWorkspaceTarget[];
-  /** JGAgent：v0.4.0 手机端工作区列表附带 task 概览（官方 V2 已拆走，自建链路保留）。 */
+  /** JGHarness：v0.4.0 手机端工作区列表附带 task 概览（官方 V2 已拆走，自建链路保留）。 */
   tasks?: WebRemoteControlTaskTarget[];
   activeWorkspaceKey?: string;
   activeTaskId?: string;
@@ -774,7 +774,7 @@ export interface WebRemoteControlWindowBootstrapResult {
   /** 当前连接的桌面实际版本；旧桌面缺失时手机保留原 URL。 */
   desktopAppVersion?: string;
   workspaces: WebRemoteControlWorkspaceTarget[];
-  /** JGAgent：v0.4.0 自建链路在 bootstrap 中附带 task 概览（官方 V2 已拆走；V1 协议必带）。 */
+  /** JGHarness：v0.4.0 自建链路在 bootstrap 中附带 task 概览（官方 V2 已拆走；V1 协议必带）。 */
   tasks: WebRemoteControlTaskTarget[];
   initialViewState?: WebRemoteControlMobileViewState;
   mobileViewState?: WebRemoteControlMobileViewState;
@@ -994,9 +994,9 @@ export type RelayDesktopControlEvent =
   | WebRemoteControlWindowControlRequest
   | WebRemoteControlWindowControlResponse;
 
-// JGAgent：以下 V1 relay 协议类型（直连 wss://zcode.z.ai/ws 的旧链路）为 v0.4.0 自建 Web 远控
+// JGHarness：以下 V1 relay 协议类型（直连 wss://zcode.z.ai/ws 的旧链路）为 v0.4.0 自建 Web 远控
 // 所依赖；上游 v3.16.x 将 relay 协议升级 V2（web-remote-relay/ 目录 + token 门禁）并删除 V1 类型，
-// 旧 relay 端点经实测仍存活（2026-10-25），JGAgent 自建链路继续使用 V1，此处保留类型定义。
+// 旧 relay 端点经实测仍存活（2026-10-25），JGHarness 自建链路继续使用 V1，此处保留类型定义。
 export interface WebRemoteControlExternalQrParams {
   deviceSid: string;
   passHash: string;

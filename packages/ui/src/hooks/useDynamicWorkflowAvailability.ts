@@ -22,7 +22,7 @@ export function useDynamicWorkflowAvailability(): DynamicWorkflowAvailabilitySna
 
 /**
  * app 会话级取数，挂在 Root 里一次。
- * JGAgent 去官方化（阶段 3）：灰度配置原由 CodingPlanSubscriptionService 下发，订阅服务域
+ * JGHarness 去官方化（阶段 3）：灰度配置原由 CodingPlanSubscriptionService 下发，订阅服务域
  * 删除后快照固定 disabled，loader 仅保留挂载形状（内部 no-op）。
  */
 export function useDynamicWorkflowAvailabilityLoader(): void {
@@ -45,7 +45,7 @@ export function useDynamicWorkflowUserModeSync(params: {
   settingsLoaded: boolean;
   userMode: DynamicWorkflowMode | undefined;
   zcodeAgentService: Pick<IZCodeAgentService, "syncDynamicWorkflowUserMode">;
-  // JGAgent：订阅服务域已摘除，该参数保留为可选占位（store 的 reload 为 no-op）。
+  // JGHarness：订阅服务域已摘除，该参数保留为可选占位（store 的 reload 为 no-op）。
   codingPlanSubscriptionService?: unknown;
 }): void {
   const { settingsLoaded, userMode, zcodeAgentService, codingPlanSubscriptionService } = params;

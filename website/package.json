@@ -1,5 +1,5 @@
 {
-  "name": "jgagent-website",
+  "name": "jgharness-website",
   "private": true,
   "type": "module",
   "scripts": {

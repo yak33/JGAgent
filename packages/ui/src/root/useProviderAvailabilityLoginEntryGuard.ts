@@ -30,7 +30,7 @@ export function useProviderAvailabilityLoginEntryGuard({
   readModelSelectionView: () => Promise<ModelSelectionView>;
   setLoginEntryOpen: (open: boolean) => void;
   /**
-   * JGAgent：欢迎页（启动引导）只出现一次的依据——引导记录里已有决策
+   * JGHarness：欢迎页（启动引导）只出现一次的依据——引导记录里已有决策
    * （跳过、填 Key 都算）。为 true 时启动检查不再弹欢迎页；
    * 手动打开入口（设置页、菜单）不走此守卫，不受影响。
    */
@@ -59,7 +59,7 @@ export function useProviderAvailabilityLoginEntryGuard({
         : modelSelectionView;
       const availability = resolveProviderAvailabilityState({ modelSelectionView: refreshedView });
       const { hasUsableProvider, providerCount } = availability;
-      // JGAgent：欢迎页只在首次使用出现。做过引导决策（跳过/填 Key）后，即使
+      // JGHarness：欢迎页只在首次使用出现。做过引导决策（跳过/填 Key）后，即使
       // "未登录 + 无可用模型"也不再于启动时弹出——否则禁用中的供应商或未拉取
       // 模型的状态会让每次重启都回到欢迎页（v0.3.2 用户实测）。需要配置时
       // 用户可从设置页进入；启动路径不再承担催促职责。
@@ -110,13 +110,13 @@ export function useProviderAvailabilityLoginEntryGuard({
       return;
     }
 
-    // JGAgent：hasCompletedOnboarding 异步判定（undefined = 判定中）必须先于启动检查完成，
+    // JGHarness：hasCompletedOnboarding 异步判定（undefined = 判定中）必须先于启动检查完成，
     // 否则守卫会把"引导记录读取中"误判成"未完成"而在老用户启动时弹欢迎页。
     if (hasCompletedOnboarding === undefined) {
       return;
     }
 
-    // JGAgent 去官方化（阶段 3）：移除 isRestoringOAuthSession 等待输入，OAuth 会话恢复链路已摘除；
+    // JGHarness 去官方化（阶段 3）：移除 isRestoringOAuthSession 等待输入，OAuth 会话恢复链路已摘除；
     // 启动检查只等 ModelSelectionView 水合。
     if (startupCheckCompletedRef.current || !providerAvailabilityHydrated) {
       return;

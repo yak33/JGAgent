@@ -110,7 +110,7 @@ export function useRootPlatformEffects({
   useEffect(() => {
     // 启动时必须先完成 provider 启动检查，再恢复历史/初始 workspace。
     // 如果这里抢先 addTab，未连接 provider 的用户会先看到主界面，之后才被登录页覆盖。
-    // JGAgent 去官方化（阶段 3）：门禁不再包含 OAuth 本地会话恢复。
+    // JGHarness 去官方化（阶段 3）：门禁不再包含 OAuth 本地会话恢复。
     if (!canBootstrapInitialWorkspace || didBootstrapInitialWorkspaceRef.current) {
       return;
     }
@@ -359,7 +359,7 @@ export function useRootPlatformEffects({
 
     // 分享页 Deep Link 不应在 Root 层按登录态分叉；未登录与已登录都
     // 走同一份 continuation/import 流程。公开可导入分享由接口自身决定是否可用。
-    // JGAgent 去官方化（阶段 3）：移除 OAuth 会话恢复等待（原 isRestoringOAuthSession 门禁输入）。
+    // JGHarness 去官方化（阶段 3）：移除 OAuth 会话恢复等待（原 isRestoringOAuthSession 门禁输入）。
     pending.status = "importing";
     pendingShareImportRef.current = null;
     activeShareImportRef.current = pending;

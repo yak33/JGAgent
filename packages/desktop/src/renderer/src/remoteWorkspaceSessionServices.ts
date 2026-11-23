@@ -1,7 +1,7 @@
 import type { IServiceAccessor } from "@zcode/services";
 import type { RemoteTarget } from "@zcode/shared";
 
-// JGAgent 去官方化（阶段 3）：highspeed/offPeak 本地专属服务与远程 stub 随订阅域移除；
+// JGHarness 去官方化（阶段 3）：highspeed/offPeak 本地专属服务与远程 stub 随订阅域移除；
 // 官方对远程 workspace 服务路由的其余修复保留。
 function withLocalOnlyAccountServices(
   baseServices: IServiceAccessor,
@@ -9,7 +9,7 @@ function withLocalOnlyAccountServices(
 ): IServiceAccessor {
   return {
     ...services,
-    // JGAgent 去官方化（阶段 3）：highspeed/offPeak 服务字段随订阅域移除。
+    // JGHarness 去官方化（阶段 3）：highspeed/offPeak 服务字段随订阅域移除。
   };
 }
 

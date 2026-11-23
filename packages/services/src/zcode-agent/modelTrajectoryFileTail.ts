@@ -15,8 +15,8 @@ export interface TrajectoryFileTail {
 // debug（开发态）与 rollout（生产态）都尝试，避免数据目录环境变量差异导致读不到。
 export function resolveModelIODirs(): string[] {
   const roots = new Set<string>([
-    join(homedir(), ".jgagent", "cli"),
-    join(getDataBaseDir(), ".jgagent", "cli"),
+    join(homedir(), ".jgharness", "cli"),
+    join(getDataBaseDir(), ".jgharness", "cli"),
   ]);
   return [...roots].flatMap((root) => [join(root, "debug"), join(root, "rollout")]);
 }

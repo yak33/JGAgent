@@ -171,7 +171,7 @@ export function exposeWindowHostAttachmentServices(params: {
     },
   );
   if (params.clientMode === "web-remote-replayable") {
-    // JGAgent 去官方化（阶段 3）：HighspeedCardService RPC 发布随高速推理域移除。
+    // JGHarness 去官方化（阶段 3）：HighspeedCardService RPC 发布随高速推理域移除。
     const controllerServices =
       params.attachmentScope?.kind === "remote" ? params.windowServices! : params.services;
     if (params.attachmentScope?.kind === "remote") {

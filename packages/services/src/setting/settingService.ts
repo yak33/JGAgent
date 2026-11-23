@@ -252,8 +252,8 @@ export function createSettingServiceWithMigrations(dependencies: SettingServiceD
 } {
   // 原因：每次 IO 动态读 HOME 会让旧异步投影写进后来实例的目录。
   // 在实例创建时取值，既支持测试/Host 注入，也让读取、文件锁与替换始终同源。
-  // JGAgent：存储根为 ~/.jgagent/v2（spec: docs/specs/storage-root-isolation.md），不随上游 .zcode。
-  const settingsFile = join(resolveUserHomeDir(), ".jgagent", "v2", "setting.json");
+  // JGHarness：存储根为 ~/.jgharness/v2（spec: docs/specs/storage-root-isolation.md），不随上游 .zcode。
+  const settingsFile = join(resolveUserHomeDir(), ".jgharness", "v2", "setting.json");
   // 个性化指令文件与 settingsFile 同理：实例创建时取值，读取与写入始终同源。
   const userInstructionsFile = getAgentUserInstructionsFilePath();
   // 修复原因（评审 CR-01）：atomicWriteText 只保证单次替换完整，不保证多次保存的提交顺序；
@@ -412,7 +412,7 @@ export function createSettingServiceWithMigrations(dependencies: SettingServiceD
       const targetBaseDir = newDir?.trim() || homedir();
       const validation = validateDataBaseDirTarget(targetBaseDir);
       if (!validation.ok) {
-        // Windows 安装目录由安装器/自动更新管理，把 .jgagent/v2 放进去可能在升级时被覆盖。
+        // Windows 安装目录由安装器/自动更新管理，把 .jgharness/v2 放进去可能在升级时被覆盖。
         // 迁移前在 service 层拦截，避免 UI 入口变化或 RPC 调用绕过前端判断。
         const error = new Error(`${validation.code}: ${validation.forbiddenDir}`);
         (error as Error & { code: string }).code = validation.code;

@@ -168,7 +168,7 @@ async function applyLegacyOperation(input: {
     return;
   }
   if (operation.kind === "quota.assert") {
-    // JGAgent：额度横幅状态断言随订阅域移除。
+    // JGHarness：额度横幅状态断言随订阅域移除。
     return;
   }
   if (operation.kind === "verification.assert") {

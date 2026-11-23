@@ -91,7 +91,7 @@ import {
   AutomationRepo,
 
   createServiceLogger,
-  // JGAgent 去官方化（阶段 3）：buildTaskChangeSummary（闲时终态回填）随闲时任务域移除。
+  // JGHarness 去官方化（阶段 3）：buildTaskChangeSummary（闲时终态回填）随闲时任务域移除。
   createHostApiNetworkTransport,
   createSettingServiceWithMigrations,
   createDeviceSyncStateService,
@@ -493,7 +493,7 @@ const logger = {
 const cronAutomationRepo = new AutomationRepo();
 const cronRunSubscriptions = new Map<string, { dispose(): void }>();
 
-// JGAgent 去官方化（阶段 3）：删除闲时任务（off-peak）派发链——OffPeakTaskRepo /
+// JGHarness 去官方化（阶段 3）：删除闲时任务（off-peak）派发链——OffPeakTaskRepo /
 // OffPeakRuntime / dispatchOffPeakRun / 终态回写等随账号与订阅服务域移除；
 // host 仅保留 cron 定时任务派发。
 interface CronRunDispatchRequest {
@@ -671,7 +671,7 @@ async function dispatchCronRun(request: CronRunDispatchRequest): Promise<{
   const targetServices = resolveAutomationTargetServices(request);
   const zcodeTaskService = targetServices.getOptional(IZCodeTaskService);
   if (!zcodeTaskService) {
-    throw new Error("JGAgent task service is not initialized.");
+    throw new Error("JGHarness task service is not initialized.");
   }
   const modelSelectionService = targetServices.getOptional(IModelSelectionService);
   if (!modelSelectionService) {
@@ -1183,12 +1183,12 @@ function createReportingRemoteZCodeTaskService<T extends object>(
     const onDynamicTaskReady = Reflect.get(target, "onDynamicTaskReady");
     if (typeof onDynamicTaskReady !== "function") {
       workspaceTaskTracker.finish(taskId, meta);
-      throw new Error("remote JGAgent task service does not expose onDynamicTaskReady");
+      throw new Error("remote JGHarness task service does not expose onDynamicTaskReady");
     }
     const subscribe = onDynamicTaskReady.call(target, taskId);
     if (typeof subscribe !== "function") {
       workspaceTaskTracker.finish(taskId, meta);
-      throw new Error("remote JGAgent task ready event is not subscribable");
+      throw new Error("remote JGHarness task ready event is not subscribable");
     }
     workspaceProxyState.trackTaskReady(
       taskId,
@@ -1199,7 +1199,7 @@ function createReportingRemoteZCodeTaskService<T extends object>(
     return true;
   }
 
-  // remote workspace 的 JGAgent Agent manager 跑在远端 server，desktop main 不能直接看到
+  // remote workspace 的 JGHarness Agent manager 跑在远端 server，desktop main 不能直接看到
   // `handles` 状态。sendPrompt Promise 只是远端 ACK，必须等待 task ready 才能允许回收 workspace。
   return new Proxy(service, {
     get(target, property, receiver) {
@@ -1342,12 +1342,12 @@ function warmUpZCodeAgent(
       if (!result.available) {
         if (result.reasonCode === "provider_not_ready") {
           logger.info(
-            `JGAgent agent warmup waiting for provider/model (${reason}) workspace=${workspacePath}`,
+            `JGHarness agent warmup waiting for provider/model (${reason}) workspace=${workspacePath}`,
           );
           return;
         }
         logger.warn(
-          `JGAgent agent warmup unavailable (${reason}) workspace=${workspacePath} reason=${result.reason ?? "unknown"}`,
+          `JGHarness agent warmup unavailable (${reason}) workspace=${workspacePath} reason=${result.reason ?? "unknown"}`,
         );
         return;
       }
@@ -1355,11 +1355,11 @@ function warmUpZCodeAgent(
       // presentation 只剩 mode 与 slash commands。预热不能为读取 presentation 额外创建
       // Agent App，否则其 MCP close 会占住协议通道并阻塞真正的 Session 初始化。
       logger.info(
-        `JGAgent agent warmup ready (${reason}) workspace=${workspacePath} transport=${result.transportKind ?? "unknown"}`,
+        `JGHarness agent warmup ready (${reason}) workspace=${workspacePath} transport=${result.transportKind ?? "unknown"}`,
       );
     })
     .catch((error) => {
-      logger.warn(`JGAgent agent warmup failed (${reason}) workspace=${workspacePath}:`, error);
+      logger.warn(`JGHarness agent warmup failed (${reason}) workspace=${workspacePath}:`, error);
     });
 }
 
@@ -2606,7 +2606,7 @@ async function disposeHostResources(reason: string): Promise<HostShutdownResult>
       disposeCronRunSubscription(key);
     }
     cronAutomationRepo.close();
-    // JGAgent 去官方化（阶段 3）：闲时任务订阅/Repo 收口随闲时任务域移除。
+    // JGHarness 去官方化（阶段 3）：闲时任务订阅/Repo 收口随闲时任务域移除。
 
     if (activeSessionRealtimePort) {
       activeSessionRealtimePort.dispose();
@@ -2698,7 +2698,7 @@ function disposeHostResourcesBestEffort(reason: string): void {
     disposeCronRunSubscription(key);
   }
   cronAutomationRepo.close();
-  // JGAgent 去官方化（阶段 3）：闲时任务订阅/Repo 收口随闲时任务域移除。
+  // JGHarness 去官方化（阶段 3）：闲时任务订阅/Repo 收口随闲时任务域移除。
   void windowRemoteConnectionRegistry.dispose();
 
   if (activeServices) {
@@ -3021,7 +3021,7 @@ parentPort.on("message", async (e: Electron.MessageEvent) => {
     return;
   }
 
-  // JGAgent 去官方化（阶段 3）：OffPeakRun 派发消息分支随闲时任务域移除
+  // JGHarness 去官方化（阶段 3）：OffPeakRun 派发消息分支随闲时任务域移除
   // （scheduler 不再产生该消息；迟到的旧消息按未知类型忽略）。
     if (msg.type === HostMessageTypes.BrowserExecuteResult) {
     // main 的 WebContentsView+CDP 执行完 browser 命令，按 requestId 关联回 bridge 的 pending。
@@ -3051,7 +3051,7 @@ parentPort.on("message", async (e: Electron.MessageEvent) => {
       parentPort.postMessage({
         type: HostResponseTypes.SessionMessageDeliverResult,
         result: {
-          error: "JGAgent task service is not initialized.",
+          error: "JGHarness task service is not initialized.",
           messageId: msg.request.messageId,
           requestId: msg.request.requestId,
           sessionId: msg.request.fromSessionId,
@@ -3087,7 +3087,7 @@ parentPort.on("message", async (e: Electron.MessageEvent) => {
   if (msg.type === HostMessageTypes.SessionMessageDeliveryResult) {
     const zcodeTaskService = activeServices?.getOptional(IZCodeTaskService);
     if (!zcodeTaskService) {
-      logger.warn("session message delivery result received before JGAgent task service initialized");
+      logger.warn("session message delivery result received before JGHarness task service initialized");
       return;
     }
     void zcodeTaskService.sendSessionMessageDeliveryResult(msg.result).catch((error) => {
@@ -3851,7 +3851,7 @@ parentPort.on("message", async (e: Electron.MessageEvent) => {
                 });
               },
               onAutomationManualRunRequested: dispatchManualAutomationRun,
-              // JGAgent 去官方化（阶段 3）：onOffPeakSchedulerWakeRequested 随闲时任务域移除。
+              // JGHarness 去官方化（阶段 3）：onOffPeakSchedulerWakeRequested 随闲时任务域移除。
               onProviderProvisioningSourceChanged: (trigger) => {
                 parentPort?.postMessage({
                   type: HostResponseTypes.ProviderProvisioningSourceChanged,

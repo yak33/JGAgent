@@ -5,7 +5,7 @@
 //   - 维护派发状态机：misfire 跳过、single-flight 认领、成功结算、失败退避重试
 //   - 把到期任务的派发请求发回 main（main 再翻译成 CronRun 转给 workspace host 执行 createTask+sendPrompt）
 //   - 收到 main 回报后结算 automation + automation_runs
-// JGAgent 去官方化（阶段 3）：闲时任务（off_peak_tasks）轮询/派发/结算随账号与订阅域移除。
+// JGHarness 去官方化（阶段 3）：闲时任务（off_peak_tasks）轮询/派发/结算随账号与订阅域移除。
 // 本进程只读写 tasks-index，不碰 UI / agent runtime；createTask 由 host 域执行。
 import { AutomationRepo, computeAutomationNextRunAt, isOneShotAutomation } from "@zcode/services/node";
 import {
@@ -87,7 +87,7 @@ async function tick(): Promise<void> {
         for (const manualRun of manualRuns) {
           await handleClaimedManual(manualRun.automation, manualRun.run);
         }
-        // JGAgent 去官方化（阶段 3）：闲时任务认领与执行计数上报随闲时任务域移除。
+        // JGHarness 去官方化（阶段 3）：闲时任务认领与执行计数上报随闲时任务域移除。
       } catch (error) {
         log("error", `tick failed: ${error instanceof Error ? error.message : String(error)}`);
       }
@@ -199,7 +199,7 @@ async function handleClaimedManual(
   postDispatchRequest(automation, run.runId, run.modelSelection);
 }
 
-// JGAgent 去官方化（阶段 3）：reportOffPeakActiveCount / handleOffPeakClaimed 随闲时任务域移除。
+// JGHarness 去官方化（阶段 3）：reportOffPeakActiveCount / handleOffPeakClaimed 随闲时任务域移除。
 
 async function settleDispatchResult(
   msg: Extract<MainToSchedulerMessage, { type: "cron-dispatch-result" }>,
@@ -285,7 +285,7 @@ async function dispose(): Promise<void> {
     }
   }
   inFlight.clear();
-  // JGAgent 去官方化（阶段 3）：闲时任务认领释放与 Repo 收口随闲时任务域移除。
+  // JGHarness 去官方化（阶段 3）：闲时任务认领释放与 Repo 收口随闲时任务域移除。
   try {
     repo.close();
   } catch {
@@ -325,7 +325,7 @@ parentPort?.on("message", (event: Electron.MessageEvent) => {
 
 async function main(): Promise<void> {
   await repo.ensureReady();
-  // JGAgent 去官方化（阶段 3）：闲时任务中断恢复随闲时任务域移除。
+  // JGHarness 去官方化（阶段 3）：闲时任务中断恢复随闲时任务域移除。
   schedulerReady = true;
   log("info", "cron scheduler started");
   requestTick();

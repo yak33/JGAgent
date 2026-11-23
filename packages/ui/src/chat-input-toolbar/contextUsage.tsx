@@ -25,7 +25,7 @@ import { ControlHintTooltip } from "@/ControlHintTooltip.js";
 import { useZCodeIntl } from "@/i18n/IntlProvider.js";
 import { formatCompactTokenNumber } from "@/lib/tokenNumberFormat.js";
 
-// JGAgent 去官方化（阶段 3）：本组件原有 Coding Plan 余量面板、额度重置徽标/提醒/
+// JGHarness 去官方化（阶段 3）：本组件原有 Coding Plan 余量面板、额度重置徽标/提醒/
 // 撒花动效与 Start Plan 余额面板，均随账号与订阅服务域删除；现仅保留上下文占用
 // （token 用量、breakdown、缓存命中率）展示。
 
@@ -182,7 +182,7 @@ export function getRenderableTaskUsage<
     return null;
   }
 
-  // JGAgent Protocol 迁移后会单独补齐真实 contextUsed/contextWindow。
+  // JGHarness Protocol 迁移后会单独补齐真实 contextUsed/contextWindow。
   // used=0 或非法值不代表可展示的上下文占用，避免把初始化/异常兜底渲染成误导性的 0%。
   if (
     !Number.isFinite(taskUsage.used) ||

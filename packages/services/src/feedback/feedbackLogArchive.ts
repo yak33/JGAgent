@@ -13,12 +13,12 @@ interface FeedbackLogSource {
   directory: string;
   archivePrefix: string;
   exitLogsOnly?: boolean;
-  /** JGAgent：上游 v3.16.x exportLogs 传入的白名单字段；命中时按文件名精确归档（如 config.json）。 */
+  /** JGHarness：上游 v3.16.x exportLogs 传入的白名单字段；命中时按文件名精确归档（如 config.json）。 */
   includeFileNames?: readonly string[];
   /** 上游语义：默认仅归档当天文件；false 时放宽 mtime 限制（cli-config 等长期有效的文件）。 */
   onlyCurrentDay?: boolean;
-  /** 上游内容策略标记；JGAgent 归档全程经 redactFeedbackText 脱敏，无需分支处理。 */
-  // 官方 v3.18 新增 diagnostic/cli-memory 值；JGAgent 归档仍统一走 redactFeedbackText 脱敏兜底。
+  /** 上游内容策略标记；JGHarness 归档全程经 redactFeedbackText 脱敏，无需分支处理。 */
+  // 官方 v3.18 新增 diagnostic/cli-memory 值；JGHarness 归档仍统一走 redactFeedbackText 脱敏兜底。
   contentPolicy?: "diagnostic" | "cli-config" | "cli-memory";
 }
 
@@ -173,7 +173,7 @@ export async function createFeedbackDiagnosticArchive(options: {
     zip.addBuffer(
       Buffer.from(
         [
-          "JGAgent diagnostic logs",
+          "JGHarness diagnostic logs",
           `timestamp: ${now.toISOString()}`,
           `appVersion: ${ZCODE_VERSION}`,
           `commit: ${ZCODE_COMMIT}`,

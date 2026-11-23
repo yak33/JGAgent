@@ -9,7 +9,7 @@ import {
   resolveLocale,
   SUPPORTED_LOCALES,
 } from "./locale.js";
-import type { JGAgentCopy } from "./types.js";
+import type { JGHarnessCopy } from "./types.js";
 
 export {
   DEFAULT_LOCALE,
@@ -20,13 +20,13 @@ export {
   resolveLocale,
 };
 export type { LocaleDetectionInput } from "./locale.js";
-export type { CliCopy, TuiCopy, UiLocale, SupportedLocale, JGAgentCopy } from "./types.js";
+export type { CliCopy, TuiCopy, UiLocale, SupportedLocale, JGHarnessCopy } from "./types.js";
 
-const CATALOGS: Record<SupportedLocale, JGAgentCopy> = {
+const CATALOGS: Record<SupportedLocale, JGHarnessCopy> = {
   "en-US": enUS,
   "zh-CN": zhCN,
 };
 
-export function getZCodeCopy(locale?: UiLocale | string, detected?: string | null): JGAgentCopy {
+export function getZCodeCopy(locale?: UiLocale | string, detected?: string | null): JGHarnessCopy {
   return CATALOGS[resolveLocale(locale, detected)];
 }

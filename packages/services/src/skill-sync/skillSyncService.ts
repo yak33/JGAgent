@@ -34,7 +34,7 @@ export function resolveUserHomeDir(): string {
 }
 
 export function getUserZcodeSkillRoot(): string {
-  return join(resolveUserHomeDir(), ".jgagent", "skills");
+  return join(resolveUserHomeDir(), ".jgharness", "skills");
 
 }
 

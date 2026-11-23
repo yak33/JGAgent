@@ -15,7 +15,7 @@ function createRetiredOverview(): PluginsOverviewResult {
 }
 
 function throwRetiredPluginManagement(): never {
-  throw new Error("Legacy plugin management has been retired in JGAgent Agent mode");
+  throw new Error("Legacy plugin management has been retired in JGHarness Agent mode");
 }
 
 export function createPluginsService(_options?: PluginsServiceOptions): IPluginsService {

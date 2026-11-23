@@ -6,7 +6,7 @@ import {
   useSettingsScopeForm,
 } from "@/settings-scope/index.js";
 /* eslint-disable max-lines -- 子智能体管理页集中维护作用域列表、表单和启用状态，避免状态分散 */
-// JGAgent 去官方化（阶段 3）：删除 Start Plan 模型推荐链路（useStartPlanRecommendation / startPlanRecommendation）。
+// JGHarness 去官方化（阶段 3）：删除 Start Plan 模型推荐链路（useStartPlanRecommendation / startPlanRecommendation）。
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Check, Plus, Trash2 } from "lucide-react";
 import { completeNewModelSelection } from "@zcode/provider";
@@ -633,7 +633,7 @@ function SubagentModelOverrideControl({
     config: { model?: string; thoughtLevel?: string },
   ) => Promise<void>;
 }) {
-  // JGAgent 去官方化（阶段 3）：Start Plan 推荐移除，模型选择按原值直接生效。
+  // JGHarness 去官方化（阶段 3）：Start Plan 推荐移除，模型选择按原值直接生效。
   const { intl } = useZCodeIntl();
   const [pending, setPending] = useState(false);
   const [config, setConfig] = useState<{
@@ -842,7 +842,7 @@ function SubagentForm({
   workspaceTabs: ConfigWorkspaceTarget[];
   onScopeKeyChange: (scopeKey: string) => void;
 }) {
-  // JGAgent 去官方化（阶段 3）：Start Plan 推荐移除，模型选择按原值直接生效。
+  // JGHarness 去官方化（阶段 3）：Start Plan 推荐移除，模型选择按原值直接生效。
   const { intl } = useZCodeIntl();
   const initialFormStateKey = createSubagentFormInitialStateKey(initial);
   const initialFormState = useMemo(
@@ -1032,7 +1032,7 @@ function SubagentForm({
       return;
     }
     let selection = toSubagentModelSelection(persistedModel, thoughtLevel);
-    // JGAgent 去官方化（阶段 3）：提交前不再做 Start Plan 推荐改写。
+    // JGHarness 去官方化（阶段 3）：提交前不再做 Start Plan 推荐改写。
     await onSave({
       name: name.trim(),
       description: description.trim(),

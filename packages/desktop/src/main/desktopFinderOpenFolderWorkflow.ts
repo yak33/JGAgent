@@ -4,13 +4,13 @@ import { join } from "node:path";
 import { spawn } from "node:child_process";
 import { toZhOrEnLocale, type Locale } from "@zcode/shared";
 
-const WORKFLOW_NAME = "Open in JGAgent.workflow";
+const WORKFLOW_NAME = "Open in JGHarness.workflow";
 const WORKFLOW_BUNDLE_ID = "dev.zcode.app.finder-open-workflow";
 const WORKFLOW_VERSION = "5";
 // Finder 服务菜单只内置中英；其它界面语言用英文。
 const SERVICES_MENU_LABELS: Record<"zh-CN" | "en-US", string> = {
-  "zh-CN": "在JGAgent中打开",
-  "en-US": "Open in JGAgent",
+  "zh-CN": "在JGHarness中打开",
+  "en-US": "Open in JGHarness",
 };
 
 const workflowScript = `first=""

@@ -3206,7 +3206,7 @@ const WorkspaceShellLayoutContent = memo(function WorkspaceShellLayoutComponent(
   );
   return (
     <DesktopWindowFrame
-      title={`JGAgent / ${getPathLeaf(workspaceAbsPath)}`}
+      title={`JGHarness / ${getPathLeaf(workspaceAbsPath)}`}
       showHeader
       isDesktop={isDesktop}
       isMacDesktop={isMacDesktop}

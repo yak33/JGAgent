@@ -1,4 +1,4 @@
-/* oxlint-disable eslint(max-lines) -- JGAgent session 到当前聊天 projection 的迁移桥需要同时保持 snapshot 和 event 映射一致。 */
+/* oxlint-disable eslint(max-lines) -- JGHarness session 到当前聊天 projection 的迁移桥需要同时保持 snapshot 和 event 映射一致。 */
 import {
   getZCodeAgentAvailableModes as getSharedAgentAvailableModes,
   normalizeAvailableZCodeMode,
@@ -150,7 +150,7 @@ export function parseModelPickerValue(value: string): ModelSelection {
   const customModel = decodeCustomModelValue(value);
   if (customModel?.providerId && customModel.modelName) {
     // UI 自定义模型值是展示态 custom:provider:model，
-    // JGAgent Protocol 必须收到严格的 providerId/modelId 结构。
+    // JGHarness Protocol 必须收到严格的 providerId/modelId 结构。
     return {
       providerId: customModel.providerId,
       modelId: customModel.modelName,
@@ -265,7 +265,7 @@ function resolveSettingsThoughtLevelCurrentValue(
     thoughtLevel.defaultLevel && thoughtLevelValues.has(thoughtLevel.defaultLevel)
       ? thoughtLevel.defaultLevel
       : undefined;
-  // JGAgent Protocol 的 defaultLevel 是模型事实，current 为空时表示用户尚未显式修改。
+  // JGHarness Protocol 的 defaultLevel 是模型事实，current 为空时表示用户尚未显式修改。
   // 实时模型状态事件也要投影默认值，否则工具栏会拿到空 currentValue，出现没有档位被选中的 UI。
   return currentThoughtLevel ?? defaultThoughtLevel ?? thoughtLevel.available[0]?.value;
 }

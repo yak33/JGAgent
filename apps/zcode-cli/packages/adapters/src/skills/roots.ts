@@ -111,8 +111,8 @@ function skillRootsForBase(
 ): SkillRoot[] {
   // 合并而不是 fallback：用户可能同时安装原生 skill 和兼容 `.agents` skill。
   // 同一级别仍保持主段名目录优先，后续同名按 root 顺序解析。
-  // JGAgent 存储根隔离：用户级（home）走 .jgagent 与官方 ZCode 隔离，工作区级 .zcode 保持共享。
-  const zcodeDir = scope === "user" ? ".jgagent" : ZCODE_DIR;
+  // JGHarness 存储根隔离：用户级（home）走 .jgharness 与官方 ZCode 隔离，工作区级 .zcode 保持共享。
+  const zcodeDir = scope === "user" ? ".jgharness" : ZCODE_DIR;
   return [
     root(join(baseDirectory, zcodeDir, SKILLS_DIR), scope, "zcode", nextPriority()),
     root(join(baseDirectory, AGENTS_DIR, SKILLS_DIR), scope, "agents", nextPriority()),

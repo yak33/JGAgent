@@ -64,7 +64,7 @@ export type CodingPlanStatus =
   | "unavailable"
   | "unsupported";
 
-// JGAgent 去官方化（阶段 3）：codingPlanPricingCards.ts 已删除，登录参数类型迁移到本模块。
+// JGHarness 去官方化（阶段 3）：codingPlanPricingCards.ts 已删除，登录参数类型迁移到本模块。
 export type CodingPlanLoginOptions = {
   forceOAuth?: boolean;
 };

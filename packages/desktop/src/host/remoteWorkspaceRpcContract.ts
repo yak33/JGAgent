@@ -13,7 +13,7 @@ export const REMOTE_WORKSPACE_RPC_CHANNELS = [
   "onboardingRecordService",
   "credentialService",
   "broadcastService",
-  // JGAgent 去官方化（阶段 3）：oauthService / codingPlanSubscriptionService 通道随账号域移除。
+  // JGHarness 去官方化（阶段 3）：oauthService / codingPlanSubscriptionService 通道随账号域移除。
   "zcodeTaskService",
   "zcodeAgentService",
   "zcodeSessionService",

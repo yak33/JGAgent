@@ -266,7 +266,7 @@ async function findDefaultUserInstructionFile(
     return undefined;
   }
 
-  const filePath = join(resolveUserHomeDir(env), ".jgagent", "AGENTS.md");
+  const filePath = join(resolveUserHomeDir(env), ".jgharness", "AGENTS.md");
   if (await isInstructionFileCandidate(filePath)) {
     return { filePath, fileName: "AGENTS.md" };
   }

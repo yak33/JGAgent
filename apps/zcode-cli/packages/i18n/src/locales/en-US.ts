@@ -1,6 +1,6 @@
-import type { JGAgentCopy } from "../types.js";
+import type { JGHarnessCopy } from "../types.js";
 
-export const enUS: JGAgentCopy = {
+export const enUS: JGHarnessCopy = {
   locale: "en-US",
   cli: {
     errors: {
@@ -15,7 +15,7 @@ Usage:
 With no command, zcode opens the full-screen TUI.
 
 Commands:
-  app-server Run the JGAgent Protocol stdio app server
+  app-server Run the JGHarness Protocol stdio app server
   commands   List custom slash commands (\`commands list\`)
   doctor     Inspect runtime and packaging assumptions
   login [zai|bigmodel]  Sign in through browser authorization
@@ -291,7 +291,7 @@ Slash Commands:
     },
     terminal: {
       requiresInteractive: "TUI requires an interactive terminal.",
-      starting: "Starting JGAgent... Ctrl+C to exit",
+      starting: "Starting JGHarness... Ctrl+C to exit",
     },
     transcript: {
       compact: {

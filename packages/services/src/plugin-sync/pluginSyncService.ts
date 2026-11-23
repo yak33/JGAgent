@@ -117,11 +117,11 @@ export function resolveUserHomeDir(): string {
 }
 
 export function getUserZcodeConfigPath(): string {
-  return join(resolveUserHomeDir(), ".jgagent", "cli", "config.json");
+  return join(resolveUserHomeDir(), ".jgharness", "cli", "config.json");
 }
 
 export function getUserZcodePluginRoot(): string {
-  return join(resolveUserHomeDir(), ".jgagent", "plugins");
+  return join(resolveUserHomeDir(), ".jgharness", "plugins");
 
 }
 

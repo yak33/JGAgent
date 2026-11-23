@@ -38,8 +38,8 @@ interface ParsedFrontmatter {
 }
 
 const SKILL_META_FILE_NAME = "_meta.json";
-const SKILL_SETTINGS_DIR = join(resolveUserHomeDir(), ".jgagent", "v2");
-const SKILL_CLI_SETTINGS_DIR = join(resolveUserHomeDir(), ".jgagent", "cli");
+const SKILL_SETTINGS_DIR = join(resolveUserHomeDir(), ".jgharness", "v2");
+const SKILL_CLI_SETTINGS_DIR = join(resolveUserHomeDir(), ".jgharness", "cli");
 const SKILL_CLI_CONFIG_FILE = join(SKILL_CLI_SETTINGS_DIR, "config.json");
 const GIT_MARKER = ".git";
 const HOME_PREFIX = "~/";
@@ -60,7 +60,7 @@ interface SkillsServiceOptions {
   isDesktopRuntime?: boolean;
 }
 
-/** JGAgent Agent 工作区级技能目录。 */
+/** JGHarness Agent 工作区级技能目录。 */
 function getWorkspaceZcodeSkillRoot(workspacePath: string): string {
   return join(workspacePath, ".zcode", "skills");
 }
@@ -70,9 +70,9 @@ function getWorkspaceAgentsSkillRoot(workspacePath: string): string {
   return join(workspacePath, ".agents", "skills");
 }
 
-/** JGAgent Agent 用户级技能目录。 */
+/** JGHarness Agent 用户级技能目录。 */
 function getUserZcodeSkillRoot(): string {
-  return join(resolveUserHomeDir(), ".jgagent", "skills");
+  return join(resolveUserHomeDir(), ".jgharness", "skills");
 }
 
 /** 兼容目录: 用户级 `~/.agents/skills`。 */
@@ -952,7 +952,7 @@ async function discoverSkills(params: {
       }
 
       // frontmatter 扩展字段通常来自不同 skill 生态的元信息。
-      // 这些字段不影响 JGAgent 读取 name/description，继续报 warning 只会制造无操作价值的噪音。
+      // 这些字段不影响 JGHarness 读取 name/description，继续报 warning 只会制造无操作价值的噪音。
 
       const body = parsed.body.trim();
       const metadata = await readSkillMetadata(skillPath);

@@ -4,7 +4,7 @@ import type {
 } from "@zcode/adapters";
 import type { EnvRecord } from "@zcode/adapters/model";
 
-// JGAgent 去官方化（阶段 3）：OAuth 登录客户端（cli-oauth.js）与浏览器轮询登录类型
+// JGHarness 去官方化（阶段 3）：OAuth 登录客户端（cli-oauth.js）与浏览器轮询登录类型
 // （CliOAuthInitData/PollData/User、createCliOAuthClient）已随账号域移除；
 // 本契约只保留 API Key 配置、登出与共享凭据存储的类型面。
 

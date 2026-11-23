@@ -96,7 +96,7 @@ export function useRootWorkspaceActions({
   allowOpenWorkspace,
   preferDirectoryBrowser,
   openDirectoryBrowser,
-  // JGAgent 去官方化（阶段 3）：refreshProviderState / updateAppSettings /
+  // JGHarness 去官方化（阶段 3）：refreshProviderState / updateAppSettings /
   // onProviderFamilyDomainClearedAfterLogout 解构随 OAuth 登出链路移除（参数接口保留）。
   userId,
   onOpenRemoteConnection,
@@ -504,7 +504,7 @@ export function useRootWorkspaceActions({
       },
       "Root",
     );
-    // JGAgent 去官方化（阶段 3）：OAuth 登录域删除后没有服务端会话可退出，
+    // JGHarness 去官方化（阶段 3）：OAuth 登录域删除后没有服务端会话可退出，
     // 登出仅清理本地 Coding Plan webview partition 并重启应用复位 renderer 状态；
     // providerFamilyDomain 的登出重置逻辑随 OAuth 镜像 provider 一并移除。
     // Coding Plan 官网 webview 使用独立持久 partition，App logout 必须同步清理。

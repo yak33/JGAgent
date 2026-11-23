@@ -618,7 +618,7 @@ function createProviderProxyFetch(options: ProviderProxyFetchOptions): ProviderF
   return createNetworkProxyFetch(options);
 }
 
-// JGAgent 说明：上游 v3.15.1 移除了 official-coding-plan-gateway 的出口包装，
+// JGHarness 说明：上游 v3.15.1 移除了 official-coding-plan-gateway 的出口包装，
 // 改为按 endpointRoutingPort 的通用端点路由（provider-endpoint-routing-fetch.ts）。
 // official-coding-plan-gateway.ts 仍保留空路由表机制，供公司自建网关时重新启用。
 async function detectProviderBusinessError(
@@ -681,7 +681,7 @@ export function readProviderBusinessFailureFromBody(body: unknown):
     toProviderCode(errorRecord?.providerCode) ??
     toProviderCode(record.error_code) ??
     toProviderCode(errorRecord?.error_code) ??
-    // 二次包装后的外层 code 是 JGAgent 自己的 PROVIDER_BUSINESS_ERROR，
+    // 二次包装后的外层 code 是 JGHarness 自己的 PROVIDER_BUSINESS_ERROR，
     // 真实上游码在 providerCode；只有没有 providerCode 时才退回读取 code。
     toProviderCode(record.code) ??
     toProviderCode(errorRecord?.code);

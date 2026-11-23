@@ -1,8 +1,8 @@
 {
   "name": "@zcode/desktop",
   "private": true,
-  "description": "JGAgent Desktop App",
-  "author": "JGAgent",
+  "description": "JGHarness Desktop App",
+  "author": "JGHarness",
   "type": "module",
   "main": "out/main/index.js",
   "imports": {
@@ -139,6 +139,6 @@
     "wdio-electron-service": "^9.2.1",
     "webdriverio": "^9.27.0"
   },
-  "productName": "JGAgent",
-  "version": "0.6.0"
+  "productName": "JGHarness",
+  "version": "0.7.0"
 }

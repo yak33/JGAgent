@@ -73,5 +73,5 @@ export function useCredentials() {
   return { load, save, delete: del };
 }
 
-// JGAgent 去官方化（阶段 3）：删除 useAuthToken（读取 OAuth active provider 的 access token）；
+// JGHarness 去官方化（阶段 3）：删除 useAuthToken（读取 OAuth active provider 的 access token）；
 // 登录体系移除后没有 active provider，apiKey 模式不经过该 hook。

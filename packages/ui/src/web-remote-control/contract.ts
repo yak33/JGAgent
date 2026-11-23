@@ -1,4 +1,4 @@
-// JGAgent：账号域已摘除；onDidChangeSession 事件端口内联为最小形状（无实例接线）。
+// JGHarness：账号域已摘除；onDidChangeSession 事件端口内联为最小形状（无实例接线）。
 interface WebRemoteControlOAuthSessionEventPort {
   onDidChangeSession: (listener: () => void) => () => void;
 }

@@ -105,7 +105,7 @@ export const REMOTE_WORKSPACE_RPC_REGISTRATIONS = [
 const conversationShareLog = createServiceLogger("conversation-share");
 
 const runtimePreferencesLogger = createServiceLogger("remote-runtime-preferences");
-// JGAgent 去官方化（阶段 3）：ZCODE_JWT_TOKEN_KEY 读取随 OAuth 删除（分享令牌恒为空）。
+// JGHarness 去官方化（阶段 3）：ZCODE_JWT_TOKEN_KEY 读取随 OAuth 删除（分享令牌恒为空）。
 
 export function resolveServerProjectService(params: {
   connectionServices: IServiceAccessor;
@@ -210,7 +210,7 @@ export function createServerRemoteWorkspaceServiceCollection(params: {
     .register(IModelSelectionService, params.connectionServices.modelSelectionService)
     .register(ISourceServerWorkspaceService, params.connectionServices.sourceServerWorkspaceService)
     .register(IUsageStatsService, params.connectionServices.usageStatsService)
-    // JGAgent 去官方化（阶段 3）：server remote 装配同样不注册 OAuth / 订阅服务。
+    // JGHarness 去官方化（阶段 3）：server remote 装配同样不注册 OAuth / 订阅服务。
     .register(IClientConfigService, params.clientConfigService)
     .register(IClientScenesService, params.connectionServices.clientScenesService)
     .register(ISkillsService, params.connectionServices.skillsService)

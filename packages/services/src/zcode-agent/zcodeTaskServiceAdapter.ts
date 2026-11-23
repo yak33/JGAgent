@@ -1,4 +1,4 @@
-/* oxlint-disable eslint(max-lines) -- 迁移期需要在一个门面里集中维护旧 task projection 到 JGAgent session 的协议适配。 */
+/* oxlint-disable eslint(max-lines) -- 迁移期需要在一个门面里集中维护旧 task projection 到 JGHarness session 的协议适配。 */
 import { formatBotInputClientId, isAuxiliarySessionKind } from "@zcode/shared";
 
 import { createBotTopicAdmission } from "#src/zcode-agent/botTopicAdmission.js";
@@ -250,7 +250,7 @@ function resolveZCodeAgentCurrentLogFilePath(now = new Date()): string {
   // Host 读日志尾部必须用同一基准目录，否则隔离运行时读不到当前日志；
   // 未设置时 getDataBaseDir() 回退 homedir()，与原行为一致。
   const logDir =
-    configuredLogDir || join(getDataBaseDir(), ".jgagent", "cli", "log");
+    configuredLogDir || join(getDataBaseDir(), ".jgharness", "cli", "log");
   return join(logDir, `zcode-${formatZCodeAgentLogDate(now)}.jsonl`);
 }
 
@@ -310,7 +310,7 @@ export function createZCodeTaskServiceAdapter(
 
   function unsupported(name: string): never {
     throw Object.assign(
-      new Error(`JGAgent task service adapter does not support IZCodeTaskService.${name} yet.`),
+      new Error(`JGHarness task service adapter does not support IZCodeTaskService.${name} yet.`),
       {
         code: "ZCODE_AGENT_UNSUPPORTED_LEGACY_TASK_METHOD",
       },
@@ -420,10 +420,10 @@ export function createZCodeTaskServiceAdapter(
     // 新输入开始时必须清掉上一轮 live-only 子工具，避免后续 snapshot 把旧工具补到新回复尾部。
     clearLiveToolProjection(target);
     clearStreamingToolInputCache(target);
-    // JGAgent task wrapper 的字段仍叫 traceId，但这里语义已经是单次输入 inputId。
-    // 先记录 inputId，后续 JGAgent session 事件回投 JGAgent Agent 时才能让 UI 终态按输入轮次收口。
+    // JGHarness task wrapper 的字段仍叫 traceId，但这里语义已经是单次输入 inputId。
+    // 先记录 inputId，后续 JGHarness session 事件回投 JGHarness Agent 时才能让 UI 终态按输入轮次收口。
     activePromptInputIds.set(taskKey(target), params.traceId);
-    logger.info(params.traceId, "JGAgent task facade sendPrompt 开始", {
+    logger.info(params.traceId, "JGHarness task facade sendPrompt 开始", {
       attachmentCount: params.attachments?.length ?? 0,
       queryId: params.queryId ?? null,
       reason: params.logReason ?? "direct",
@@ -496,7 +496,7 @@ export function createZCodeTaskServiceAdapter(
         // 调用方需要区分 accepted 与 duplicate：duplicate 不会开新一轮，也没有终态事件。
         ack = assertV4CommandAckOk("sendText", sendAck, `session=${target.taskId}`);
       }
-      logger.info(params.traceId, "JGAgent task facade sendPrompt ACK", {
+      logger.info(params.traceId, "JGHarness task facade sendPrompt ACK", {
         ackStatus: ack?.status ?? null,
 
         durationMs: Date.now() - startedAt,
@@ -510,7 +510,7 @@ export function createZCodeTaskServiceAdapter(
       return ack;
     } catch (error) {
       activePromptInputIds.delete(taskKey(target));
-      logger.warn(params.traceId, "JGAgent task facade sendPrompt 失败", {
+      logger.warn(params.traceId, "JGHarness task facade sendPrompt 失败", {
         durationMs: Date.now() - startedAt,
         error: error instanceof Error ? error.message : String(error),
         queryId: params.queryId ?? null,
@@ -613,7 +613,7 @@ export function createZCodeTaskServiceAdapter(
     // 手机 host command 在 sendPrompt ACK 后仍要保持 running，
     // 否则手机刷新拿不到“已开始发送”的 pendingCommands。只有真实终态到达后才能从 host 队列移除。
     removeRuntimeCommand(params, command.commandId);
-    logger.info(command.traceId, "JGAgent task command 终态收口", {
+    logger.info(command.traceId, "JGHarness task command 终态收口", {
       commandId: command.commandId,
       terminalType,
       taskId: params.taskId,
@@ -648,7 +648,7 @@ export function createZCodeTaskServiceAdapter(
     }
 
     const runningCommand = markRuntimeCommandRunning(params, command);
-    logger.info(runningCommand.traceId, "JGAgent task command drain 开始", {
+    logger.info(runningCommand.traceId, "JGHarness task command drain 开始", {
       commandId: runningCommand.commandId,
       queryId: runningCommand.queryId ?? null,
       reason,
@@ -673,7 +673,7 @@ export function createZCodeTaskServiceAdapter(
       });
     } catch (error) {
       markRuntimeCommandFailed(params, runningCommand, error);
-      logger.warn(runningCommand.traceId, "JGAgent task command drain 失败", {
+      logger.warn(runningCommand.traceId, "JGHarness task command drain 失败", {
         commandId: runningCommand.commandId,
         error: error instanceof Error ? error.message : String(error),
         reason,
@@ -689,7 +689,7 @@ export function createZCodeTaskServiceAdapter(
     try {
       await drainRuntimeCommands(params, reason);
     } catch (error) {
-      logger.warn(undefined, "JGAgent task command drain 调度失败", {
+      logger.warn(undefined, "JGHarness task command drain 调度失败", {
         error: error instanceof Error ? error.message : String(error),
         reason,
         taskId: params.taskId,
@@ -990,7 +990,7 @@ export function createZCodeTaskServiceAdapter(
     }
 
     if (changed) {
-      logger.debug(undefined, "JGAgent snapshot 合并 live tool projection", {
+      logger.debug(undefined, "JGHarness snapshot 合并 live tool projection", {
         event: "zcode_task.snapshot.live_tool_projection.merged",
         liveToolCount: liveTools.length,
         mergedToolCount,
@@ -1016,7 +1016,7 @@ export function createZCodeTaskServiceAdapter(
   function getTaskTarget(taskId: string): TaskTarget {
     const target = taskTargets.get(taskId);
     if (!target) {
-      throw Object.assign(new Error(`JGAgent session target is not loaded: ${taskId}`), {
+      throw Object.assign(new Error(`JGHarness session target is not loaded: ${taskId}`), {
         code: "ZCODE_SESSION_TARGET_NOT_FOUND",
       });
     }
@@ -1406,7 +1406,7 @@ export function createZCodeTaskServiceAdapter(
     if (model || thoughtLevel) {
       // task-local thoughtLevel 和 model 一样属于历史 session 恢复 hint。
       // 不回填 thoughtLevel 时，同 workspace 的 draft 默认值会在 session/resume 后覆盖 active task。
-      logger.info(undefined, "从 task index 回填 JGAgent session resume 配置", {
+      logger.info(undefined, "从 task index 回填 JGHarness session resume 配置", {
         model: model || null,
         thoughtLevel: thoughtLevel || null,
         reason,
@@ -1584,7 +1584,7 @@ export function createZCodeTaskServiceAdapter(
   function mapServiceEvent(params: TaskTarget, event: ZCodeAgentServiceEvent): void {
     if (event.type === "snapshot") {
       void syncTaskIndexSnapshot(event.snapshot).catch((error) => {
-        logger.warn(undefined, "同步 JGAgent snapshot 到 task index 失败", error);
+        logger.warn(undefined, "同步 JGHarness snapshot 到 task index 失败", error);
       });
       const snapshotEvent: ZCodeStreamEvent = {
         type: "task_snapshot_updated",
@@ -2192,7 +2192,7 @@ export function createZCodeTaskServiceAdapter(
       const commands = runtimeCommands.get(key) ?? [];
       const command = commands.find((candidate) => candidate.commandId === params.commandId);
       if (!command) {
-        logger.info(undefined, "JGAgent task command 取消时已不存在", {
+        logger.info(undefined, "JGHarness task command 取消时已不存在", {
           commandId: params.commandId,
           taskId: params.taskId,
           workspaceIdentity: params.workspaceIdentity ?? null,
@@ -2206,7 +2206,7 @@ export function createZCodeTaskServiceAdapter(
         };
       }
       if (command.status === "running") {
-        logger.info(command.traceId, "JGAgent task command 已开始运行，跳过取消", {
+        logger.info(command.traceId, "JGHarness task command 已开始运行，跳过取消", {
           commandId: command.commandId,
           taskId: params.taskId,
           workspaceIdentity: params.workspaceIdentity ?? null,
@@ -2227,7 +2227,7 @@ export function createZCodeTaskServiceAdapter(
         commands.filter((item) => item.commandId !== command.commandId),
       );
       emitRuntimeCommandSnapshotUpdated(params, command.traceId);
-      logger.info(command.traceId, "JGAgent task command 已取消", {
+      logger.info(command.traceId, "JGHarness task command 已取消", {
         commandId: command.commandId,
         status: command.status,
         taskId: params.taskId,
@@ -2251,7 +2251,7 @@ export function createZCodeTaskServiceAdapter(
             workspaceIdentity: params.workspaceIdentity,
           }
         : getTaskTarget(params.taskId);
-      logger.info(params.runId, "JGAgent task facade stopGeneration 开始", {
+      logger.info(params.runId, "JGHarness task facade stopGeneration 开始", {
         hasRunId: Boolean(params.runId),
         taskId: params.taskId,
         workspaceIdentity: target.workspaceIdentity ?? null,
@@ -2272,7 +2272,7 @@ export function createZCodeTaskServiceAdapter(
         }),
       });
       assertV4CommandAckOk("stop", ack, `session=${params.taskId}`);
-      logger.info(params.runId, "JGAgent task facade stopGeneration ACK", {
+      logger.info(params.runId, "JGHarness task facade stopGeneration ACK", {
         durationMs: Date.now() - startedAt,
         taskId: params.taskId,
         workspaceIdentity: target.workspaceIdentity ?? null,
@@ -2807,7 +2807,7 @@ export function createZCodeTaskServiceAdapter(
             },
           });
           const meta = await syncTaskIndexSnapshot(snapshot);
-          // 导入后的任务必须是真实 JGAgent session，setModel/sendPrompt 才能继续命中 runtime。
+          // 导入后的任务必须是真实 JGHarness session，setModel/sendPrompt 才能继续命中 runtime。
           // 同时保留 migrationSource，避免任务列表把 Claude Code 迁移历史当成本地新会话。
           return updateIndexedPresentation({ ...meta, migrationSource: "claudeCode" });
         },
@@ -2948,12 +2948,12 @@ export function createZCodeTaskServiceAdapter(
 
     async getTaskNativeSessionLogFile() {
       const path = resolveZCodeAgentCurrentLogFilePath();
-      // 返回 JGAgent Agent 的结构化日志 JSONL；日志行中的 sessionId 用于按当前任务排查。
+      // 返回 JGHarness Agent 的结构化日志 JSONL；日志行中的 sessionId 用于按当前任务排查。
       return { provider: GLM_PROVIDER, path, exists: existsSync(path) };
     },
 
     async getModelTrajectory(params) {
-      // JGAgent Agent 把 taskId 当作 sessionId 落盘 model-io（见本文件其它 sessionId: params.taskId 用法），
+      // JGHarness Agent 把 taskId 当作 sessionId 落盘 model-io（见本文件其它 sessionId: params.taskId 用法），
       // 这里按 sessionId 还原该 task 的模型调用轨迹，供 UI 侧边栏可视化。
       const trajectory = await readModelTrajectory(params.taskId, params.limit);
       logger.info(
@@ -2964,7 +2964,7 @@ export function createZCodeTaskServiceAdapter(
 
     async getTaskTokenUsage(params): Promise<ZCodeTaskTokenUsageResult> {
       // 摘要面板需要展示 task 的累计模型消耗，不能复用 usage_update 的 context window。
-      // 这里通过 JGAgent Protocol 读 agent SQLite 的 model_usage 聚合，保持桌面和远控同一事实源。
+      // 这里通过 JGHarness Protocol 读 agent SQLite 的 model_usage 聚合，保持桌面和远控同一事实源。
       return options.zcodeAgentService.getTaskTokenUsage({
         workspacePath: params.workspacePath,
         workspaceIdentity: params.workspaceIdentity,
@@ -3838,7 +3838,7 @@ function mapToolPart(
 ): ZCodePersistedToolCall {
   const state = part.state;
   const taskNotification = backgroundTaskNotifications?.get(part.callId);
-  // JGAgent Protocol 的 part.callId 是实时流和终态 snapshot 共同的工具身份。
+  // JGHarness Protocol 的 part.callId 是实时流和终态 snapshot 共同的工具身份。
   // 以前只保存 metadata 会丢掉 toolCallId，手机 replayable 里 result-only 临时工具就无法被终态快照覆盖。
   const raw = attachZCodeBackgroundTaskNotificationToRaw(
     attachToolCallIdToRaw("metadata" in state ? (state.metadata ?? state) : state, part.callId),
@@ -4046,13 +4046,13 @@ function mapSessionEvent(
   const inputId = stringValue(payload.inputId);
   const queryId = stringValue(payload.queryId);
   // 兼容层对外的 traceId 语义是“一次用户输入到本轮回复结束”的轮次标识。
-  // JGAgent Protocol runtime trace 只在事件没有 inputId 时兜底，避免同一轮 chunk/tool/complete 被拆成不同 trace。
+  // JGHarness Protocol runtime trace 只在事件没有 inputId 时兜底，避免同一轮 chunk/tool/complete 被拆成不同 trace。
   const eventInputId = inputId ?? activePromptInputId;
   const traceId = eventInputId ?? protocolTraceId;
   if (eventInputId && eventInputId !== protocolTraceId) {
     logger.debug(
       eventInputId,
-      `对齐 JGAgent prompt inputId eventType=${event.type} protocolTrace=${protocolTraceId}`,
+      `对齐 JGHarness prompt inputId eventType=${event.type} protocolTrace=${protocolTraceId}`,
     );
   }
   const turnKey = `${resolveWorkspaceKey(params)}:${event.sessionId}:${event.turnId ?? eventInputId ?? traceId}`;
@@ -4258,7 +4258,7 @@ function mapSessionEvent(
           params.taskId,
           traceId,
           eventInputId,
-          stringValue(errorPayload.message) ?? "JGAgent compact failed",
+          stringValue(errorPayload.message) ?? "JGHarness compact failed",
         ),
       ];
     }
@@ -4270,7 +4270,7 @@ function mapSessionEvent(
         taskId: params.taskId,
         traceId,
         ...(eventInputId ? { inputId: eventInputId } : {}),
-        error: stringValue(errorPayload.message) ?? "JGAgent session failed",
+        error: stringValue(errorPayload.message) ?? "JGHarness session failed",
         // type 是外层错误分类，code 才是 provider/subagent 要展示的真实错误码。
         code: stringValue(errorPayload.code) ?? stringValue(errorPayload.type),
         detail: stringValue(errorPayload.detail),
@@ -4541,7 +4541,7 @@ function logStreamingToolInputProjection(
     toolName?: string;
   },
 ): void {
-  logger.debug(traceId, "JGAgent streaming tool input projected", {
+  logger.debug(traceId, "JGHarness streaming tool input projected", {
     ...details,
     event: "zcode.task.streaming_tool_input.projected",
   });
@@ -4779,8 +4779,8 @@ function mapToolUpdated(
   }
   if ("result" in payload) {
     const result = asRecord(payload.result);
-    // JGAgent Protocol 的 ToolCallResult 只有 toolCallId/result，不再重复带 toolName。
-    // 去掉 JGAgent Agent 后如果不记住前序 ToolCallScheduled 的 TodoWrite 名称，result 里的 todos
+    // JGHarness Protocol 的 ToolCallResult 只有 toolCallId/result，不再重复带 toolName。
+    // 去掉 JGHarness Agent 后如果不记住前序 ToolCallScheduled 的 TodoWrite 名称，result 里的 todos
     // 就只能当普通字符串输出，无法继续投射成顶部 todo/plan 事件。
     const toolName = rememberedToolName;
     const content = normalizeToolResultContent(toolName, result);
@@ -4947,7 +4947,7 @@ function isSubagentDispatchToolName(toolName: string | undefined): boolean {
 }
 
 function parentToolUseIdFromToolPayload(payload: Record<string, unknown>): string | null {
-  // JGAgent Protocol 发送的父级字段叫 parentToolCallId；
+  // JGHarness Protocol 发送的父级字段叫 parentToolCallId；
   // UI stream 模型统一消费 parentToolUseId，必须在服务投影层完成一次性归一。
   return (
     stringValue(payload.parentToolUseId) ??
@@ -5696,7 +5696,7 @@ function contextUsageFromPayload(payload: Record<string, unknown>): ContextUsage
   if (size === undefined || size <= 0) {
     return null;
   }
-  // JGAgent Protocol 的 session.updated 里 contextUsed/contextWindow 是 projection 事实源；
+  // JGHarness Protocol 的 session.updated 里 contextUsed/contextWindow 是 projection 事实源；
   // 旧 task stream 只认识 usage_update，adapter 不转换就会让右下角 context meter 永远拿不到数据。
   // used=0 只表示初始化或异常兜底，不能渲染成可用的 context meter。
   if (used === undefined || used <= 0) {

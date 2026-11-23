@@ -21,7 +21,7 @@ export interface CronRunResultPayload {
   failureKind?: "transient" | "permanent";
 }
 
-// JGAgent 去官方化（阶段 3）：OffPeakRunResultPayload 及 offpeak 派发转发随闲时任务域删除。
+// JGHarness 去官方化（阶段 3）：OffPeakRunResultPayload 及 offpeak 派发转发随闲时任务域删除。
 interface CronSchedulerDeps {
   hostProcessLocalEnv: Record<string, string>;
   logger: {
@@ -31,13 +31,13 @@ interface CronSchedulerDeps {
   };
   /** 选一个能执行本地 workspace 派发的 host；无可用 host 时返回 null（scheduler 会退避重试）。 */
   resolveDispatchHost: () => ElectronUtilityProcess | null;
-  // JGAgent 去官方化（阶段 3）：闲时执行计数回调随闲时任务域移除。
+  // JGHarness 去官方化（阶段 3）：闲时执行计数回调随闲时任务域移除。
 }
 
 export interface CronSchedulerHandle {
   /** host 回报派发结果时调用，转交给 scheduler 结算。 */
   handleCronRunResult: (result: CronRunResultPayload) => void;
-  // JGAgent 去官方化（阶段 3）：handleOffPeakRunResult 随闲时任务域移除。
+  // JGHarness 去官方化（阶段 3）：handleOffPeakRunResult 随闲时任务域移除。
   /** manual run 落库后立即唤醒 scheduler，不等待下一次轮询。 */
   wake: (automationId: string) => void;
   /** app 退出前优雅收尾（通知 scheduler 释放认领 + 关库，兜底强杀）。 */
@@ -141,7 +141,7 @@ export function spawnCronScheduler(deps: CronSchedulerDeps): CronSchedulerHandle
       return;
     }
 
-    // JGAgent 去官方化（阶段 3）：offpeak-dispatch-request 转发分支随闲时任务域删除
+    // JGHarness 去官方化（阶段 3）：offpeak-dispatch-request 转发分支随闲时任务域删除
     // （scheduler 不再产生该消息；迟到消息按未知类型忽略）。
   });
 
@@ -154,7 +154,7 @@ export function spawnCronScheduler(deps: CronSchedulerDeps): CronSchedulerHandle
     handleCronRunResult(result) {
       postToScheduler({ type: "cron-dispatch-result", ...result });
     },
-    // JGAgent 去官方化（阶段 3）：handleOffPeakRunResult 实现随闲时任务域移除。
+    // JGHarness 去官方化（阶段 3）：handleOffPeakRunResult 实现随闲时任务域移除。
     wake(automationId) {
       if (isDisposing) return;
       postToScheduler({ type: "scheduler-wake", automationId });

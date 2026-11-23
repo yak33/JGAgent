@@ -170,7 +170,7 @@ export class SourceServerDirectory {
       options.migrateControllerIdentity ??
       (async (input) =>
         await migrateControllerRemoteWorkspaceIdentity({
-          dbPath: join(getDataBaseDir(), ".jgagent", "v2", "tasks-index.sqlite"),
+          dbPath: join(getDataBaseDir(), ".jgharness", "v2", "tasks-index.sqlite"),
           ...input,
         }));
   }

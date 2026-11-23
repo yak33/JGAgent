@@ -66,7 +66,7 @@ export async function ensureSeaRuntimeTools(
 
   const env = options.env ?? process.env;
   const configuredStorageRoot = options.storageRoot ?? env.ZCODE_STORAGE_DIR?.trim();
-  const storageRoot = configuredStorageRoot || join(homedir(), ".jgagent");
+  const storageRoot = configuredStorageRoot || join(homedir(), ".jgharness");
   const runtimeEnv: CliEnv = {};
 
   for (const tool of manifest.tools) {

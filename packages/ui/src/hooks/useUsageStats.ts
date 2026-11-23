@@ -22,7 +22,7 @@ function getErrorMessage(error: unknown): string {
   return String(error);
 }
 
-// JGAgent 去官方化（阶段 3）：删除 useUsageStats（Coding Plan monitor 链路）与
+// JGHarness 去官方化（阶段 3）：删除 useUsageStats（Coding Plan monitor 链路）与
 // useCodingPlanUsageStats（订阅配额）；仅保留应用级统计 useAppUsageStats（读 agent 数据库）。
 export function useAppUsageStats(range: AppUsageRange) {
   const { usageStatsService } = useServices();

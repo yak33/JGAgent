@@ -50,7 +50,7 @@ async function readUserCliConfig(
 ): Promise<Record<string, unknown>> {
   try {
     const raw = await readFile(
-      join(resolveUserHomeDir(options), ".jgagent", "cli", "config.json"),
+      join(resolveUserHomeDir(options), ".jgharness", "cli", "config.json"),
       "utf8",
     );
     const parsed = JSON.parse(raw) as unknown;

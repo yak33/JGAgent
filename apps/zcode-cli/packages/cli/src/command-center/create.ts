@@ -90,7 +90,7 @@ export function createCommandCenter(deps: CommandCenterDeps): TuiSubmitPrompt {
             selection: buildLoginSelection(deps.getLocale?.()),
           };
         }
-        // JGAgent 去官方化（阶段 3）：zai-coding-plan / bigmodel-coding-plan OAuth
+        // JGHarness 去官方化（阶段 3）：zai-coding-plan / bigmodel-coding-plan OAuth
         // 登录分支删除；/login 仅保留 API Key 子命令。
         const apiKeyCommand = parseApiKeyLoginArgs(command.args);
         if (apiKeyCommand) {

@@ -131,7 +131,7 @@ export type CommandCenterTarget = {
   };
 };
 
-// JGAgent 去官方化（阶段 3）：删除 OAuth 登录结果/选项类型（CommandCenterLoginResult /
+// JGHarness 去官方化（阶段 3）：删除 OAuth 登录结果/选项类型（CommandCenterLoginResult /
 // CommandCenterLoginOptions / CommandCenterBigmodelLogin*）；API Key 登录类型保留。
 export type CommandCenterApiKeyOptions = {
   apiKey: string;
@@ -268,7 +268,7 @@ export type CommandCenterDeps = {
   listSessions?: () => Promise<CommandCenterSession[]>;
   listCustomCommands?: () => Promise<CommandCenterCustomCommandListOutcome>;
   listSkills?: () => Promise<CommandCenterSkillListOutcome>;
-  // JGAgent 去官方化（阶段 3）：login / loginBigmodel deps 字段随 OAuth 登录域删除。
+  // JGHarness 去官方化（阶段 3）：login / loginBigmodel deps 字段随 OAuth 登录域删除。
   configureApiKey?: (options: CommandCenterApiKeyOptions) => Promise<CommandCenterApiKeyResult>;
   loadCustomCommand?: (name: string) => Promise<CommandCenterCustomCommandContent>;
   newApp?: () => Promise<CommandCenterApp>;

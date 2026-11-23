@@ -23,14 +23,14 @@ export function createCliProviderRefreshReporter(
   return {
     onBuiltinRefreshError(error: unknown) {
       stderr.write(
-        `JGAgent Built-in 刷新失败: ${error instanceof Error ? error.message : "unknown error"}\n`,
+        `JGHarness Built-in 刷新失败: ${error instanceof Error ? error.message : "unknown error"}\n`,
       );
     },
     onBuiltinRefreshResult(event: ZCodeBuiltinRefreshEvent) {
       // TTL 检查不是生产事件；成功更新才默认留痕，不能输出 CDN URL 查询参数或内容。
       if (event.result === "updated" || process.env.NODE_ENV !== "production") {
         stderr.write(
-          `JGAgent Built-in ${event.result}${event.reason ? ` (${event.reason})` : ""}${event.revision === undefined ? "" : ` revision=${event.revision} source=CDN`}\n`,
+          `JGHarness Built-in ${event.result}${event.reason ? ` (${event.reason})` : ""}${event.revision === undefined ? "" : ` revision=${event.revision} source=CDN`}\n`,
         );
       }
     },
@@ -73,12 +73,12 @@ export async function prepareCliProviderRuntimeEnv(
       sea: options.sea ?? getSeaProviderConfigAssets(),
     }));
   const personalFilePath =
-    explicitPersonal ?? join(dataBaseDir, ".jgagent", "v2", PERSONAL_PROVIDER_CONFIG_FILE_NAME);
+    explicitPersonal ?? join(dataBaseDir, ".jgharness", "v2", PERSONAL_PROVIDER_CONFIG_FILE_NAME);
   const appVersion = options.appVersion ?? ZCODE_VERSION;
   const platform = options.platform ?? resolveZCodeBuiltinClientPlatform();
   const zcodeEndpointOrigin = resolveRuntimeZCodeEndpointOrigin(options.env);
   const cachePaths = resolveZCodeBuiltinCachePaths({
-    environmentConfigRoot: join(dataBaseDir, ".jgagent", "v2"),
+    environmentConfigRoot: join(dataBaseDir, ".jgharness", "v2"),
     platform,
     appVersion,
     zcodeEndpointOrigin,
@@ -137,13 +137,13 @@ async function resolveBundledZCodeBuiltinProviderConfig(input: {
   if (input.sea?.isSea()) {
     const content = input.sea.getAsset(SEA_ZCODE_BUILTIN_PROVIDER_CONFIG_ASSET_KEY, "utf8");
     return materializeZCodeBuiltinProviderConfig({
-      environmentConfigRoot: join(input.dataBaseDir, ".jgagent", "v2"),
+      environmentConfigRoot: join(input.dataBaseDir, ".jgharness", "v2"),
       content,
     });
   }
 
   const entrypoint = input.entrypoint?.trim();
-  if (!entrypoint) throw new Error("无法定位 CLI JGAgent Built-in Provider Config：缺少入口路径");
+  if (!entrypoint) throw new Error("无法定位 CLI JGHarness Built-in Provider Config：缺少入口路径");
   // 全局 bin 可以是软链接，随包配置必须相对真实入口定位。
   const entryDirectory = dirname(realpathSync(resolve(entrypoint)));
   const candidates = [
@@ -152,7 +152,7 @@ async function resolveBundledZCodeBuiltinProviderConfig(input: {
   ];
   const candidate = candidates.find((filePath) => existsSync(filePath));
   if (candidate) return candidate;
-  throw new Error(`无法定位 CLI JGAgent Built-in Provider Config：${candidates.join(", ")}`);
+  throw new Error(`无法定位 CLI JGHarness Built-in Provider Config：${candidates.join(", ")}`);
 }
 
 function getSeaProviderConfigAssets(): SeaProviderConfigAssets | undefined {

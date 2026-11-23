@@ -65,8 +65,8 @@ export interface OfficialPluginDefinition {
   version: string;
 }
 
-const ZAI_AUTHOR = { name: "JieGuan", url: "https://jgagent.invalid" } as const;
-const OFFICIAL_PLUGIN_ASSETS_BASE_URL = "https://cdn.jgagent.invalid/jgagent/official-plugin/assets";
+const ZAI_AUTHOR = { name: "JieGuan", url: "https://jgharness.invalid" } as const;
+const OFFICIAL_PLUGIN_ASSETS_BASE_URL = "https://cdn.jgharness.invalid/jgharness/official-plugin/assets";
 
 export const OFFICIAL_NODE_REPL_HOST_REQUIRED_SEED_PATHS = ["dist/mcp/server.js"] as const;
 const NODE_REPL_HOST_BUILD_IDENTITY_PATH = "dist/build-identity.json";
@@ -223,7 +223,7 @@ export const OFFICIAL_PLUGIN_DEFINITIONS: readonly OfficialPluginDefinition[] = 
       displayName_i18n: { "zh-CN": "浏览器操作" },
       icon: `${OFFICIAL_PLUGIN_ASSETS_BASE_URL}/browser-use/icon.png`,
       description_i18n: {
-        "zh-CN": "操作 JGAgent 内置浏览器，检查网页并验证交互。",
+        "zh-CN": "操作 JGHarness 内置浏览器，检查网页并验证交互。",
       },
     },
     name: OFFICIAL_BROWSER_USE_PLUGIN_NAME,
@@ -326,7 +326,7 @@ export const OFFICIAL_PLUGIN_DEFINITIONS: readonly OfficialPluginDefinition[] = 
       displayName_i18n: { "zh-CN": "恢复旧版会话" },
       icon: `${OFFICIAL_PLUGIN_ASSETS_BASE_URL}/restore-legacy-sessions/icon.png`,
       description_i18n: {
-        "zh-CN": "将旧版会话恢复为 JGAgent 任务与会话记录。",
+        "zh-CN": "将旧版会话恢复为 JGHarness 任务与会话记录。",
       },
     },
     name: "restore-legacy-sessions",
@@ -349,7 +349,7 @@ export const OFFICIAL_PLUGIN_DEFINITIONS: readonly OfficialPluginDefinition[] = 
       // 创建器使用客户端自带图标，不再借用 skill-creator 的远端图片。
       displayName_i18n: { "zh-CN": "插件创建器" },
       description_i18n: {
-        "zh-CN": "开发、校验 JGAgent 插件，完成本地 dev 市场安装、试用与更新。",
+        "zh-CN": "开发、校验 JGHarness 插件，完成本地 dev 市场安装、试用与更新。",
       },
     },
     rootCandidates: [
@@ -377,7 +377,7 @@ export const OFFICIAL_PLUGIN_DEFINITIONS: readonly OfficialPluginDefinition[] = 
       displayName: "Skill Creator",
       displayName_i18n: { "zh-CN": "技能创建器" },
       icon: `${OFFICIAL_PLUGIN_ASSETS_BASE_URL}/skill-creator/icon.png`,
-      description_i18n: { "zh-CN": "创建、编辑和验证可复用的 JGAgent 技能。" },
+      description_i18n: { "zh-CN": "创建、编辑和验证可复用的 JGHarness 技能。" },
     },
     name: "skill-creator",
     rootCandidates: [
@@ -390,23 +390,23 @@ export const OFFICIAL_PLUGIN_DEFINITIONS: readonly OfficialPluginDefinition[] = 
   },
   {
     // 纯内容型插件（只有 commands + skills，无 MCP / 无系统依赖），默认启用，
-    // 让用户/agent 开箱即用地拿到 JGAgent 配置指南、自诊断技能与 dynamic workflow 编写指南。
+    // 让用户/agent 开箱即用地拿到 JGHarness 配置指南、自诊断技能与 dynamic workflow 编写指南。
     defaultEnabled: true,
     listing: {
       author: ZAI_AUTHOR,
       category: "utilities",
-      displayName: "JGAgent Guide",
-      displayName_i18n: { "zh-CN": "JGAgent 使用指南" },
+      displayName: "JGHarness Guide",
+      displayName_i18n: { "zh-CN": "JGHarness 使用指南" },
       icon: `${OFFICIAL_PLUGIN_ASSETS_BASE_URL}/zcode-guide/icon.png`,
       description_i18n: {
-        "zh-CN": "提供 JGAgent 配置指南与插件、技能、MCP、命令和钩子诊断。",
+        "zh-CN": "提供 JGHarness 配置指南与插件、技能、MCP、命令和钩子诊断。",
       },
       examplePrompts: [
-        "How do I configure MCP servers in JGAgent?",
-        "Diagnose my current JGAgent setup",
+        "How do I configure MCP servers in JGHarness?",
+        "Diagnose my current JGHarness setup",
       ],
       examplePrompts_i18n: {
-        "zh-CN": ["JGAgent 里怎么配置 MCP 服务器？", "帮我诊断当前的 JGAgent 配置"],
+        "zh-CN": ["JGHarness 里怎么配置 MCP 服务器？", "帮我诊断当前的 JGHarness 配置"],
       },
     },
     name: "zcode-guide",

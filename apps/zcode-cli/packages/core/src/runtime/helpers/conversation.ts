@@ -171,7 +171,7 @@ export function formatBrowserAmbientUserInput(
     ...(inputOrigin === "desktop" ? [DESIGN_MODE_AMBIENT_LINE] : []),
     "</in-app-browser-context>",
     "",
-    "## My request for JGAgent:",
+    "## My request for JGHarness:",
     input,
   ];
   return lines.join("\n");

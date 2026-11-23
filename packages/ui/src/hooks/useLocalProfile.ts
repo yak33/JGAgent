@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import { generateRandomUsername, normalizeLocalProfileName } from "@/lib/randomUsername.js";
 import { useZCodeIntl } from "@/i18n/IntlProvider.js";
 
-const STORAGE_KEY = "jgagent-local-profile";
+const STORAGE_KEY = "jgharness-local-profile";
 
 /** 固定 8 色头像色板；colorIndex 越界时渲染方回退到 0 号色。 */
 export const LOCAL_PROFILE_COLOR_PALETTE: readonly string[] = [

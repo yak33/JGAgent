@@ -109,7 +109,7 @@ export class RemoteServiceAccess implements IServiceAccessor {
   readonly extensionGrantsService?: IExtensionGrantsService;
   readonly voiceInputService?: IVoiceInputService;
   readonly usageStatsService: IUsageStatsService;
-  // JGAgent 去官方化（阶段 3）：删除 oauthService / codingPlanSubscriptionService /
+  // JGHarness 去官方化（阶段 3）：删除 oauthService / codingPlanSubscriptionService /
   // offPeakTaskService 三个远程代理（账号与商业化服务域移除）。
   readonly clientConfigService: IClientConfigService;
   readonly clientScenesService: IClientScenesService;

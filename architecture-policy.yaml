@@ -2396,3 +2396,27 @@ exceptions:
     rule: unmanaged-new-file
     paths: [packages/ui/src/CredentialStoreRecovery.tsx]
     reason: 上游 v3.18 内联于 WelcomeScreen 的凭据恢复页，JGAgent 无登录页故独立成文件由 Root 挂载；接管整个 ui 未受管模块不在本次范围。
+  # JGHarness 改名批次（2026-11-24）：v3.18.2 同步经干净区带入的官方新文件，改名触检时补录例外。
+  - id: jgharness-rename-upstream-v3-18-2-carryover
+    rule: unmanaged-new-file
+    paths:
+      - apps/zcode-cli/packages/adapters/src/model/official-coding-plan-gateway.ts
+      - apps/zcode-cli/packages/bootstrap/src/auth-login-contract.ts
+      - apps/zcode-cli/packages/bootstrap/src/zcode-protocol/runtime-resources.ts
+      - apps/zcode-cli/packages/cli/src/tui-prompt-handler-runtime.ts
+      - packages/desktop/src/main/armsEventRedaction.ts
+      - packages/desktop/src/main/desktopZCodeDataSizeTelemetry.ts
+      - packages/desktop/src/main/processResourceSystemWindowAggregator.ts
+      - packages/desktop/src/main/windowsCuaOperationIndicatorContent.ts
+      - packages/desktop/src/main/zcodeDataSizeTelemetryState.ts
+      - packages/desktop/src/main/zcodeDataSizeWorkerClient.ts
+      - packages/provider/src/config/rule-data-schema.ts
+      - packages/server/src/stdioDeviceMid.ts
+      - packages/services/src/file/workspaceFileIgnore.ts
+      - packages/services/src/model-provider/legacyModelProviderSerialized.ts
+      - packages/services/src/model-provider/legacyPersonalProviderConfigImporter.ts
+      - packages/services/src/model-provider/legacyZCodeConfigProviderReader.ts
+      - packages/shared/src/telemetryRedaction.ts
+      - packages/ui/src/lib/chatErrorAttribution.ts
+      - packages/ui/src/sidebar-activity/SidebarBottomActivity.tsx
+    reason: 上游 v3.18.2 同步经干净区带入的官方文件（改名为 JGHarness 时被逐文件触检）；功能均为通用链路，不含商业化装配，接管各宿主模块不在改名范围内。

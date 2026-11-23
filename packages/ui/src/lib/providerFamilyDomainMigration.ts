@@ -22,7 +22,7 @@ function inferProviderFamilyDomainFromSelection(
   return [...usableDomains][0] ?? null;
 }
 
-// JGAgent 去官方化（阶段 3）：删除 OAuth active provider → family domain 的推断分支；
+// JGHarness 去官方化（阶段 3）：删除 OAuth active provider → family domain 的推断分支；
 // 迁移只剩"从 Registry 可选 Provider 推断"一条路径（apiKey/Personal 配置）。
 export async function ensureProviderFamilyDomainMigration(
   services: Pick<IServiceAccessor, "settingService" | "modelSelectionService">,

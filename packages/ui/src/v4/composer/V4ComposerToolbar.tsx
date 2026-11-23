@@ -137,7 +137,7 @@ export interface ModelSelectionSource {
   model: string;
 }
 
-// JGAgent 去官方化（阶段 3）：删除输入框订阅/套餐上下文用量链路——
+// JGHarness 去官方化（阶段 3）：删除输入框订阅/套餐上下文用量链路——
 // V4ContextPlanConnection 解析、team usage source 解析等 helper 随账号/订阅域移除。
 export interface V4ComposerToolbarProps {
   workspacePath: string;
@@ -236,7 +236,7 @@ function V4ComposerModelControlsImpl({
     null,
     workspaceIdentity,
   );
-  // JGAgent 去官方化（阶段 3）：配置面读取与 Team Plan 门控豁免随订阅域移除；
+  // JGHarness 去官方化（阶段 3）：配置面读取与 Team Plan 门控豁免随订阅域移除；
   // useCodingPlanEntitlements / useEnterpriseCodingPlanProducts /
   // useUsageEntitlement 及 Coding Plan 余量、Start Plan 余额装配随订阅域移除。
   const openSettingsTab = useTabStore((state) => state.openSettingsTab);
@@ -284,9 +284,9 @@ function V4ComposerModelControlsImpl({
     return resolveDraftDisplayedConfig(draftConfig ?? {});
   }, [draftConfig]);
 
-  // JGAgent 去官方化（阶段 3）：移除 Start Plan 升级弹窗入口（handleOpenStartPlanUpgrade），
+  // JGHarness 去官方化（阶段 3）：移除 Start Plan 升级弹窗入口（handleOpenStartPlanUpgrade），
   // 余额 hover 面板保留展示与静默刷新。
-  // JGAgent 去官方化（阶段 3）：用量详情跳转回调随订阅统计入口移除。
+  // JGHarness 去官方化（阶段 3）：用量详情跳转回调随订阅统计入口移除。
 
 
 
@@ -470,7 +470,7 @@ function V4ComposerModelControlsImpl({
     ],
   );
 
-  // JGAgent 去官方化（阶段 3）：订阅域（Coding Plan entitlements / Start Plan）保持摘除，
+  // JGHarness 去官方化（阶段 3）：订阅域（Coding Plan entitlements / Start Plan）保持摘除，
   // planGroups 的订阅分组入参恒为空数组；provider 配置面读取（连接方式选中键）保留官方装配。
   const providerSettingsRead = useProviderSettingsView();
   const providerSettingsView =
@@ -479,7 +479,7 @@ function V4ComposerModelControlsImpl({
   const baseServices = useBaseWorkspaceServices();
   const { settings: sharedSettings } = useSettings({ services: baseServices });
   const subscribedTeamProducts: readonly never[] = [];
-  // JGAgent：订阅鉴权摘除后 connectionFamily 仅作分组标签用（无团队产品拉取）。
+  // JGHarness：订阅鉴权摘除后 connectionFamily 仅作分组标签用（无团队产品拉取）。
   const connectionFamily =
     resolveModelProviderFamilySpecByProviderId(effectiveConfig?.provider ?? "")?.id ??
     sharedSettings?.providerFamilyDomain ??

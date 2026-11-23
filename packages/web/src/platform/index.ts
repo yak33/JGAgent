@@ -72,7 +72,7 @@ export function createWebPlatform(options?: {
     // Web 端不作为 Web 远程控制的发起端，保留空实现以兼容统一接口。
     startWebRemoteControl: () =>
       Promise.reject(new Error("Web remote control can only be started from desktop")),
-    // JGAgent V1：重置配对只能由桌面端执行；Web 端直接拒绝（与 main.tsx 旧实现语义一致）。
+    // JGHarness V1：重置配对只能由桌面端执行；Web 端直接拒绝（与 main.tsx 旧实现语义一致）。
     refreshWebRemoteControlPairing: () =>
       Promise.reject(new Error("Web remote control pairing can only be refreshed from desktop")),
     stopWebRemoteControl: () => Promise.resolve(),

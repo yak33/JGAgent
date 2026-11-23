@@ -237,7 +237,7 @@ export class ConversationSharePreviewClient {
       });
       throw new ConversationSharePreviewClientError({
         kind: "unsupported_schema_version",
-        message: "Conversation share requires a newer JGAgent version",
+        message: "Conversation share requires a newer JGHarness version",
         status: response.status,
         requestId,
       });

@@ -1,5 +1,5 @@
 // 凭据存储损坏恢复页：credential store 损坏时全屏接管，从备份恢复或提示重载。
-// 上游 v3.18 将该组件内联在 WelcomeScreen；JGAgent 无 OAuth 登录页，
+// 上游 v3.18 将该组件内联在 WelcomeScreen；JGHarness 无 OAuth 登录页，
 // 组件独立成文件供 Root 直接挂载（凭据恢复对 API Key 用户同样生效）。
 // 作者 ZHANGCHAO 2026/11/22
 import { useState } from "react";

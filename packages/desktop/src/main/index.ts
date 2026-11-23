@@ -55,6 +55,7 @@ import { randomUUID } from "node:crypto";
 import type { UtilityProcess as ElectronUtilityProcess } from "electron";
 import { spawn } from "node:child_process";
 import { join, resolve } from "node:path";
+import { existsSync, renameSync } from "node:fs";
 import { homedir, hostname } from "node:os";
 import {
   createCredentialService,
@@ -323,7 +324,7 @@ registerLocalMediaPreviewScheme(protocol, [
 const localMediaPreviewPathRegistry = createLocalMediaPreviewPathRegistry();
 
 // e2e 由 Chromedriver 管理远程调试端口；如果这里继续固定到 9229，
-// 会和开发态已打开的 JGAgent Dev 抢端口，导致 WebDriver session 创建前白屏超时。
+// 会和开发态已打开的 JGHarness Dev 抢端口，导致 WebDriver session 创建前白屏超时。
 // 仅本地开发运行默认开启远程调试端口，并允许 e2e 通过环境变量交给 Chromedriver 接管。
 if (!app.isPackaged && process.env.ZCODE_DISABLE_FIXED_REMOTE_DEBUGGING_PORT !== "1") {
   app.commandLine.appendSwitch("remote-debugging-port", "9229");
@@ -620,7 +621,7 @@ async function runBrowserCommandOnView(params: {
 let currentDesktopZoomLevel = 0;
 let currentDesktopWindowSize: DesktopWindowSize | undefined;
 const preloadPath = join(import.meta.dirname, "../preload/index.cjs");
-const settingsFile = join(homedir(), ".jgagent", "v2", "setting.json");
+const settingsFile = join(homedir(), ".jgharness", "v2", "setting.json");
 let activeAppShutdownPolicy = resolveAppShutdownPolicy("normal", process.platform);
 let activeAppShutdownKind: AppShutdownKind | null = null;
 const WINDOWS_AGENT_FORCE_KILL_TIMEOUT_MS = 2_000;
@@ -638,7 +639,7 @@ mainMemoryDiagnosticsRegistry.register("app", () => ({
   windows: BrowserWindow.getAllWindows().filter((win) => !win.isDestroyed()).length,
   willDownloadListeners: session.defaultSession.listenerCount("will-download"),
 }));
-// JGAgent 网络收口：打包版必须在任何端点解析发生前清掉启动环境携带的
+// JGHarness 网络收口：打包版必须在任何端点解析发生前清掉启动环境携带的
 // ZCODE_*/BIGMODEL_* 端点变量（宿主 ZCode 会话会注入官方地址，见
 // sanitizeAmbientEndpointEnvForPackagedApp 注释）。module scope 尽早执行，
 // 保证下方 hostProcessLocalEnv、force-update 与 Host 子进程全部拿到净化后的环境。
@@ -759,11 +760,11 @@ function forwardCronRunResult(
 ): void {
   cronScheduler?.handleCronRunResult(result);
 }
-// JGAgent 去官方化（阶段 3）：forwardOffPeakRunResult 随闲时任务域删除。
+// JGHarness 去官方化（阶段 3）：forwardOffPeakRunResult 随闲时任务域删除。
 function wakeCronScheduler(automationId: string): void {
   cronScheduler?.wake(automationId);
 }
-// JGAgent 去官方化（阶段 3）：wakeOffPeakScheduler 随闲时任务域删除。
+// JGHarness 去官方化（阶段 3）：wakeOffPeakScheduler 随闲时任务域删除。
 // 选一个本地 host 执行派发：本期本地 workspace 由任一本地窗口 host 的 createTask 按 path 拉起/复用 agent。
 function resolveCronDispatchHost(): ElectronUtilityProcess | null {
   const first = windowHostProcessMap.values().next();
@@ -900,7 +901,7 @@ function syncAppTelemetryInteractiveState(): void {
 app.on("browser-window-focus", (_event, win) => {
   syncAppTelemetryInteractiveState();
   rebuildMenu();
-  // 设置/更新等无 Host 的 JGAgent 窗口也算前台：router 会先把旧 workspace Host 清成 null，
+  // 设置/更新等无 Host 的 JGHarness 窗口也算前台：router 会先把旧 workspace Host 清成 null，
   // 再把无 Host 的新窗口事实静默丢弃，避免旧会话 PiP 继续显示。
   cuaPipFocusRouter.focusWindow(resolveCuaPipWindowKey(win));
 });
@@ -1094,7 +1095,7 @@ const webRemoteControlManager = createWebRemoteControlManager({
     migrateLegacyCommonMcp: (payload) => migrateLegacyCommonMcp(payload),
   },
   reconnectWorkspace: reconnectWebRemoteControlWorkspaceInRenderer,
-  // JGAgent：V2 的项目导航预热回调（prepareProjectWorkspace / cancelProjectPreparation）
+  // JGHarness：V2 的项目导航预热回调（prepareProjectWorkspace / cancelProjectPreparation）
   // 随 V1 直连 manager 恢复而移除。
   reportRendererTelemetryEvent: (event) => {
     void appTelemetryCore.reportEvent(event).catch(() => {});
@@ -2094,7 +2095,7 @@ function createWindowInstance(startupBootstrap: StartupWindowBootstrap = {}) {
             void appTelemetryCore.reportEvent(message.event).catch(() => {});
           },
           onCronRunResult: forwardCronRunResult,
-          // JGAgent 去官方化（阶段 3）：onOffPeakRunResult / onOffPeakSchedulerWakeRequested 随闲时任务域移除。
+          // JGHarness 去官方化（阶段 3）：onOffPeakRunResult / onOffPeakSchedulerWakeRequested 随闲时任务域移除。
           onCronSchedulerWakeRequested: wakeCronScheduler,
           authorizeLocalMediaPreviewPath: localMediaPreviewPathRegistry.authorize,
           registerPluginSandbox: (input) => {
@@ -2232,7 +2233,23 @@ app.on("second-instance", (_event, argv, _workingDirectory, additionalData) => {
   }
 });
 
+// JGHarness v0.7.0 改名迁移：存储根由 ~/.jgagent 改为 ~/.jgharness。首启检测旧根存在且
+// 新根不存在时整体重命名（配置/会话/凭据/插件全部保留）；新根已存在则不动旧目录，避免
+// 覆盖新数据；迁移失败不阻断启动（按全新目录继续，旧数据留在原处可手动找回）。
+function migrateLegacyJGAgentDataRoot(): void {
+  const legacyRoot = join(homedir(), ".jgagent");
+  const nextRoot = join(homedir(), ".jgharness");
+  try {
+    if (!existsSync(legacyRoot) || existsSync(nextRoot)) return;
+    renameSync(legacyRoot, nextRoot);
+    logger.info(`[migrate] 存储根已迁移: ${legacyRoot} -> ${nextRoot}`);
+  } catch (error) {
+    logger.warn("[migrate] ~/.jgagent -> ~/.jgharness 迁移失败（按新目录继续）", error);
+  }
+}
+
 app.whenReady().then(async () => {
+  migrateLegacyJGAgentDataRoot();
   markMainLaunchAppReady();
   installRequestSecurityDiagnostics(session.defaultSession.webRequest, logger);
   installLocalMediaPreviewProtocol(session.defaultSession.protocol, {
@@ -2324,7 +2341,7 @@ app.whenReady().then(async () => {
         hostProcessLocalEnv,
         logger,
         resolveDispatchHost: resolveCronDispatchHost,
-        // JGAgent 去官方化（阶段 3）：onOffPeakActiveCountChanged（闲时执行计数）随闲时任务域移除。
+        // JGHarness 去官方化（阶段 3）：onOffPeakActiveCountChanged（闲时执行计数）随闲时任务域移除。
       });
     } catch (error) {
       logger.error("[cron-scheduler] failed to spawn scheduler process:", error);
@@ -2391,7 +2408,7 @@ app.whenReady().then(async () => {
   logWindowsBundledRuntimeIntegrityDiagnostic();
 
   // 启动自动更新检查（后台执行，不阻塞主界面）
-  // Preview 身份无论连接哪个后端都不自动更新：stable feed 上只分发正式 JGAgent 安装包，
+  // Preview 身份无论连接哪个后端都不自动更新：stable feed 上只分发正式 JGHarness 安装包，
   // 不向 Preview 渠道提供更新。构建期未启用自动更新时同样不更新
   // （见 docs/desktop/build-time-optional-capabilities.md）。
   void initAutoUpdater({

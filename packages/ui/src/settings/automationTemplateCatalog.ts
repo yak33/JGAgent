@@ -2,7 +2,7 @@ import type { ClientSceneConfig, ClientSceneItem } from "@zcode/services";
 import type { AutomationScheduledTemplateIconName } from "@/settings/AutomationScheduledTemplateIcon.js";
 import { canVisualizeCronInAutomationEditor } from "@/settings/automationFormat.js";
 
-// JGAgent 去官方化（阶段 3）：删除闲时任务（Off-Peak）模板族——
+// JGHarness 去官方化（阶段 3）：删除闲时任务（Off-Peak）模板族——
 // OffPeakAutomationTemplate、offPeakIcon、mapOffPeakTemplates、
 // resolveOffPeakTemplateText、materializeOffPeakTemplateDraft 随闲时任务域移除；
 // 定时任务（scheduled）模板链路保留。

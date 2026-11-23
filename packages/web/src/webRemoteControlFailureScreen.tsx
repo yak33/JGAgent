@@ -15,7 +15,7 @@ interface WebRemoteControlScreenCopy {
 
 const WEB_REMOTE_CONTROL_SCREEN_COPY = {
   "zh-CN": {
-    // JGAgent：官方 V2 账号域 reason，JGAgent V1 链路不触发；补齐 Record 完整性。
+    // JGHarness：官方 V2 账号域 reason，JGHarness V1 链路不触发；补齐 Record 完整性。
     "device-not-owned": {
       tone: "warning",
       badge: "设备未授权",
@@ -149,7 +149,7 @@ const WEB_REMOTE_CONTROL_SCREEN_COPY = {
     },
   },
   "en-US": {
-    // JGAgent：官方 V2 账号域 reason，JGAgent V1 链路不触发；补齐 Record 完整性。
+    // JGHarness：官方 V2 账号域 reason，JGHarness V1 链路不触发；补齐 Record 完整性。
     "device-not-owned": {
       tone: "warning",
       badge: "Device not owned",

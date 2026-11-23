@@ -93,7 +93,7 @@ export function startCliMemoryDiagnostics(
     }),
     write: (record) =>
       writeMemoryDiagnostic(
-        options.directory ?? join(homedir(), ".jgagent", "cli", CLI_MEMORY_DIAGNOSTIC_DIRECTORY),
+        options.directory ?? join(homedir(), ".jgharness", "cli", CLI_MEMORY_DIAGNOSTIC_DIRECTORY),
         record,
       ),
   });

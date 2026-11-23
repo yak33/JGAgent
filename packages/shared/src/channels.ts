@@ -123,13 +123,13 @@ export const ServiceChannels = {
   CuaPipSession: "cua-pip-session",
   /** 跨窗口广播 */
   Broadcast: "broadcast",
-  /** JGAgent task wrapper 服务 */
+  /** JGHarness task wrapper 服务 */
   ZCodeTask: "zcode-task",
   /** 窗口 Host 聚合 workspace/task 投影与列表写路由 */
   WindowController: "window-controller",
-  /** JGAgent Protocol agent 服务 */
+  /** JGHarness Protocol agent 服务 */
   ZCodeAgent: "zcode-agent",
-  /** JGAgent session 应用服务 */
+  /** JGHarness session 应用服务 */
   ZCodeSession: "zcode-session",
   Project: "project",
   /** 受管 worktree 任务管理（列表、删除、起点、fork 到新 worktree），仅本地桌面 Host。 */
@@ -171,7 +171,7 @@ export const ServiceChannels = {
   /** Coding Plan 订阅购买服务 */
   CodingPlanSubscription: "coding-plan-subscription",
   ClientConfig: "client-config",
-  /** JGAgent 客户端场景配置服务 */
+  /** JGHarness 客户端场景配置服务 */
   ClientScenes: "client-scenes",
   CloudContent: "cloud-content",
   MarketingTouch: "marketing-touch",
@@ -279,7 +279,7 @@ export const PlatformChannels = {
   BindRemoteWorkspaceSessionContext: "zcode:bind-remote-workspace-session-context",
   /** 为当前 workspace 开启 Web 远程控制 */
   StartWebRemoteControl: "zcode:start-web-remote-control",
-  /** JGAgent：v0.4.0 V1 链路的重置配对 IPC 通道（官方 V2 已移除）。 */
+  /** JGHarness：v0.4.0 V1 链路的重置配对 IPC 通道（官方 V2 已移除）。 */
   ResetWebRemoteControlPairing: "zcode:reset-web-remote-control-pairing",
   /** 关闭当前窗口的 Web 远程控制 */
   StopWebRemoteControl: "zcode:stop-web-remote-control",
@@ -402,7 +402,7 @@ export const PlatformChannels = {
   OpenInFileManager: "zcode:open-in-file-manager",
   /** Renderer → Main：使用系统默认应用打开本地文件 */
   OpenExternalFile: "zcode:open-external-file",
-  /** Renderer → Main：打开 JGAgent Computer Use 权限引导 */
+  /** Renderer → Main：打开 JGHarness Computer Use 权限引导 */
   OpenCuaPermissionOnboarding: "zcode:open-cua-permission-onboarding",
   /** Renderer → Main：取消当前 renderer 发起的一次权限引导 participant */
   CancelCuaPermissionOnboarding: "zcode:cancel-cua-permission-onboarding",
@@ -730,7 +730,7 @@ export const HostMessageTypes = {
   LocalMediaPreviewPathAuthorizeResult: "local-media-preview-path-authorize-result",
   /** main → host：插件 UI 沙箱登记结果（PluginSandboxRegisterResultPayload） */
   PluginSandboxRegisterResult: "plugin-sandbox-register-result",
-  /** Main → Host：全局前台 JGAgent 窗口派生的 producer focus fact。 */
+  /** Main → Host：全局前台 JGHarness 窗口派生的 producer focus fact。 */
   CuaPipFocusChanged: "cua-pip-focus-changed",
   /** main → host：要求 Host 现读本地 Source，并同步指定 Remote Environment。 */
   ProviderProvisioningExecute: "provider-provisioning-execute",
@@ -828,7 +828,7 @@ export const HostResponseTypes = {
   TaskOwnerCommandResult: "task-owner-command-result",
   /** host → main：Agent 请求向另一个 session 发送消息 */
   SessionMessageSendRequested: "session-message-send-requested",
-  /** host → main：声明一个 JGAgent Agent session 当前归属该 host */
+  /** host → main：声明一个 JGHarness Agent session 当前归属该 host */
   SessionRouteAnnounce: "session-route-announce",
   /** host → main：目标 host 完成本地 session message 投递 */
   SessionMessageDeliverResult: "session-message-deliver-result",

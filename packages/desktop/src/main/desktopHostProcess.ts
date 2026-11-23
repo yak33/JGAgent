@@ -7,7 +7,7 @@ import { getAppConfigDir } from "@zcode/services/node";
 import { ingestToolExecResource } from "./desktopResourceTelemetry.js";
 import { bindAppControlNavigationHost } from "#src/app-control-navigation/main.js";
 import { ingestMcpResourceSamples } from "./processResourceMcpTelemetrySource.js";
-/* eslint-disable max-lines -- host process 统一处理 main↔host 生命周期、日志、JGAgent Agent，拆分前先保持跨进程消息收口。 */
+/* eslint-disable max-lines -- host process 统一处理 main↔host 生命周期、日志、JGHarness Agent，拆分前先保持跨进程消息收口。 */
 import {
   type HostAgentProcessErrorResponse,
   type HostAgentProcessExceptionResponse,
@@ -98,7 +98,7 @@ export interface HostInitMessage {
   }>;
   agentSpawnFallbackCwd?: string;
   remoteAssets?: RemoteAssetDirs;
-  /** Main 解析后的 JGAgent Built-in Provider Config 路径；Host/Services 不感知 Electron 安装布局。 */
+  /** Main 解析后的 JGHarness Built-in Provider Config 路径；Host/Services 不感知 Electron 安装布局。 */
   zcodeBuiltinProviderConfigFilePath: string;
   /** Main 提前异步采集并过滤的本机 runtime 环境；只允许传给 InitLocal。 */
   runtimeProcessEnvPatch?: Record<string, string>;

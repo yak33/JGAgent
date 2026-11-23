@@ -15,7 +15,7 @@ const MESSAGES: Record<
   Omit<CuaPermissionPanelMessages, "permissionLabel"> & Record<CuaPermissionKind, string>
 > = {
   "zh-CN": {
-    documentTitle: "JGAgent Computer Use 权限",
+    documentTitle: "JGHarness Computer Use 权限",
     dragTitle: "拖动我到上面的权限列表",
     hintPrefix: "把左边的图标拖进上方的",
     hintSuffix: "列表",
@@ -24,7 +24,7 @@ const MESSAGES: Record<
     screen_recording: "屏幕录制",
   },
   "en-US": {
-    documentTitle: "JGAgent Computer Use Permissions",
+    documentTitle: "JGHarness Computer Use Permissions",
     dragTitle: "Drag me to the permission list above",
     hintPrefix: "Drag the icon on the left into the ",
     hintSuffix: " list above",

@@ -1,4 +1,4 @@
-// JGAgent 去官方化（阶段 3）：移除升级弹窗按钮组件 CodingPlanUpgradeAction（含 CodingPlanEntryButton 依赖）。
+// JGHarness 去官方化（阶段 3）：移除升级弹窗按钮组件 CodingPlanUpgradeAction（含 CodingPlanEntryButton 依赖）。
 import { Loader2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button.js";
 import { useZCodeIntl } from "@/i18n/IntlProvider.js";

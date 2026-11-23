@@ -39,13 +39,13 @@
 ```text
 1. bump 版本 + 提交推送 main（Vercel 连 GitHub 自动构建部署 website/，域名 jg-agent.vercel.app）
 2. 打包（注意带 VS18 generator env，见第二节陷阱）
-3. 下载仓发 Release：gh release create v<ver> -R yak33/JGAgent-downloads      JGAgent-<ver>-win-x64.exe JGAgent-<ver>-win-x64.exe.blockmap latest.yml      JGAgent-latest-win-x64.exe JGAgent-latest-win-x64.exe.blockmap（latest 别名副本供稳定链接）
+3. 下载仓发 Release：gh release create v<ver> -R yak33/JGHarness-downloads      JGHarness-<ver>-win-x64.exe JGHarness-<ver>-win-x64.exe.blockmap latest.yml      JGHarness-latest-win-x64.exe JGHarness-latest-win-x64.exe.blockmap（latest 别名副本供稳定链接；v0.6.0 前资产名为 JGAgent-*，历史链接经 vercel.json 兼容规则继续有效）
 4. 验证（本机须走 VPN 代理 127.0.0.1:7897，vercel.app 直连不通）：
    curl -x http://127.0.0.1:7897 -sI https://jg-agent.vercel.app/downloads/JGAgent-latest-win-x64.exe 看 302→GitHub 200
    curl -x ... /downloads/latest.yml 内容应含 <ver>
 ```
 
-- `website/vercel.json` 把 `/downloads/*` rewrite 到 `github.com/yak33/JGAgent-downloads` 的 Release 资产（latest.yml 与 JGAgent-latest-* 走 `releases/latest/download/`，版本化路径走 `releases/download/v<ver>/`，changelog 旧链接不坏）。
+- `website/vercel.json` 把 `/downloads/*` rewrite 到 `github.com/yak33/JGHarness-downloads` 的 Release 资产（latest.yml 与 JGHarness-latest-* 走 `releases/latest/download/`，版本化路径走 `releases/download/v<ver>/`；另保留 JGAgent-<ver>-* 兼容规则让 v0.6.0 前的 changelog 旧链接继续有效）。
 - 主仓保持私有；安装包只进公开下载仓（主仓单文件 100MB 硬限装不下 exe）。
 - ⚠️ 下载仓的两个坑（v0.6.0 实测）：① 空仓库 `gh release create` 报 HTTP 422 "Repository is empty"，先推一个初始提交；② 中途被杀的 create 进程会留下 **draft release**（draft 资产匿名下载 404），补传后须 `gh release edit v<ver> --draft=false`；draft 期间的 404 会被 CDN/代理负缓存几分钟，验证加 `-H "Cache-Control: no-cache"`。
 - ⚠️ exe 上传极慢（本机上行 ~100KB/s，204MB×2 约 1 小时）：直连与 VPN 代理速度相近，属本机出口带宽瓶颈；gh 进程 CPU 缓慢增长即健康，勿误判卡死。

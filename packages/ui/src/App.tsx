@@ -293,7 +293,7 @@ export function App({
   });
   const workspaceKey = workspaceIdentity?.trim() || workspaceAbsPath;
   const notificationEnabled = useZCodeStore((s) => s.notificationEnabled);
-  // JGAgent 去官方化（阶段 3）：marketing-touch 任务完成刷新随运营域删除。
+  // JGHarness 去官方化（阶段 3）：marketing-touch 任务完成刷新随运营域删除。
   useWorkspaceTerminalTaskNotifications({
     workspacePath: workspaceAbsPath,
     ...(workspaceIdentity ? { workspaceIdentity } : {}),
@@ -303,7 +303,7 @@ export function App({
     platform,
     formatMessage: intl.formatMessage,
   });
-  // JGAgent 去官方化（阶段 3）：闲时任务终态/等确认通知摘除（offPeakTaskService 服务域删除）。
+  // JGHarness 去官方化（阶段 3）：闲时任务终态/等确认通知摘除（offPeakTaskService 服务域删除）。
   const lastHandledDraftSidePaneCloseRef = useRef({
     workspaceKey,
     draftFocusVersion,

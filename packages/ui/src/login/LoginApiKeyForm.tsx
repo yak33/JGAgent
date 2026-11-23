@@ -44,7 +44,7 @@ import {
 import { useZCodeStore } from "@/store/StoreProvider.js";
 
 interface LoginApiKeyFormProps {
-  /** JGAgent 去官方化：登录入口仅剩 API Key 表单时无可返回的渠道列表，允许省略并隐藏返回按钮。 */
+  /** JGHarness 去官方化：登录入口仅剩 API Key 表单时无可返回的渠道列表，允许省略并隐藏返回按钮。 */
   onCancel?: () => void;
   onSaved: () => void | Promise<void>;
   onSkipped: () => void | Promise<void>;
@@ -235,11 +235,11 @@ export function LoginApiKeyForm({ onCancel, onSaved, onSkipped }: LoginApiKeyFor
                 <SelectValue />
               </SelectTrigger>
               <SelectContent align="end" className="rounded-lg">
-                {/* JGAgent 去官方化：捷关为默认渠道；自定义供应商面向 OpenAI 兼容私有网关 */}
+                {/* JGHarness 去官方化：捷关为默认渠道；自定义供应商面向 OpenAI 兼容私有网关 */}
                 <SelectItem
-                  value="jgagent"
+                  value="jgharness"
                   className="rounded-md"
-                  data-testid={testId(TID_LOGIN_API_KEY_PROVIDER_ITEM, "jgagent")}
+                  data-testid={testId(TID_LOGIN_API_KEY_PROVIDER_ITEM, "jgharness")}
                 >
                   捷关模型网关
                 </SelectItem>

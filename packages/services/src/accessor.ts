@@ -1,4 +1,4 @@
-// JGAgent 去官方化（阶段 3）：账号与商业化服务域（oauthService、codingPlanSubscriptionService、
+// JGHarness 去官方化（阶段 3）：账号与商业化服务域（oauthService、codingPlanSubscriptionService、
 // offPeakTaskService）保持移除；官方新功能域（remote-projects、task-groups、project 等）正常合入。
 import type { IRemoteProjectService } from "#src/remote-projects/contract.js";
 import type { ITaskGroupService } from "#src/task-groups/contract.js";

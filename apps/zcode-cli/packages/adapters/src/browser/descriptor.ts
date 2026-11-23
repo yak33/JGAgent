@@ -8,7 +8,7 @@ export function createManagedCdpDescriptor(
     id: browserId,
     generation,
     type: "cdp",
-    name: "JGAgent Headless Chromium",
+    name: "JGHarness Headless Chromium",
     capabilities: {
       browser: [],
       tab: [],

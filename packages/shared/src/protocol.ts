@@ -85,7 +85,7 @@ export type Locale = (typeof SUPPORTED_LOCALES)[number];
 /** 界面语言偏好；system 表示跟随当前运行端系统语言。 */
 export type LocalePreference = "system" | Locale;
 
-/** JGAgent 运行中继续输入时的交互行为 */
+/** JGHarness 运行中继续输入时的交互行为 */
 export type ZCodeInteractionBehavior = "queue" | "guide";
 
 /** 桌面端 Electron 自动更新发布通道。 */
@@ -287,7 +287,7 @@ export interface AppSettings {
   httpProxyCaCertPath?: string;
   /**
    * 内置浏览器忽略 HTTPS 证书校验错误（自签名、过期、域名不匹配等），用于访问内网测试站点。
-   * 只影响内置浏览器出口，不影响 JGAgent 自身对后端与模型 API 的请求。默认关闭，重启后生效。
+   * 只影响内置浏览器出口，不影响 JGHarness 自身对后端与模型 API 的请求。默认关闭，重启后生效。
    */
   embeddedBrowserAllowInsecureCertificates?: boolean;
   /** 文件树单击本地 .html 文件时在内置浏览器打开（默认 false：沿用源码预览）。右键「打开」始终是源码预览。 */

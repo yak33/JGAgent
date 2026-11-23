@@ -93,7 +93,7 @@ export async function openStartupSessionStore(
   startupTimer: StartupTimer,
 ): Promise<SqliteSessionStore> {
   const dbPath = getSessionDbPath(configResult);
-  startupTimer.start("JGAgent SQLite migration started", {
+  startupTimer.start("JGHarness SQLite migration started", {
     context: { dbPath },
     event: "bootstrap.app.startup.sqlite_migration.started",
     stage: "migrate_session_db",
@@ -110,7 +110,7 @@ export async function openStartupSessionStore(
       },
     },
   );
-  startupTimer.mark("JGAgent SQLite migration completed", {
+  startupTimer.mark("JGHarness SQLite migration completed", {
     context: { dbPath },
     event: "bootstrap.app.startup.sqlite_migration.completed",
     stage: "migrate_session_db",
@@ -123,13 +123,13 @@ export async function openStartupZCodeProtocolSessionStore(
   startupTimer: StartupTimer,
 ): Promise<SqliteSessionStore> {
   const dbPath = getSessionDbPath(configResult);
-  startupTimer.start("JGAgent Protocol SQLite migration started", {
+  startupTimer.start("JGHarness Protocol SQLite migration started", {
     context: { dbPath },
     event: "zcode_protocol.startup.sqlite_migration.started",
     stage: "migrate_session_db",
   });
   const store = await SqliteSessionStore.openStartup({ dbPath });
-  startupTimer.mark("JGAgent Protocol SQLite migration completed", {
+  startupTimer.mark("JGHarness Protocol SQLite migration completed", {
     context: { dbPath },
     event: "zcode_protocol.startup.sqlite_migration.completed",
     stage: "migrate_session_db",
@@ -141,7 +141,7 @@ export function getSessionDbPath(configResult: ConfigResult, workingDirectory?: 
   const configured = configResult.config.storage.sessionDbPath;
   // 默认 sessionDbPath 是 "~/.zcode/cli/db/db.sqlite" 字面量，resolvePath 会把 ~ 展开成 homedir()。
   // 设置 ZCODE_DATA_BASE_DIR（与 ZCode 原版共机隔离）时，默认库必须落到
-  // <ZCODE_DATA_BASE_DIR>/.jgagent/cli/db 下，因此默认值改走 getDefaultSessionDbPath()；
+  // <ZCODE_DATA_BASE_DIR>/.jgharness/cli/db 下，因此默认值改走 getDefaultSessionDbPath()；
   // 用户显式配置的路径保持原有解析行为不变。
   if (configured === DefaultRuntimeConfig.storage.sessionDbPath) {
     return getDefaultSessionDbPath();

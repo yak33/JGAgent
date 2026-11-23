@@ -39,7 +39,7 @@ interface DirectoryMcpDescriptor {
 const ZCODE_MCP_DESCRIPTOR: DirectoryMcpDescriptor = {
   source: "zcodeagentmcp",
   directorySource: "zcode",
-  userConfigDirSegments: [".jgagent", "cli"],
+  userConfigDirSegments: [".jgharness", "cli"],
   workspaceConfigDirSegments: [".zcode"],
   fileName: "config.json",
   format: "json",
@@ -378,7 +378,7 @@ export async function loadCliMcpFromUserDirectory(
 ): Promise<LoadCliMcpFromUserDirectoryResult> {
   const servers: NativeMcpServerRecord[] = [];
 
-  // 去掉其他 provider 后，JGAgent Agent 只按目录约定读取；先 workspace，再 user。
+  // 去掉其他 provider 后，JGHarness Agent 只按目录约定读取；先 workspace，再 user。
   if (request?.workspacePath) {
     servers.push(
       ...(await readDirectoryServersFromPreferredSources("workspace", request.workspacePath)),

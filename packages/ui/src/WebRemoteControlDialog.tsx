@@ -254,7 +254,7 @@ function getFailureDescription(
       });
     case "unexpected-error":
       return formatMessage({ id: "webRemoteControl.failure.unexpectedError" });
-    // JGAgent：官方 V2 新增 reason（device-not-owned / auth-required）按通用失败文案回落。
+    // JGHarness：官方 V2 新增 reason（device-not-owned / auth-required）按通用失败文案回落。
     default:
       return formatMessage({ id: "webRemoteControl.failure.unexpectedError" });
   }
@@ -900,7 +900,7 @@ export const WebRemoteControlDialog = memo(function WebRemoteControlDialogCompon
           </div>
         </DialogContent>
       </Dialog>
-      {/* JGAgent：官方 v3.16.x BotsDialog 不再接收 workspace props。 */}
+      {/* JGHarness：官方 v3.16.x BotsDialog 不再接收 workspace props。 */}
       <BotsDialog
         open={botsDialogOpen}
         onOpenChange={setBotsDialogOpen}

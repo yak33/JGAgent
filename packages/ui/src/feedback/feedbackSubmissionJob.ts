@@ -260,8 +260,8 @@ export function startFeedbackSubmissionJob(
       // 工单创建成功后前台弹窗可以收起；截图和日志继续由后台 job 负责上传。
       options.onTicketCreated?.(ticket.id);
 
-      // JGAgent 离线降级：反馈服务端未接入时，create 返回 local_only 工单（内容已存
-      // 本地 ~/.jgagent），跳过截图/日志上传——它们没有可用的上传目标。
+      // JGHarness 离线降级：反馈服务端未接入时，create 返回 local_only 工单（内容已存
+      // 本地 ~/.jgharness），跳过截图/日志上传——它们没有可用的上传目标。
       if (ticket.local_only === true) {
         setState({
           status: "success",

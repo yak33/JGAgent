@@ -16,7 +16,7 @@ import {
   ZCODE_PROVIDER_CONFIG_NETWORK_ERROR,
   zcodeProviderRuntimeHeadersErrorCode,
 } from "@zcode/shared";
-// JGAgent：账号鉴权类型面保留（实装随账号域摘除），供 AccountRequestAuthOptions 对齐官方签名。
+// JGHarness：账号鉴权类型面保留（实装随账号域摘除），供 AccountRequestAuthOptions 对齐官方签名。
 import type { IAccountRequestAuthService } from "#src/model-provider/accountRequestAuthService.js";
 import { RemoteConversationTelemetry } from "#src/conversation-telemetry/remoteConversationTelemetry.js";
 import {
@@ -66,7 +66,7 @@ import {
   sessionDebugSnapshotSchema,
   type LocalTtftFacts,
 } from "@zcode/shared";
-/* oxlint-disable eslint(max-lines) -- JGAgent Protocol transport、通知 wiring 和 app-facing session 方法必须共享同一个 client/emitter 上下文。 */
+/* oxlint-disable eslint(max-lines) -- JGHarness Protocol transport、通知 wiring 和 app-facing session 方法必须共享同一个 client/emitter 上下文。 */
 import { ensureIndependentPlanSupport } from "./independentPlanSupport.js";
 import { isRemoteInputPredictionEnabled } from "./inputPredictionSwitch.js";
 import { randomUUID } from "node:crypto";
@@ -209,7 +209,7 @@ import {
 } from "@zcode/shared";
 import { createServiceLogger } from "#src/logger/serviceLogger.js";
 import { createOfficialMcpIssuanceAudit } from "#src/official-mcp/officialMcpIssuanceAudit.js";
-// JGAgent 去官方化（阶段 3）：账号请求鉴权依赖随 accountRequestAuthService 删除；
+// JGHarness 去官方化（阶段 3）：账号请求鉴权依赖随 accountRequestAuthService 删除；
 // provider runtime headers 反向请求统一按不可用快速失败。
 import { mergeAutomationMutationToolDenylist } from "#src/zcode-agent/automationToolPolicy.js";
 import { ZCODE_AGENT_RUNTIME_UNAVAILABLE_CODE } from "./zcodeAgent.js";
@@ -553,7 +553,7 @@ export function supportsLegacyRemoteTaskAllowlist(workspaceIdentity: string | un
 }
 
 function isClosedStdioTransportError(error: unknown): boolean {
-  return error instanceof Error && error.message === "JGAgent agent stdio transport is closed";
+  return error instanceof Error && error.message === "JGHarness agent stdio transport is closed";
 }
 
 interface SessionEventSequenceState {
@@ -614,16 +614,16 @@ function savedWorkflowScopeParam(params: ZCodeAgentSavedWorkflowTarget): {
 }
 
 function ensurePluginManagementWorkspacePath(): string {
-  const workspacePath = join(getDataBaseDir(), ".jgagent", PLUGIN_MANAGEMENT_WORKSPACE_DIR_NAME);
+  const workspacePath = join(getDataBaseDir(), ".jgharness", PLUGIN_MANAGEMENT_WORKSPACE_DIR_NAME);
   // 插件管理是控制面能力，不能复用可能因真实 workspace 被删而 EPIPE 的会话进程。
   // 这里给它固定一个内部 cwd；真实 workspace 仍通过协议参数传给 CLI 做 workspace-scope 判定。
   mkdirSync(workspacePath, { recursive: true });
   return workspacePath;
 }
 
-// NOTE: this counts ONLY the per-session MCP servers passed through the JGAgent Protocol
+// NOTE: this counts ONLY the per-session MCP servers passed through the JGHarness Protocol
 // session/create params (the app→protocol channel). It is deliberately independent of the
-// CLI/bootstrap MCP servers configured in ~/.jgagent/cli/config.json (mcp.servers), which the agent
+// CLI/bootstrap MCP servers configured in ~/.jgharness/cli/config.json (mcp.servers), which the agent
 // runtime connects separately and reports via the `mcp.server.connected`/toolCount events. So a
 // createSession log line with mcpServerCount:0 is EXPECTED when zcode-cua is a CLI-config MCP server
 // (e.g. the product Helper broker path injected through the gated bootstrap env): the model still receives those
@@ -747,7 +747,7 @@ function isProtocolRequestTimeout(error: unknown, method: string): boolean {
   if (error instanceof ZCodeProtocolRequestTimeoutError) {
     return error.method === method;
   }
-  return error instanceof Error && error.message === `JGAgent Protocol request timed out: ${method}`;
+  return error instanceof Error && error.message === `JGHarness Protocol request timed out: ${method}`;
 }
 
 function assertV4AttachmentNdjsonEnvelope(method: string, params: unknown): void {
@@ -1066,7 +1066,7 @@ function createRuntimeUnavailableError(params: ZCodeAgentWorkspaceTarget): Error
   code: typeof ZCODE_AGENT_RUNTIME_UNAVAILABLE_CODE;
   workspaceKey: string;
 } {
-  const error = new Error("JGAgent Agent runtime is not running.") as Error & {
+  const error = new Error("JGHarness Agent runtime is not running.") as Error & {
     code: typeof ZCODE_AGENT_RUNTIME_UNAVAILABLE_CODE;
     workspaceKey: string;
   };
@@ -1134,7 +1134,7 @@ interface CreateZCodeAgentServiceBaseOptions extends Omit<
   /** 仅供 MCP 状态探测进程使用，不能把空闲回收传给 chat。 */
   mcpStatusIdleTimeoutMs?: number;
   accountProviderConfigSource?: ProviderSource<AccountProviderConfigSnapshot>;
-  // JGAgent 去官方化（阶段 3）：accountRequestAuthService 选项随账号域删除。
+  // JGHarness 去官方化（阶段 3）：accountRequestAuthService 选项随账号域删除。
   /** Desktop Host 请求 Main 登记 Agent 已授权的精确本地视频路径。 */
   authorizeLocalMediaPreviewPath?: (path: string) => Promise<string>;
   modelSelectionReadinessSource?: ModelSelectionReadinessSource;
@@ -1189,7 +1189,7 @@ interface CreateZCodeAgentServiceBaseOptions extends Omit<
   resolveDynamicWorkflowUserMode?: () => Promise<DynamicWorkflowMode | undefined>;
   /** 用户选择同步后交给装配层转发（Desktop Host 推给本窗口的远程 Host）；值取自本机设置。 */
   forwardDynamicWorkflowUserMode?: (mode: DynamicWorkflowMode | undefined) => void;
-  // JGAgent 去官方化（阶段 3）：删除 resolveOffPeakClientConfig / resolveOffPeakTaskService
+  // JGHarness 去官方化（阶段 3）：删除 resolveOffPeakClientConfig / resolveOffPeakTaskService
   // 装配点（闲时任务协议面随账号/订阅域移除，offPeak/create、offPeak/list 请求按不支持失败）。
   /**
    * browser-use 执行桥：把 agent 的 interaction/browserExecute 反向请求转发到 main
@@ -1280,7 +1280,7 @@ function toProtocolAutomation(automation: ZCodeAutomation) {
   };
 }
 
-// JGAgent 去官方化（阶段 3）：删除闲时任务协议辅助函数
+// JGHarness 去官方化（阶段 3）：删除闲时任务协议辅助函数
 // （toProtocolOffPeakTaskSnapshot / respondOffPeakInternalError / resolveOffPeakAllowedModels /
 // resolveOffPeakCreateModel / resolveOffPeakToolSelection），offPeak/create、offPeak/list
 // 反向请求 handler 随账号/订阅域一并移除。
@@ -1596,7 +1596,7 @@ export function createZCodeAgentService(
   // 此缓存只去重已交付的账号快照，不表示 Worker 的 Registry 已应用该版本。
   const accountConfigReceivedRevisionByClient = new WeakMap<ZCodeProtocolClient, string>();
   const sessionTraceIdBySessionKey = new Map<string, TraceId>();
-  // JGAgent：AccountRequestAuthOptions 联合类型保证我方装配恒为 undefined（账号域摘除）。
+  // JGHarness：AccountRequestAuthOptions 联合类型保证我方装配恒为 undefined（账号域摘除）。
   const accountRequestAuthService = options?.accountRequestAuthService;
   const accountProviderConfigSource = options?.accountProviderConfigSource;
   const modelSelectionReadinessSource = options?.modelSelectionReadinessSource;
@@ -1654,12 +1654,12 @@ export function createZCodeAgentService(
     invalidateWorkspaceClient(event.workspaceKey, active.client);
   });
 
-  // JGAgent 去官方化（阶段 3）：删除 resolveAccountRequestAuth 与
+  // JGHarness 去官方化（阶段 3）：删除 resolveAccountRequestAuth 与
   // respondAccountRequestAuthWithoutInteraction（账号请求鉴权域移除；
   // provider runtime headers 请求无自动应答通道，统一快速失败）。
 
 
-  // JGAgent 去官方化（阶段 3）：账号鉴权服务恒不注入，此无交互应答函数不可达；
+  // JGHarness 去官方化（阶段 3）：账号鉴权服务恒不注入，此无交互应答函数不可达；
   // 保留签名以对齐官方路由结构。
   async function respondAccountRequestAuthWithoutInteraction(_params: {
     key: string;
@@ -1857,7 +1857,7 @@ export function createZCodeAgentService(
             throw new Error("Account Config 接收回执版本与交付版本不一致");
           }
           accountConfigReceivedRevisionByClient.set(params.client, result.receivedRevision);
-          logger.info(undefined, "account provider config 已交付到 JGAgent agent", {
+          logger.info(undefined, "account provider config 已交付到 JGHarness agent", {
             providerCount: result.providerCount,
             reason: params.reason,
             receivedRevision: result.receivedRevision,
@@ -1989,7 +1989,7 @@ export function createZCodeAgentService(
             workspace,
             refreshRegistry: true,
           });
-          logger.info(undefined, "provider/model 就绪后已启动等待中的 JGAgent agent", {
+          logger.info(undefined, "provider/model 就绪后已启动等待中的 JGHarness agent", {
             providerCount: event.snapshot.providerCount,
             reason: event.reason,
             revision: event.snapshot.revision,
@@ -2513,7 +2513,7 @@ export function createZCodeAgentService(
           if (parsed.success) {
             processResourceSampleEmitter.fire({ ...parsed.data, lane });
           } else {
-            logger.debug(undefined, "丢弃无效 JGAgent CLI 资源样本", {
+            logger.debug(undefined, "丢弃无效 JGHarness CLI 资源样本", {
               issues: parsed.error.issues.map((issue) => ({
                 code: issue.code,
                 path: issue.path.join("."),
@@ -2540,7 +2540,7 @@ export function createZCodeAgentService(
           if (parsed.success) {
             mcpTelemetryEmitter.fire(parsed.data);
           } else {
-            logger.debug(undefined, "丢弃无效 JGAgent CLI MCP 遥测事件", {
+            logger.debug(undefined, "丢弃无效 JGHarness CLI MCP 遥测事件", {
               issues: parsed.error.issues.map((issue) => ({
                 code: issue.code,
                 path: issue.path.join("."),
@@ -2555,7 +2555,7 @@ export function createZCodeAgentService(
           if (parsed.success) {
             pluginOperationProgressEmitters.get(parsed.data.operationId)?.fire(parsed.data);
           } else {
-            logger.warn(undefined, "丢弃无效 JGAgent Protocol 插件操作进度", {
+            logger.warn(undefined, "丢弃无效 JGHarness Protocol 插件操作进度", {
               issues: parsed.error.issues.map((issue) => ({
                 code: issue.code,
                 message: issue.message,
@@ -2573,7 +2573,7 @@ export function createZCodeAgentService(
             // 避免把两条独立事件流的 sequenceNumber/seq 混为同一顺序域。
             cuaOperationTurnTracker?.accept(workspace, parsed.data);
           } else {
-            logger.warn(undefined, "丢弃无效 JGAgent Protocol Computer Use operation event", {
+            logger.warn(undefined, "丢弃无效 JGHarness Protocol Computer Use operation event", {
               issues: parsed.error.issues.map((issue) => ({
                 code: issue.code,
                 message: issue.message,
@@ -2596,7 +2596,7 @@ export function createZCodeAgentService(
                 : {};
             logger.warn(
               typeof rawParams.traceId === "string" ? rawParams.traceId : undefined,
-              "丢弃无效 JGAgent Protocol session event",
+              "丢弃无效 JGHarness Protocol session event",
               {
                 eventId: rawParams.eventId,
                 issues: parsed.error.issues.map((issue) => ({
@@ -3066,7 +3066,7 @@ export function createZCodeAgentService(
             request: parsed.data,
           };
           pendingProviderRuntimeHeaders.set(pendingKey, pending);
-          logger.info(request.trace?.traceId, "收到 JGAgent provider runtime headers 请求", {
+          logger.info(request.trace?.traceId, "收到 JGHarness provider runtime headers 请求", {
             modelId: parsed.data.modelSelection.modelId,
             providerId: parsed.data.providerId,
             requestId: parsed.data.requestId,
@@ -3369,7 +3369,7 @@ export function createZCodeAgentService(
           return;
         }
 
-        // JGAgent 去官方化（阶段 3）：删除 offPeak/create 与 offPeak/list 反向请求 handler
+        // JGHarness 去官方化（阶段 3）：删除 offPeak/create 与 offPeak/list 反向请求 handler
         // （闲时任务服务域移除；CLI 侧请求将按 method-not-found 语义失败）。
         if (request.method === zcodeProtocolMethods.automationList) {
           const parsed = zcodeAutomationListParamsSchema.safeParse(request.params ?? {});
@@ -3519,7 +3519,7 @@ export function createZCodeAgentService(
 
         void client.respondError(request.id, {
           code: -32601,
-          message: `Unsupported JGAgent Protocol request: ${request.method}`,
+          message: `Unsupported JGHarness Protocol request: ${request.method}`,
         });
       }),
       client.onClose(() => {
@@ -3620,7 +3620,7 @@ export function createZCodeAgentService(
     }
     const workspaceKey = resolveWorkspaceKey(params);
     activeClientsByWorkspaceKey.delete(workspaceKey);
-    logger.warn(undefined, "复用的 JGAgent Protocol client 已 disposed，清理 stale entry", {
+    logger.warn(undefined, "复用的 JGHarness Protocol client 已 disposed，清理 stale entry", {
       workspaceKey,
       workspacePath: params.workspacePath,
     });
@@ -3718,7 +3718,7 @@ export function createZCodeAgentService(
         appliedSnapshot = snapshot;
       }
     })();
-    // JGAgent 去官方化（阶段 3）：删除 Off-Peak 工具策略同步块（闲时任务域移除，
+    // JGHarness 去官方化（阶段 3）：删除 Off-Peak 工具策略同步块（闲时任务域移除，
     // 恒不注册该工具面，无需向 CLI 同步）。
     // 动态工作流灰度门禁
     // 模式的 workspace 级事实，在允许任何 session 工作前同步给 CLI，v4 冷恢复也才拿得到工具面。
@@ -3780,7 +3780,7 @@ export function createZCodeAgentService(
     } finally {
       delete entry.interactionPreferencesReady;
     }
-    logger.info(undefined, "为只读会话控制面启动 JGAgent agent", {
+    logger.info(undefined, "为只读会话控制面启动 JGHarness agent", {
       workspaceKey,
       workspacePath: params.workspacePath,
     });
@@ -3839,8 +3839,8 @@ export function createZCodeAgentService(
         logger.info(
           undefined,
           active
-            ? "provider/model 尚未就绪，JGAgent agent 保持只读"
-            : "provider/model 尚未就绪，JGAgent agent 保持未启动",
+            ? "provider/model 尚未就绪，JGHarness agent 保持只读"
+            : "provider/model 尚未就绪，JGHarness agent 保持未启动",
           {
             providerCount: readinessSnapshot?.providerCount ?? 0,
             revision: readinessSnapshot?.revision ?? null,
@@ -3860,7 +3860,7 @@ export function createZCodeAgentService(
     processManager.markReady(params, entry.client);
     entry.workspace = params;
     waitingWorkspaceStartups.delete(workspaceKey);
-    logger.info(undefined, "provider/model 就绪，允许 JGAgent agent 模型执行", {
+    logger.info(undefined, "provider/model 就绪，允许 JGHarness agent 模型执行", {
       modelId: readiness.modelId,
       providerId: readiness.providerId,
       revision: readinessSnapshot.revision,
@@ -3934,7 +3934,7 @@ export function createZCodeAgentService(
   // 就绪的 workspace 级方法，管理面进程正是为这种「不寄居真实项目」的控制面能力准备的，且不会因
   // 真实 workspace 生命周期被 watchdog 回收；getOrStartReadOnlyClient 反而会把这个合成 workspace
   // 塞进 activeClientsByWorkspaceKey 并跑一遍交互偏好同步，污染会话 client map。两条路径都在本机，
-  // homedir() 即用户家目录，全局根 `~/.jgagent/workflows/` 因此解析到真实目录。
+  // homedir() 即用户家目录，全局根 `~/.jgharness/workflows/` 因此解析到真实目录。
   // 远程 runtime（SSH/WSL identity 或带 remoteSessionId）的 home 不是本机，绝不选它当载体。
   function isLocalActiveWorkspaceClient(workspace: ZCodeAgentWorkspaceTarget): boolean {
     return (
@@ -4051,7 +4051,7 @@ export function createZCodeAgentService(
   }
 
   // 3.12.2：远端灰度读取不能放进客户端就绪与创建命令：失败时串行重试会阻塞普通聊天。
-  // JGAgent 去官方化（阶段 3）：删除 isOffPeakToolSupported 门禁（闲时任务域移除，恒为关闭）。
+  // JGHarness 去官方化（阶段 3）：删除 isOffPeakToolSupported 门禁（闲时任务域移除，恒为关闭）。
 
   /**
    * 服务端「提供」（docs/dynamic-workflow/launch.md「Gray release」）：Host 读取一次并在本进程内固定。
@@ -4195,7 +4195,7 @@ export function createZCodeAgentService(
       const sessionId = prepared?.sessionId ?? payload.sessionId;
       const additionalDirectories =
         prepared?.additionalDirectories ?? payload.additionalDirectories;
-      // JGAgent：闲时任务域已摘除，offPeakToolEnabled 恒为关闭（官方门禁函数不引入）。
+      // JGHarness：闲时任务域已摘除，offPeakToolEnabled 恒为关闭（官方门禁函数不引入）。
       const offPeakToolEnabled = false as const;
       return {
         ...envelope,
@@ -4225,7 +4225,7 @@ export function createZCodeAgentService(
         },
       };
     }
-    // JGAgent 去官方化（阶段 3）：删除 offPeakTaskId 派发轮的 OffPeakCreate 工具
+    // JGHarness 去官方化（阶段 3）：删除 offPeakTaskId 派发轮的 OffPeakCreate 工具
     // denylist 合并分支（闲时任务域移除后不再产生该类 payload）。
     return envelope;
   }
@@ -4252,13 +4252,13 @@ export function createZCodeAgentService(
     async initialize(params: ZCodeAgentWorkspaceTarget): Promise<ZCodeAgentInitializeResult> {
       const workspaceKey = resolveWorkspaceKey(params);
       const startedAt = Date.now();
-      logger.info(undefined, "开始初始化 JGAgent agent", {
+      logger.info(undefined, "开始初始化 JGHarness agent", {
         workspaceKey,
         workspacePath: params.workspacePath,
       });
       try {
         const client = await getClient(params);
-        logger.info(undefined, "JGAgent agent 初始化完成", {
+        logger.info(undefined, "JGHarness agent 初始化完成", {
           durationMs: Date.now() - startedAt,
           transportKind: client.transportKind === "websocket" ? "websocket" : "stdio",
           workspaceKey,
@@ -4275,7 +4275,7 @@ export function createZCodeAgentService(
         const providerNotReady = isProviderNotReadyError(error);
         logger[providerNotReady ? "info" : "warn"](
           undefined,
-          providerNotReady ? "JGAgent agent 等待 provider/model 就绪" : "JGAgent agent 初始化失败",
+          providerNotReady ? "JGHarness agent 等待 provider/model 就绪" : "JGHarness agent 初始化失败",
           {
             durationMs: Date.now() - startedAt,
             message: error instanceof Error ? error.message : String(error),
@@ -4363,7 +4363,7 @@ export function createZCodeAgentService(
         refreshRegistry: true,
       });
       const sessionTraceId = params.sessionTraceId;
-      logger.info(sessionTraceId, "开始请求 JGAgent Protocol session/create", {
+      logger.info(sessionTraceId, "开始请求 JGHarness Protocol session/create", {
         hasInitialModel: params.model !== undefined,
         hasInitialThoughtLevel: params.thoughtLevel !== undefined,
         initialModel: formatModelSelectionForLog(params.model),
@@ -4373,7 +4373,7 @@ export function createZCodeAgentService(
         workspaceKey: resolveWorkspaceKey(params),
         workspacePath: params.workspacePath,
       });
-      // JGAgent 去官方化（阶段 3）：offPeakToolEnabled 恒缺省（闲时任务域移除）。
+      // JGHarness 去官方化（阶段 3）：offPeakToolEnabled 恒缺省（闲时任务域移除）。
       // 灰度在 client 就绪时已判定，这里是进程内已解析 promise 的再次 await（不打远端）。
       const dynamicWorkflowFlags = await resolveDynamicWorkflowSessionFlags();
       try {
@@ -4384,7 +4384,7 @@ export function createZCodeAgentService(
           sessionTraceId ? { trace: { traceId: sessionTraceId } } : undefined,
         );
         rememberSessionTrace({ ...params, sessionId: snapshot.session.sessionId }, snapshot);
-        logger.info(sessionTraceId, "JGAgent Protocol session/create 完成", {
+        logger.info(sessionTraceId, "JGHarness Protocol session/create 完成", {
           durationMs: Date.now() - startedAt,
           messageCount: snapshot.messages.length,
           modelCurrent: formatModelSelectionForLog(snapshot.settings.model.current),
@@ -4399,7 +4399,7 @@ export function createZCodeAgentService(
       } catch (error) {
         const compatFields = getSessionCreateCompatFields(error);
         if (compatFields.length === 0) {
-          logger.warn(sessionTraceId, "JGAgent Protocol session/create 失败", {
+          logger.warn(sessionTraceId, "JGHarness Protocol session/create 失败", {
             durationMs: Date.now() - startedAt,
             message: error instanceof Error ? error.message : String(error),
             persistence: params.persistence,
@@ -4408,7 +4408,7 @@ export function createZCodeAgentService(
           });
           throw error;
         }
-        logger.warn(sessionTraceId, "JGAgent Protocol session/create 命中新旧协议兼容重试", {
+        logger.warn(sessionTraceId, "JGHarness Protocol session/create 命中新旧协议兼容重试", {
           compatFields,
           durationMs: Date.now() - startedAt,
           workspaceKey: resolveWorkspaceKey(params),
@@ -4428,7 +4428,7 @@ export function createZCodeAgentService(
         );
         rememberSessionTrace({ ...params, sessionId: snapshot.session.sessionId }, snapshot);
         if (!compatFields.includes("thoughtLevel") || !params.thoughtLevel) {
-          logger.info(sessionTraceId, "JGAgent Protocol session/create 兼容重试完成", {
+          logger.info(sessionTraceId, "JGHarness Protocol session/create 兼容重试完成", {
             durationMs: Date.now() - startedAt,
             sessionId: snapshot.session.sessionId,
             snapshotTraceId: snapshot.session.traceId ?? null,
@@ -4455,7 +4455,7 @@ export function createZCodeAgentService(
         );
         logger.info(
           sessionTraceId,
-          "JGAgent Protocol session/create 兼容重试后设置 thoughtLevel 完成",
+          "JGHarness Protocol session/create 兼容重试后设置 thoughtLevel 完成",
           {
             durationMs: Date.now() - startedAt,
             sessionId: snapshot.session.sessionId,
@@ -4483,10 +4483,10 @@ export function createZCodeAgentService(
         refreshRegistry: true,
       });
       const cachedTraceId = getSessionTraceId(params);
-      // JGAgent 去官方化（阶段 3）：offPeakToolEnabled 恒缺省（闲时任务域移除）。
+      // JGHarness 去官方化（阶段 3）：offPeakToolEnabled 恒缺省（闲时任务域移除）。
       // 冷恢复同样按 Host 的灰度判定下发，否则恢复出来的会话会丢掉工作流工具簇。
       const dynamicWorkflowFlags = await resolveDynamicWorkflowSessionFlags();
-      logger.info(cachedTraceId, "开始请求 JGAgent Protocol session/resume", {
+      logger.info(cachedTraceId, "开始请求 JGHarness Protocol session/resume", {
         mcpServerCount: getMcpServerCount(params),
         mcpServerNames: getMcpServerNames(params),
         modelHint: params.model ?? null,
@@ -4501,7 +4501,7 @@ export function createZCodeAgentService(
           zcodeSessionStateSnapshotSchema,
         );
         const sessionTraceId = rememberSessionTrace(params, snapshot) ?? cachedTraceId;
-        logger.info(sessionTraceId, "JGAgent Protocol session/resume 完成", {
+        logger.info(sessionTraceId, "JGHarness Protocol session/resume 完成", {
           durationMs: Date.now() - startedAt,
           messageCount: snapshot.messages.length,
           modelCurrent: formatModelSelectionForLog(snapshot.settings.model.current),
@@ -4515,7 +4515,7 @@ export function createZCodeAgentService(
       } catch (error) {
         const compatFields = getSessionResumeCompatFields(error);
         if (compatFields.length === 0) {
-          logger.warn(cachedTraceId, "JGAgent Protocol session/resume 失败", {
+          logger.warn(cachedTraceId, "JGHarness Protocol session/resume 失败", {
             durationMs: Date.now() - startedAt,
             message: error instanceof Error ? error.message : String(error),
             sessionId: params.sessionId,
@@ -4524,7 +4524,7 @@ export function createZCodeAgentService(
           });
           throw error;
         }
-        logger.warn(cachedTraceId, "JGAgent Protocol session/resume 命中新旧协议兼容重试", {
+        logger.warn(cachedTraceId, "JGHarness Protocol session/resume 命中新旧协议兼容重试", {
           compatFields,
           durationMs: Date.now() - startedAt,
           sessionId: params.sessionId,
@@ -4540,7 +4540,7 @@ export function createZCodeAgentService(
           zcodeSessionStateSnapshotSchema,
         );
         const sessionTraceId = rememberSessionTrace(params, snapshot) ?? cachedTraceId;
-        logger.info(sessionTraceId, "JGAgent Protocol session/resume 兼容重试完成", {
+        logger.info(sessionTraceId, "JGHarness Protocol session/resume 兼容重试完成", {
           durationMs: Date.now() - startedAt,
           sessionId: params.sessionId,
           snapshotTraceId: snapshot.session.traceId ?? null,
@@ -4724,7 +4724,7 @@ export function createZCodeAgentService(
 
     async readWorkspacePresentation(params: ZCodeAgentReadWorkspacePresentationParams) {
       const startedAt = Date.now();
-      logger.info(undefined, "开始请求 JGAgent Protocol workspace/readPresentation", {
+      logger.info(undefined, "开始请求 JGHarness Protocol workspace/readPresentation", {
         workspaceKey: resolveWorkspaceKey(params),
         workspacePath: params.workspacePath,
       });
@@ -4768,9 +4768,9 @@ export function createZCodeAgentService(
           }
         }
         if (!presentation) {
-          throw new Error("JGAgent Protocol workspace/readPresentation did not return a result");
+          throw new Error("JGHarness Protocol workspace/readPresentation did not return a result");
         }
-        logger.info(undefined, "JGAgent Protocol workspace/readPresentation 完成", {
+        logger.info(undefined, "JGHarness Protocol workspace/readPresentation 完成", {
           durationMs: Date.now() - startedAt,
           slashCommandCount: presentation.slashCommands.length,
           workspaceKey: resolveWorkspaceKey(params),
@@ -4778,7 +4778,7 @@ export function createZCodeAgentService(
         });
         return presentation;
       } catch (error) {
-        logger.warn(undefined, "JGAgent Protocol workspace/readPresentation 失败", {
+        logger.warn(undefined, "JGHarness Protocol workspace/readPresentation 失败", {
           durationMs: Date.now() - startedAt,
           message: error instanceof Error ? error.message : String(error),
           workspaceKey: resolveWorkspaceKey(params),
@@ -5712,7 +5712,7 @@ export function createZCodeAgentService(
 
     async generateWorkspaceText(params: ZCodeAgentGenerateWorkspaceTextParams) {
       const client = await getClient(params);
-      // Worker 自己读取 JGAgent Built-in / Personal Config；Host 只在执行前确保账号状态形成的
+      // Worker 自己读取 JGHarness Built-in / Personal Config；Host 只在执行前确保账号状态形成的
       // Account Config Overlay 已同步，避免新进程先按旧套餐状态创建 Model。
       await ensureAccountProviderConfigSynced({
         client,
@@ -5811,7 +5811,7 @@ export function createZCodeAgentService(
         ...params,
         ...(browserAmbientContext ? { browserAmbientContext } : {}),
       };
-      logger.info(logTraceId, "JGAgent Agent session/send 开始", {
+      logger.info(logTraceId, "JGHarness Agent session/send 开始", {
         attachmentCount: params.attachments?.length ?? 0,
         hasBrowserAmbientContext: browserAmbientContext !== undefined,
         inputId: params.inputId,
@@ -5828,7 +5828,7 @@ export function createZCodeAgentService(
           buildSessionSendParams(protocolParams),
           zcodeSessionSendResultSchema,
         );
-        logger.info(logTraceId, "JGAgent Agent session/send ACK", {
+        logger.info(logTraceId, "JGHarness Agent session/send ACK", {
           durationMs: Date.now() - startedAt,
           inputId: params.inputId,
           queryId: params.queryId ?? null,
@@ -5849,7 +5849,7 @@ export function createZCodeAgentService(
         }
         const compatFields = getSessionSendCompatFields(error);
         if (compatFields.length > 0) {
-          logger.warn(logTraceId, "JGAgent Agent session/send 命中新旧协议兼容重试", {
+          logger.warn(logTraceId, "JGHarness Agent session/send 命中新旧协议兼容重试", {
             compatFields,
             durationMs: Date.now() - startedAt,
             sessionId: params.sessionId,
@@ -5863,7 +5863,7 @@ export function createZCodeAgentService(
           );
           return result;
         }
-        logger.warn(logTraceId, "JGAgent Agent session/send 失败", {
+        logger.warn(logTraceId, "JGHarness Agent session/send 失败", {
           durationMs: Date.now() - startedAt,
           error: error instanceof Error ? error.message : String(error),
           inputId: params.inputId,
@@ -5881,7 +5881,7 @@ export function createZCodeAgentService(
       const startedAt = Date.now();
       const client = await getClient(params);
       const sessionTraceId = getSessionTraceId(params);
-      logger.info(sessionTraceId ?? params.inputId, "JGAgent Protocol session/compact 开始", {
+      logger.info(sessionTraceId ?? params.inputId, "JGHarness Protocol session/compact 开始", {
         inputId: params.inputId,
         sessionId: params.sessionId,
         workspaceKey: resolveWorkspaceKey(params),
@@ -5898,7 +5898,7 @@ export function createZCodeAgentService(
             timeoutMs: SESSION_COMPACT_REQUEST_TIMEOUT_MS,
           },
         );
-        logger.info(sessionTraceId ?? params.inputId, "JGAgent Protocol session/compact ACK", {
+        logger.info(sessionTraceId ?? params.inputId, "JGHarness Protocol session/compact ACK", {
           durationMs: Date.now() - startedAt,
           inputId: params.inputId,
           sessionId: params.sessionId,
@@ -5907,7 +5907,7 @@ export function createZCodeAgentService(
         });
         return result;
       } catch (error) {
-        logger.warn(sessionTraceId ?? params.inputId, "JGAgent Protocol session/compact 失败", {
+        logger.warn(sessionTraceId ?? params.inputId, "JGHarness Protocol session/compact 失败", {
           durationMs: Date.now() - startedAt,
           error: error instanceof Error ? error.message : String(error),
           inputId: params.inputId,
@@ -5922,7 +5922,7 @@ export function createZCodeAgentService(
     async goalSession(params: ZCodeAgentGoalParams) {
       const startedAt = Date.now();
       const client = await getClient(params);
-      logger.info(params.inputId, "开始请求 JGAgent Protocol session/goal", {
+      logger.info(params.inputId, "开始请求 JGHarness Protocol session/goal", {
         action: params.action,
         hasObjective: Boolean(params.objective?.trim()),
         sessionId: params.sessionId,
@@ -5941,7 +5941,7 @@ export function createZCodeAgentService(
           },
           zcodeSessionGoalResultSchema,
         );
-        logger.info(params.inputId, "JGAgent Protocol session/goal 完成", {
+        logger.info(params.inputId, "JGHarness Protocol session/goal 完成", {
           action: params.action,
           durationMs: Date.now() - startedAt,
           messageCount: result.snapshot.messages.length,
@@ -5954,7 +5954,7 @@ export function createZCodeAgentService(
         });
         return result;
       } catch (error) {
-        logger.warn(params.inputId, "JGAgent Protocol session/goal 失败", {
+        logger.warn(params.inputId, "JGHarness Protocol session/goal 失败", {
           action: params.action,
           durationMs: Date.now() - startedAt,
           message: error instanceof Error ? error.message : String(error),
@@ -6011,7 +6011,7 @@ export function createZCodeAgentService(
     async setModel(params: ZCodeAgentSetModelParams) {
       const startedAt = Date.now();
       const client = await getClient(params);
-      logger.info(undefined, "开始请求 JGAgent Protocol session/setModel", {
+      logger.info(undefined, "开始请求 JGHarness Protocol session/setModel", {
         expectedRevision: params.expectedRevision ?? null,
         persistAsWorkspaceLastUsed: params.persistAsWorkspaceLastUsed ?? null,
         requestedModel: formatModelSelectionForLog(params.model),
@@ -6030,7 +6030,7 @@ export function createZCodeAgentService(
           },
           zcodeSessionStateSnapshotSchema,
         );
-        logger.info(undefined, "JGAgent Protocol session/setModel 完成", {
+        logger.info(undefined, "JGHarness Protocol session/setModel 完成", {
           durationMs: Date.now() - startedAt,
           requestedModel: formatModelSelectionForLog(params.model),
           sessionId: params.sessionId,
@@ -6040,7 +6040,7 @@ export function createZCodeAgentService(
         });
         return snapshot;
       } catch (error) {
-        logger.warn(undefined, "JGAgent Protocol session/setModel 失败", {
+        logger.warn(undefined, "JGHarness Protocol session/setModel 失败", {
           durationMs: Date.now() - startedAt,
           message: error instanceof Error ? error.message : String(error),
           requestedModel: formatModelSelectionForLog(params.model),
@@ -6090,7 +6090,7 @@ export function createZCodeAgentService(
           module: "services.zcode_agent",
           requestId: params.requestId,
         });
-        throw new Error(`JGAgent session runtime preferences request not found: ${params.requestId}`);
+        throw new Error(`JGHarness session runtime preferences request not found: ${params.requestId}`);
       }
       const responseContext = {
         event: "zcode_agent.runtime_preferences.host_response_received",
@@ -6191,7 +6191,7 @@ export function createZCodeAgentService(
         });
         return;
       }
-      // JGAgent 去官方化（阶段 3）：账号鉴权解析（resolveAccountRequestAuth）已随账号域移除；
+      // JGHarness 去官方化（阶段 3）：账号鉴权解析（resolveAccountRequestAuth）已随账号域移除；
       // 应答只接受 Renderer 传回的运行时校验头，无头即按缺失快速失败。
       if (pendingProviderRuntimeHeaders.get(key) !== pending) return;
       pendingProviderRuntimeHeaders.delete(key);
@@ -6481,7 +6481,7 @@ export function createZCodeAgentService(
           : undefined;
       // conversation 冷订阅会在 CLI 内部直接恢复历史 Session 并立即发布首帧。
       // 若 Account Config 尚未到达，首帧会先按缺少 Account Overlay 的 Registry 解析；这里只建立
-      // Account Config 顺序屏障，不提升模型执行权限。JGAgent Built-in / Personal 仍由 Worker 维护。
+      // Account Config 顺序屏障，不提升模型执行权限。JGHarness Built-in / Personal 仍由 Worker 维护。
       const providerRegistryStartedAt = performance.now();
       await ensureAccountProviderConfigSynced({
         client,

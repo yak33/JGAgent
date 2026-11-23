@@ -1,7 +1,7 @@
 import type { DraftPluginUiOpenRequest } from "@/plugin-ui/contract.js";
-/* oxlint-disable eslint(max-lines) -- JGAgent Agent store 类型和默认状态集中导出，避免切片间重复定义共享结构。 */
+/* oxlint-disable eslint(max-lines) -- JGHarness Agent store 类型和默认状态集中导出，避免切片间重复定义共享结构。 */
 /**
- * JGAgent Session Store 类型定义、接口、常量与默认值工厂
+ * JGHarness Session Store 类型定义、接口、常量与默认值工厂
  *
  * 从 zcodeSessionStore.ts 拆分出来，供 store 本体和 selectors / navigation 等子模块共享。
  */
@@ -49,7 +49,7 @@ export interface WorkspaceInitState {
 export interface TaskRuntimeState {
   status: ZCodeTaskRuntimeStatus;
   error: string | null;
-  /** 该 task 当前运行态绑定的 JGAgent Agent 进程 provider，用于 workspace 级进程重建 busy lock。 */
+  /** 该 task 当前运行态绑定的 JGHarness Agent 进程 provider，用于 workspace 级进程重建 busy lock。 */
   provider?: ZCodeProvider;
   /** 当前模型上下文窗口容量；模型状态事件只更新这里，不覆盖真实 usage.used。 */
   contextWindow: number | null;
@@ -153,9 +153,9 @@ export interface WorkspaceZCodeUIState {
   /** 当前 workspace 激活中的 task */
   activeTaskId: string | null;
   /**
-   * JGAgent Agent 的 workspace 初始化状态。
+   * JGHarness Agent 的 workspace 初始化状态。
    *
-   * 单 JGAgent Agent 迁移后继续按 provider 分桶会保留多份已经不会再被真实运行时更新的旧状态，
+   * 单 JGHarness Agent 迁移后继续按 provider 分桶会保留多份已经不会再被真实运行时更新的旧状态，
    * UI 在 task / draft / remote identity 切换时容易读到历史 provider 的 ready/failed。这里把状态收敛成
    * workspace 单一事实源，provider 参数只作为旧调用兼容输入。
    */
@@ -211,7 +211,7 @@ export interface WorkspaceZCodeUIState {
   optimisticTaskListByTaskId: Record<string, ZCodeTaskMeta>;
   draftCreateSource: SessionCreateSource;
   /** 首发创建后、grouped sqlite order 落地前，真实 task 继承草稿锚点的本地定位。 */
-  /** 当前 workspace 选中的 JGAgent Agent provider */
+  /** 当前 workspace 选中的 JGHarness Agent provider */
   selectedProvider: ZCodeProvider;
   /** 当前模型供应商选中键（native/custom/ghost） */
   selectedSupplierKey: string;
@@ -219,7 +219,7 @@ export interface WorkspaceZCodeUIState {
   isGhostSupplier: boolean;
   /** 当前 ghost 态来源 */
   supplierMismatchReason: ModelSelectionGhostReason | null;
-  /** JGAgent Agent configOptions（模型、模式、思考级别等） */
+  /** JGHarness Agent configOptions（模型、模式、思考级别等） */
   configOptions: ZCodeConfigOption[] | null;
   /** configOptions 加载状态 */
   configOptionsStatus: ConfigOptionsStatus;
@@ -593,7 +593,7 @@ export function createDefaultWorkspaceState(
 const DEFAULT_WORKSPACE_STATE = createDefaultWorkspaceState(FALLBACK_PROVIDER);
 
 export function getDefaultWorkspaceState(): WorkspaceZCodeUIState {
-  // 单 JGAgent Agent 迁移后默认 provider 必须收敛到 glm。
+  // 单 JGHarness Agent 迁移后默认 provider 必须收敛到 glm。
   // 这里返回稳定引用，避免未写入 workspace bucket 的连续 selector 读取产生不同快照。
   return DEFAULT_WORKSPACE_STATE;
 }

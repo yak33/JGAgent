@@ -395,7 +395,7 @@ export function resolveSharedZCodeCredentialsPath(
 
   const env = options.env ?? process.env;
   const baseDir = options.baseDir ?? env[ZCODE_DATA_BASE_DIR_ENV_KEY] ?? homedir();
-  return join(resolveUserPath(baseDir), ".jgagent", "v2", "credentials.json");
+  return join(resolveUserPath(baseDir), ".jgharness", "v2", "credentials.json");
 }
 
 async function readRawCredentialRecord(
@@ -414,7 +414,7 @@ async function readRawCredentialRecordUnchecked(filePath: string): Promise<Recor
     if (getErrorCode(error) === "ENOENT") {
       return {};
     }
-    throw new Error(`Unable to read shared JGAgent credentials: ${filePath}`, { cause: error });
+    throw new Error(`Unable to read shared JGHarness credentials: ${filePath}`, { cause: error });
   }
 
   try {
@@ -425,7 +425,7 @@ async function readRawCredentialRecordUnchecked(filePath: string): Promise<Recor
     // 先保留现场再失败，调用方必须显式处理恢复，不能静默覆盖。
     const backupPath = await backupCorruptFile(filePath).catch(() => undefined);
     const evidence = backupPath ? ` Backup: ${backupPath}` : "";
-    throw new Error(`Shared JGAgent credentials are corrupt: ${filePath}.${evidence}`, {
+    throw new Error(`Shared JGHarness credentials are corrupt: ${filePath}.${evidence}`, {
       cause: error,
     });
   }

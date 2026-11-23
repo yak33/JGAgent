@@ -1,13 +1,13 @@
 import { ZCODE_VERSION, type ZCodeEnv } from "@zcode/shared";
 
-// JGAgent 去官方化：默认 CDN 指向保留不解析域（.invalid）；远程资源分发走"本地下载后上传"，
+// JGHarness 去官方化：默认 CDN 指向保留不解析域（.invalid）；远程资源分发走"本地下载后上传"，
 // 或构建期经 CDN_DOMAIN/OSS_PATH_PREFIX 注入 __ZCODE_REMOTE_CDN_RELEASE_ROOTS__，或调用方传 overrideBaseUrl。
 declare const __ZCODE_REMOTE_CDN_RELEASE_ROOTS__: readonly string[] | undefined;
 
 const REMOTE_CDN_RELEASE_ROOTS = {
-  domestic: "https://cdn.jgagent.invalid/zcode/electron/releases",
+  domestic: "https://cdn.jgharness.invalid/zcode/electron/releases",
   // 开发构建未注入 CDN_DOMAIN 时也须使用当前发布域名，避免仍请求旧域名。
-  overseas: "https://cdn.jgagent.invalid/zcode/electron/releases",
+  overseas: "https://cdn.jgharness.invalid/zcode/electron/releases",
 } as const;
 const TEST_REMOTE_CDN_RELEASE_ROOT = "http://intranet.example.invalid:12345/ssh-remote-assets";
 

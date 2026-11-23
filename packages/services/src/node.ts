@@ -214,7 +214,7 @@ export type {
 export { createProjectWorkspaceNavigation } from "#src/project-workspace-navigation/index.js";
 export { createBotsService } from "./bots/botsService.js";
 export { createFileWatcherService } from "./fileWatcher/fileWatcherService.js";
-// JGAgent 去官方化（阶段 3）：删除 OAuth 服务域（oauth/ 目录）——createOAuthService、
+// JGHarness 去官方化（阶段 3）：删除 OAuth 服务域（oauth/ 目录）——createOAuthService、
 // createOAuthProviderLogoutHandler、OAuthCredentialRepo 及其出口随目录一并移除。
 // 上游 v3.15.1 删除 device/deviceMid.ts（职责移至 desktop 包 desktopDeviceMid.ts），
 // ensureDeviceMid 出口随之移除，跟随官方。
@@ -253,7 +253,7 @@ export {
   IModelSelectionService,
   IProviderSettingsService,
 } from "./model-provider/providerFacadeServices.js";
-// JGAgent 去官方化（阶段 3）：删除 accountProvider* 系列（约 10 个文件）与
+// JGHarness 去官方化（阶段 3）：删除 accountProvider* 系列（约 10 个文件）与
 // accountRequestAuthService、resolveAccountTeamPlanRuntimeApiKey 等账号域出口；
 // 通用 provider 运行时、personal provider 配置与 credential/ 服务保留（apiKey 模式在用）。
 export { createSourceServerWorkspaceService } from "./source-server-workspace/sourceServerWorkspaceService.js";
@@ -289,7 +289,7 @@ export {
 } from "./storage/adapters/rootsResolver.js";
 export { createFsVolumeProbe } from "./storage/adapters/volumeProbe.js";
 export { runStorageScan } from "./storage/adapters/inProcessScanRunner.js";
-// JGAgent 去官方化（阶段 3）：删除 CodingPlanSubscription 服务域
+// JGHarness 去官方化（阶段 3）：删除 CodingPlanSubscription 服务域
 // （coding-plan-subscription/ 目录）与 createCodingPlanSubscriptionService 出口。
 export { createClientConfigService } from "./client-config/clientConfigService.js";
 export { createClientScenesService } from "./client-scenes/clientScenesService.js";
@@ -338,7 +338,7 @@ export {
   computeRetryAt,
 } from "./session/automationRepo.js";
 export { AutomationService, InvalidCronExprError } from "./session/automationService.js";
-// JGAgent 去官方化（阶段 3）：删除闲时任务（Off-Peak）服务域——OffPeakTaskRepo、
+// JGHarness 去官方化（阶段 3）：删除闲时任务（Off-Peak）服务域——OffPeakTaskRepo、
 // OffPeakTaskService、IOffPeakTaskService、OffPeakServerClient、offPeakMockGateway、
 // offPeakRuntimeModel 及其出口随账号/订阅体系一并移除（闲时任务依赖 Coding Plan 凭证）。
 // host 域终态回填 files_changed 复用现有 task diff 汇总。
@@ -451,7 +451,7 @@ import {
 export type { BotProjectConnection } from "#src/bot-project-runtime/contract.js";
 import type { SessionMessageSendRequested } from "#src/session/sessionMailbox.js";
 import { createFileWatcherService } from "./fileWatcher/fileWatcherService.js";
-// JGAgent 去官方化（阶段 3）：以下 import 随账号域删除——oauth/oauthService、oauth/oauthProviderLogout、
+// JGHarness 去官方化（阶段 3）：以下 import 随账号域删除——oauth/oauthService、oauth/oauthProviderLogout、
 // oauth/repo/oauthCredentialRepo、oauth/oauthUnauthorizedRequest、model-provider/accountProvider*、
 // legacyTeamOrganizationResolver、coding-plan-subscription、session/offPeak* 系列。
 import { readLegacyZCodeConfigProviders } from "./model-provider/legacyZCodeConfigProviderReader.js";
@@ -670,7 +670,7 @@ const taskAutoArchiveDisposers = new WeakMap<ServiceCollection, () => void>();
 // （stdioDesktopPresentationSurface 单测稳定复现），Linux 的 unlink-while-open 语义掩盖了泄漏。
 // 与其它侧表一样按 ServiceCollection 登记并在 dispose 时统一 close。
 const sharedSqliteRepos = new WeakMap<ServiceCollection, ReadonlyArray<{ close(): void }>>();
-// JGAgent 去官方化（阶段 3）：删除 accountRequestAuthServices / offPeakRequestAuthBuilders
+// JGHarness 去官方化（阶段 3）：删除 accountRequestAuthServices / offPeakRequestAuthBuilders
 // 侧表与 getAccountRequestAuthService / getOffPeakRequestAuthBuilder 出口（账号域删除）。
 
 /** Local Host 进程内的 Provisioning Source；不会把凭据通过通用 RPC 暴露给 Renderer。 */
@@ -832,7 +832,7 @@ export function createDynamicCuaProductMcpServerResolver(options: {
       // 委托到底层真实 resolver（由 ICuaPermissionService.restartHelper 经此调用）。
       const resolver = await options.getResolver();
       if (!resolver) {
-        throw new Error("JGAgent Computer Use is not enabled (plugin off or not product mode).");
+        throw new Error("JGHarness Computer Use is not enabled (plugin off or not product mode).");
       }
       await resolver.restart();
     },
@@ -840,7 +840,7 @@ export function createDynamicCuaProductMcpServerResolver(options: {
       // 授权完成后的 restart 必须保留 session id，才能复用底层的幂等与时序保障。
       const resolver = await options.getResolver();
       if (!resolver) {
-        throw new Error("JGAgent Computer Use is not enabled (plugin off or not product mode).");
+        throw new Error("JGHarness Computer Use is not enabled (plugin off or not product mode).");
       }
       await resolver.restartAfterPermissionGrant(onboardingSessionId);
     },
@@ -1091,7 +1091,7 @@ export { isOfficialCuaPluginEnabledForWorkspace };
 
 export function hasGlobalCliZCodeCuaServer(env: NodeJS.ProcessEnv = process.env): boolean {
   const home = env.HOME?.trim() || homedir();
-  const configPath = join(home, ".jgagent", "cli", "config.json");
+  const configPath = join(home, ".jgharness", "cli", "config.json");
   let parsed: unknown;
   try {
     parsed = JSON.parse(readFileSync(configPath, "utf8"));
@@ -1195,7 +1195,7 @@ export function createLocalServices(options: {
     automation: ZCodeAutomation;
     run: ZCodeAutomationRun;
   }) => Promise<void>;
-  // JGAgent 去官方化（阶段 3）：移除 onOffPeakSchedulerWakeRequested 选项（闲时任务服务域删除）；
+  // JGHarness 去官方化（阶段 3）：移除 onOffPeakSchedulerWakeRequested 选项（闲时任务服务域删除）；
   // prepareLegacyAccountConnections 保留给 Host 侧 Setting 迁移（settings.json 内部字段，与账号登录无关）。
   // 注入点：默认 resolver 已能覆盖 dev/桌面/SSH 远端三类形态；
   // 测试或特殊宿主想强制走自定义 binary/参数时从这里注入。
@@ -1209,7 +1209,7 @@ export function createLocalServices(options: {
     httpProxy?: string;
     noProxy?: string;
   };
-  /** 所属 Environment 的 JGAgent Built-in Provider Config 物理路径。 */
+  /** 所属 Environment 的 JGHarness Built-in Provider Config 物理路径。 */
   zcodeBuiltinProviderConfigFilePath: string;
   /** HTTP Server 只有在调用方明确配置认证时才暴露跨 Environment Provisioning target。 */
   providerProvisioningTargetEnabled?: boolean;
@@ -1274,9 +1274,9 @@ export function createLocalServices(options: {
   const isDesktopAttachedRemote = options?.serviceAuthorityMode === "desktop-attached-remote";
   // host / remote server 以前直接沿用当前进程环境启动后续服务。
   // GUI 启动的 desktop、SSH/WSL/Docker 拉起的 remote server 往往拿不到用户 login shell 里的 PATH，
-  // 导致 bun 这类只在 shell profile 里追加的命令在 JGAgent Agent/终端里不可见。
+  // 导致 bun 这类只在 shell profile 里追加的命令在 JGHarness Agent/终端里不可见。
   // 这里在所有本地服务启动前统一修正运行时环境，并顺带把内置 rg 注入 PATH，
-  // 让 JGAgent Agent、终端、认证 runtime 共用同一套命令解析结果。
+  // 让 JGHarness Agent、终端、认证 runtime 共用同一套命令解析结果。
   initializeRuntimeProcessEnv(options?.runtimeProcessEnvPatch);
 
   const desktopContextPromptEnabledRaw =
@@ -1341,7 +1341,7 @@ export function createLocalServices(options: {
         caCertPath: settings.httpProxyCaCertPath,
       };
     });
-  // JGAgent 去官方化（阶段 3）：删除 OAuth 账号域——apiClient 不再挂
+  // JGHarness 去官方化（阶段 3）：删除 OAuth 账号域——apiClient 不再挂
   // onZcodeJwtInvalid / isZcodeJwtRequest（OAuth 凭据 401 分类链路随 oauth/ 目录移除）。
   const apiClient = createNodeApiClient({
     fetchImpl: hostApiNetworkTransport.fetch,
@@ -1353,7 +1353,7 @@ export function createLocalServices(options: {
   // 增加启动 I/O，后续 session syncer 也继续复用这一实例。
   const taskIndexRepo = new TaskIndexRepo(undefined, options?.projectStorageHostId);
   // onboarding 完成记录：userId 由登录态补全（apikey/未登录为 null），见 docs/onboarding-record-spec.md。
-  // JGAgent 去官方化（阶段 3）：登录体系删除后 userId 恒为 null（apikey 模式）；
+  // JGHarness 去官方化（阶段 3）：登录体系删除后 userId 恒为 null（apikey 模式）；
   // 上游 v3.16.x 的多证据源资格判定（索引 + 会话库 + 旧版快照）保留合入。
   const onboardingEvidenceLogger = createServiceLogger("onboardingRecordService");
   const onboardingRecordService = createOnboardingRecordService({
@@ -1386,7 +1386,7 @@ export function createLocalServices(options: {
       resolveLegacyTaskSessionsDir: () => join(resolveAppConfigDir(), "sessions"),
     }),
   });
-  // JGAgent 去官方化（阶段 3）：OAuthCredentialRepo / accountProvider 凭证链 /
+  // JGHarness 去官方化（阶段 3）：OAuthCredentialRepo / accountProvider 凭证链 /
   // legacyTeamOrganizationResolver / accountRequestAuthService 装配随账号域删除。
   const providerConfigLog = createServiceLogger("provider-config");
   const clientConfigPlatform = resolveClientConfigPlatform();
@@ -1399,8 +1399,8 @@ export function createLocalServices(options: {
       resolveEndpointOrigin: resolveCurrentZCodeEndpointOrigin,
       onRefreshResult: (event) => {
         if (event.result === "updated")
-          providerConfigLog.info(undefined, "JGAgent Built-in CDN 配置已更新", event);
-        else providerConfigLog.debug(undefined, "JGAgent Built-in 刷新检查", event);
+          providerConfigLog.info(undefined, "JGHarness Built-in CDN 配置已更新", event);
+        else providerConfigLog.debug(undefined, "JGHarness Built-in 刷新检查", event);
       },
       fetchRelease: (endpointOrigin, signal) =>
         fetchZCodeBuiltinRemoteRelease({
@@ -1413,7 +1413,7 @@ export function createLocalServices(options: {
         }),
     },
     onZCodeBuiltinRefreshError: (error) => {
-      providerConfigLog.warn(undefined, "JGAgent Built-in Config 远端刷新失败", { error });
+      providerConfigLog.warn(undefined, "JGHarness Built-in Config 远端刷新失败", { error });
     },
     onPersonalConfigRecovery: (event) => {
       providerConfigLog.warn(
@@ -1430,11 +1430,11 @@ export function createLocalServices(options: {
         error,
       });
     },
-    // 已发布 config.json 保存的是 JGAgent 用户配置；清理第三方 ACP 不能移除这条升级路径。
+    // 已发布 config.json 保存的是 JGHarness 用户配置；清理第三方 ACP 不能移除这条升级路径。
     // Repository 仅在新 Personal 配置不存在时导入，并保留旧文件以便回滚。
     readLegacyProviders: () => readLegacyZCodeConfigProviders(),
   });
-  // JGAgent 去官方化（阶段 3）：删除 accountProviderConfigSource（账号 Provider 事实源）
+  // JGHarness 去官方化（阶段 3）：删除 accountProviderConfigSource（账号 Provider 事实源）
   // 及其失效绑定/刷新错误监听；Provider Runtime 不再接收 accountSource，
   // Registry 中不再存在账号类 Provider（apiKey/Personal 配置仍是唯一来源）。
   const modelSelectionConfiguredDefaultSource = new NodeModelSelectionConfigRepository({
@@ -1511,7 +1511,7 @@ export function createLocalServices(options: {
   });
   const sourceServerWorkspaceService =
     options.sourceServerWorkspaceService ?? createSourceServerWorkspaceService();
-  // JGAgent 去官方化（阶段 3）：账号域删除后没有 Coding Plan 账号连接可解析，
+  // JGHarness 去官方化（阶段 3）：账号域删除后没有 Coding Plan 账号连接可解析，
   // 官方 Server MCP 的凭证解析统一以"无账号"stub 应答（resolveAccessCurrent 恒 null），
   // 解析结果稳定为 official_auth_unavailable，MCP 调用按既有失败路径降级。
   const noAccountRequestAuthService = {
@@ -1538,7 +1538,7 @@ export function createLocalServices(options: {
   });
   const pluginSyncService = createPluginSyncService();
   const pluginUiAccounts = createPluginUiAccountBindings({
-    // JGAgent 去官方化（阶段 3）：OAuth 凭据仓库已随账号域移除，插件账号上下文恒为空。
+    // JGHarness 去官方化（阶段 3）：OAuth 凭据仓库已随账号域移除，插件账号上下文恒为空。
     async readAccount() {
       return [null, null];
     },
@@ -1715,7 +1715,7 @@ export function createLocalServices(options: {
     const socketPath = resolveBrokerSocketPath();
     // standaloneHelperCandidatePaths 未在上游 exports 白名单——此处按同一规则枚举安装候选
     //（dev-desktop → dev/ 前缀；app 名一律取 helperConstants，不写字面量）。
-    const home = process.env.ZCODE_HOME?.trim() || join(homedir(), ".jgagent");
+    const home = process.env.ZCODE_HOME?.trim() || join(homedir(), ".jgharness");
     let appPath: string | null;
     try {
       appPath = await resolveStandaloneStatusLaunchAppPath({
@@ -1786,7 +1786,7 @@ export function createLocalServices(options: {
     enabled: cuaPipSessionEnabled,
     resolveCredentials: async () => {
       const host = defaultCuaProductHelperLifecycle.peek()?.helper.macPermissionHost;
-      // PiP 客户端以 role=presentation 声明，资格由 Helper 按对端（JGAgent 主进程）签名 identifier 裁决。
+      // PiP 客户端以 role=presentation 声明，资格由 Helper 按对端（JGHarness 主进程）签名 identifier 裁决。
       if (host?.running && host.socketPath) {
         return {
           socketPath: host.socketPath,
@@ -1832,7 +1832,7 @@ export function createLocalServices(options: {
       ) {
         return {
           available: false,
-          reason: "JGAgent Computer Use is not enabled (plugin off or not product mode).",
+          reason: "JGHarness Computer Use is not enabled (plugin off or not product mode).",
         };
       }
       // 懒启动：状态查询绝不拉起 Helper。托管 host 在（如刚完成授权流）→ 全量查询；
@@ -1854,7 +1854,7 @@ export function createLocalServices(options: {
           return {
             available: false,
             reason:
-              "JGAgent Computer Use is not running; it will start automatically on first Computer Use use.",
+              "JGHarness Computer Use is not running; it will start automatically on first Computer Use use.",
             idle: true,
           } satisfies { available: false; reason: string; idle: true };
         }
@@ -1883,7 +1883,7 @@ export function createLocalServices(options: {
         } catch {
           return {
             available: false,
-            reason: "JGAgent Computer Use is starting up; retry in a moment.",
+            reason: "JGHarness Computer Use is starting up; retry in a moment.",
             idle: true,
           } satisfies { available: false; reason: string; idle: true };
         }
@@ -1893,7 +1893,7 @@ export function createLocalServices(options: {
         if (!helper || !isDefaultCuaProductHelperCurrent(helper)) {
           return {
             available: false,
-            reason: "JGAgent Computer Use lifecycle is disposed.",
+            reason: "JGHarness Computer Use lifecycle is disposed.",
           };
         }
         // Screen Recording 的真值必须来自一个新进程：撤销对已运行的常驻 Helper 不生效，
@@ -1902,7 +1902,7 @@ export function createLocalServices(options: {
         if (!isDefaultCuaProductHelperCurrent(helper)) {
           return {
             available: false,
-            reason: "JGAgent Computer Use lifecycle is disposed.",
+            reason: "JGHarness Computer Use lifecycle is disposed.",
           };
         }
         // 真实 screen-capture 探针：TCC screen_recording === "granted" 只说明系统记录了授权，并不保证
@@ -1917,7 +1917,7 @@ export function createLocalServices(options: {
         if (!isDefaultCuaProductHelperCurrent(helper)) {
           return {
             available: false,
-            reason: "JGAgent Computer Use lifecycle is disposed.",
+            reason: "JGHarness Computer Use lifecycle is disposed.",
           };
         }
         const reportedOwnerDisplayName =
@@ -1961,7 +1961,7 @@ export function createLocalServices(options: {
       ) {
         return {
           ok: false,
-          reason: "JGAgent Computer Use is not enabled (plugin off or not product mode).",
+          reason: "JGHarness Computer Use is not enabled (plugin off or not product mode).",
         };
       }
       // 走 resolver.restart()，让 host 尽可能复用 transport；不得通过 disposeWorkspace
@@ -1974,7 +1974,7 @@ export function createLocalServices(options: {
       if (!resolver) {
         return {
           ok: false,
-          reason: "JGAgent Computer Use is not enabled (plugin off or not product mode).",
+          reason: "JGHarness Computer Use is not enabled (plugin off or not product mode).",
         };
       }
       try {
@@ -1986,14 +1986,14 @@ export function createLocalServices(options: {
         if (!helper || !isDefaultCuaProductHelperCurrent(helper)) {
           return {
             ok: false,
-            reason: "JGAgent Computer Use lifecycle is disposed.",
+            reason: "JGHarness Computer Use lifecycle is disposed.",
           };
         }
         return { ok: true };
       } catch (error) {
         return {
           ok: false,
-          reason: `Failed to restart JGAgent Computer Use: ${
+          reason: `Failed to restart JGHarness Computer Use: ${
             error instanceof Error ? error.message : String(error)
           }`,
         };
@@ -2006,7 +2006,7 @@ export function createLocalServices(options: {
   const resolveDynamicWorkflowUserMode = isDesktopAttachedRemote
     ? undefined
     : async () => (await settingService.get()).dynamicWorkflowMode;
-  // JGAgent 去官方化（阶段 3）：删除 codingPlanSubscriptionService 与 Off-Peak 工具面装配
+  // JGHarness 去官方化（阶段 3）：删除 codingPlanSubscriptionService 与 Off-Peak 工具面装配
   // （闲时任务依赖 Coding Plan 凭证与订阅灰度配置，随账号域一并移除）；
   // 动态工作流灰度配置原由订阅服务下发，现返回 undefined（保持默认关闭语义）。
   // 上游 v3.16.x 的 project 域装配（projection / remoteProject / project / taskGroup）保留合入。
@@ -2152,7 +2152,7 @@ export function createLocalServices(options: {
     resolveSessionDirectories: async (target) =>
       (await projectService.resolveSessionDirectories({ ...target, taskId: target.sessionId }))
         .additionalDirectories,
-    // JGAgent：accountProviderConfigSource 随账号域移除（apiKey/Personal 配置为唯一来源）。
+    // JGHarness：accountProviderConfigSource 随账号域移除（apiKey/Personal 配置为唯一来源）。
     ...(modelSelectionReadinessSource ? { modelSelectionReadinessSource } : {}),
     authorizeLocalMediaPreviewPath: options?.authorizeLocalMediaPreviewPath,
     commandResolver: options?.zcodeAgentCommandResolver,
@@ -2218,7 +2218,7 @@ export function createLocalServices(options: {
     },
     // 官方 Server MCP 身份头：host 是唯一身份权威，Agent 经反向请求索取。
     // Provider 存在性读取正式 Model Selection View；不恢复旧 Provider Snapshot。
-    // JGAgent 去官方化（阶段 3）：账号域删除后注入"无账号"stub，解析恒为不可用。
+    // JGHarness 去官方化（阶段 3）：账号域删除后注入"无账号"stub，解析恒为不可用。
     officialMcpAuthHeadersResolver: createOfficialMcpAuthHeadersResolver({
       accountRequestAuthService: noAccountRequestAuthService,
       credentialService,
@@ -2239,7 +2239,7 @@ export function createLocalServices(options: {
     })
       ? options?.cuaOperationStateReporter
       : undefined,
-    // JGAgent 只发布 turn/session 事实；面板 terminal policy 由 producer coordinator 决定。
+    // JGHarness 只发布 turn/session 事实；面板 terminal policy 由 producer coordinator 决定。
     ...(options?.serviceAuthorityMode === "desktop-local"
       ? {
           onCuaPipSessionLifecycle: (_workspace, event) => {
@@ -2286,7 +2286,7 @@ export function createLocalServices(options: {
       const telemetryConfigured = Boolean(
         telemetryEnv.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT || telemetryEnv.OTEL_EXPORTER_OTLP_ENDPOINT,
       );
-      // JGAgent 去官方化（阶段 3）：OAuth 删除后没有登录用户画像，遥测 userId 恒为 undefined。
+      // JGHarness 去官方化（阶段 3）：OAuth 删除后没有登录用户画像，遥测 userId 恒为 undefined。
       const telemetryDeviceMid = telemetryConfigured
         ? options?.agentTelemetry?.getDeviceMid?.()?.trim()
         : undefined;
@@ -2356,7 +2356,7 @@ export function createLocalServices(options: {
   // Helper health probe 短暂超时不应在 Computer Use turn 中途回收 Agent。resolver 会把 restart
   // 推迟到下一个 request/turn 边界；若 broker 确实已失效，当前 turn 会自然失败并由下一次请求恢复。
   hasActiveTurnRef = () => zcodeAgentService.hasActiveCuaOperationTurn();
-  // desktop-continuous UI 直接订阅 zcodeSessionService，绕开 JGAgent task adapter 的
+  // desktop-continuous UI 直接订阅 zcodeSessionService，绕开 JGHarness task adapter 的
   // mapServiceEvent 路径，导致 task_complete 永远不会写回 sqlite，侧边栏 spinner 不停。
   // 在 services 层装配一个共享的 taskIndexRepo + syncer，session 任意入口都会唤醒
   // shadow 订阅，把 runtime 终态收敛进 sqlite。
@@ -2473,7 +2473,7 @@ export function createLocalServices(options: {
       ),
     afterChange: publishProjectChange,
   });
-  // task wrapper 由 JGAgent task service adapter 提供；核心 session 状态由 JGAgent agent server 维护。
+  // task wrapper 由 JGHarness task service adapter 提供；核心 session 状态由 JGHarness agent server 维护。
   const zcodeTaskService = createZCodeTaskServiceAdapter({
     zcodeAgentService,
     taskIndexRepo,
@@ -2481,7 +2481,7 @@ export function createLocalServices(options: {
     settingService,
     cuaProductMcpServerResolver,
   });
-  // JGAgent 去官方化（阶段 3）：删除 OAuth 服务实例与 JWT 401 登出广播链路
+  // JGHarness 去官方化（阶段 3）：删除 OAuth 服务实例与 JWT 401 登出广播链路
   // （oauthService / zcodeJwtLogoutHandlerRef 随 oauth/ 目录移除）；
   // 同时删除闲时任务（Off-Peak）凭证解析闭包与逐票据 RequestAuth 装配。
   // 上游 v3.16.x：botRemoteWorkspaceService 重构为 botProjectRuntime（依赖
@@ -2570,7 +2570,7 @@ export function createLocalServices(options: {
     // 不能让开发环境默认生成仅存在于进程内存的 mock-share 链接。
     apiClient,
     baseUrl: buildRuntimeZCodeApiUrl(process.env, "/api/v1"),
-    // JGAgent 去官方化（阶段 3）：OAuth 登录删除后没有可用的分享鉴权令牌，
+    // JGHarness 去官方化（阶段 3）：OAuth 登录删除后没有可用的分享鉴权令牌，
     // 发布分享将按服务端 401 语义失败；导入分享不受影响。
     tokenProvider: async (): Promise<string | null> => null,
   });
@@ -2587,7 +2587,7 @@ export function createLocalServices(options: {
   // 注册链上的懒工厂（如 OffPeak）会各自创建 tasks-index sqlite repo；先收集到本数组，
   // services 集合建好后在 return 前统一登记进 sharedSqliteRepos 侧表
   const sqliteReposToClose: Array<{ close(): void }> = [];
-  // JGAgent 去官方化（阶段 3）：marketing-touch 与 cloud-content 服务不注册
+  // JGHarness 去官方化（阶段 3）：marketing-touch 与 cloud-content 服务不注册
   //（官方在此处 createMarketingAssetRegistry + IMarketingTouchService/ICloudContentService 装配）。
   const services = new ServiceCollection()
     .register(IFileService, fileService)
@@ -2648,7 +2648,7 @@ export function createLocalServices(options: {
       }),
     )
     .register(IFileWatcherService, createFileWatcherService())
-    // JGAgent 去官方化（阶段 3）：注册链移除 IOAuthService / ICodingPlanSubscriptionService /
+    // JGHarness 去官方化（阶段 3）：注册链移除 IOAuthService / ICodingPlanSubscriptionService /
     // IOffPeakTaskService；UsageStats 收窄为仅应用级统计（依赖只剩 agent service）。
     .register(IUsageStatsService, createUsageStatsService({ zcodeAgentService }))
     // 上游 v3.16.x 新增 source-server 域注册（无账号依赖），跟随官方。
@@ -2708,7 +2708,7 @@ export function createLocalServices(options: {
         ...options?.feedback,
         apiClient,
         credentialService,
-        // JGAgent 反馈收集服务（官网服务器上的集中收集端点）：
+        // JGHarness 反馈收集服务（官网服务器上的集中收集端点）：
         // 问题上报/提需求统一落到这里，团队在 /feedback-admin?key=<KEY> 查看。
         // 可用 ZCODE_FEEDBACK_API_BASE 覆盖；公司正式反馈后端就绪后改此常量。
         apiBaseUrl:
@@ -2813,7 +2813,7 @@ export function createTelemetryUserIdLoader(
   };
 }
 
-/** 仅给同一事件账号返回当前 JGAgent JWT；不缓存、不修改登录凭据。 */
+/** 仅给同一事件账号返回当前 JGHarness JWT；不缓存、不修改登录凭据。 */
 export function createTelemetryAuthorizationLoader(
   credentialService: Pick<ICredentialService, "load">,
 ): (userId: string) => Promise<string | null> {
@@ -2843,7 +2843,7 @@ export function createTelemetryAuthorizationLoader(
 export function createTelemetryMarketingParamsLoader(
   _credentialService: ICredentialService,
 ): () => Promise<import("@zcode/shared").OAuthLoginAttribution | null> {
-  // JGAgent 去官方化（阶段 3）：OAuth 渠道归因随登录体系删除，遥测不再携带登录归因参数。
+  // JGHarness 去官方化（阶段 3）：OAuth 渠道归因随登录体系删除，遥测不再携带登录归因参数。
   return async () => null;
 }
 
@@ -2866,7 +2866,7 @@ function readTelemetryOAuthUserId(rawUserInfo: string | null): string {
 }
 
 export function disposeServiceResources(services: ServiceCollection): void {
-  // JGAgent：cloudContent 服务未装配（商业化域移除），无资源需要收口。
+  // JGHarness：cloudContent 服务未装配（商业化域移除），无资源需要收口。
   (
     services.getOptional(IGenUiService) as (IGenUiService & { dispose?(): void }) | undefined
   )?.dispose?.();
@@ -2956,7 +2956,7 @@ export async function migrateApplicationStorage(
   hostId?: string,
 ): Promise<{ backupSkipped: boolean }> {
   const automations = new AutomationRepo();
-  // JGAgent：OffPeakTaskRepo 随闲时任务域移除，存储迁移只覆盖 automations 与 tasks。
+  // JGHarness：OffPeakTaskRepo 随闲时任务域移除，存储迁移只覆盖 automations 与 tasks。
   const tasks = new TaskIndexRepo(settings, hostId);
   try {
     await automations.ensureReady();

@@ -7,23 +7,23 @@ import {
 import type { ModelSelectionView } from "@zcode/services";
 import { encodeCustomModelValue } from "@/lib/zcodeCustomModelValue.js";
 
-export type ApiKeyProviderChoice = "jgagent" | "custom";
+export type ApiKeyProviderChoice = "jgharness" | "custom";
 
 export const CUSTOM_PROVIDER_BASE_URL_PLACEHOLDER = "https://your-gateway.example.com/v1";
 
 export function resolveLoginApiKeyDefaultProvider(locale: Locale): ApiKeyProviderChoice {
-  return "jgagent";
+  return "jgharness";
 }
 
 // 自定义供应商不基于目录模板创建，返回 null 表示没有 templateId 可查。
 export function resolveLoginApiKeyTemplateId(
   choice: ApiKeyProviderChoice,
 ): string | null {
-  return choice === "jgagent" ? "jgagent-gateway" : null;
+  return choice === "jgharness" ? "jgharness-gateway" : null;
 }
 
 export function resolveLoginApiKeyProviderLabel(choice: ApiKeyProviderChoice): string {
-  if (choice === "jgagent") {
+  if (choice === "jgharness") {
     // Welcome Screen API Key 错误提示需要使用 BigModel 品牌固定写法。
     return "捷关模型网关";
   }
@@ -76,7 +76,7 @@ export function buildLoginApiKeySkipSettings(
   _choice: ApiKeyProviderChoice,
   _now: number,
 ): Partial<AppSettings> {
-  // JGAgent 去官方化：providerFamilyDomain 仅服务 OAuth 家族选择，已随账号域删除。
+  // JGHarness 去官方化：providerFamilyDomain 仅服务 OAuth 家族选择，已随账号域删除。
   return {};
 }
 

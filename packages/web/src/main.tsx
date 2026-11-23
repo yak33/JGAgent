@@ -38,7 +38,7 @@ import {
   resolveWebRemoteControlRelayWsUrl,
 } from "@zcode/shared";
 import { WebCallbackPage } from "./auth/WebCallbackPage.js";
-// JGAgent 去官方化（阶段 3）：删除 web OAuth 登录服务（webAuthService / zaiWebOAuthProvider /
+// JGHarness 去官方化（阶段 3）：删除 web OAuth 登录服务（webAuthService / zaiWebOAuthProvider /
 // browserOAuthCredentialRepo / webZaiOAuthConfig / oauthStateCodec / webAuthLocale）；
 // /share/callback 保留渲染但仅提示登录不可用，分享页 token 读取降级为空。
 import { resolveWebCommunityUrl, resolveWebHelpConfig } from "./communityUrl.js";
@@ -304,8 +304,8 @@ function isWebRemoteRoute(): boolean {
 
 
 function renderWebAuthCallbackPage(): void {
-  // JGAgent 去官方化（阶段 3）：OAuth 回调不再交换 token，仅渲染不可用提示页。
-  document.title = "JGAgent - Sign In";
+  // JGHarness 去官方化（阶段 3）：OAuth 回调不再交换 token，仅渲染不可用提示页。
+  document.title = "JGHarness - Sign In";
   root.render(
     <WebCallbackPage
       onBack={() => {
@@ -322,7 +322,7 @@ async function renderConversationSharePage(): Promise<void> {
   document.documentElement.lang = routeLocale;
   // 分享页必须设置 title：否则浏览器标签只显示 index.html 的通用标题。
   // 会话标题要等 preview 加载完，先给一个语言正确的兜底。
-  document.title = routeLocale === "zh-CN" ? "JGAgent 会话分享" : "JGAgent Conversation Share";
+  document.title = routeLocale === "zh-CN" ? "JGHarness 会话分享" : "JGHarness Conversation Share";
   const shareCode = resolveConversationShareCodeFromPath(window.location.pathname);
   if (!shareCode) {
     root.render(
@@ -360,14 +360,14 @@ async function renderConversationSharePage(): Promise<void> {
       window.sessionStorage.removeItem("zcode:share:mock-auth");
       window.location.reload();
     }
-    // JGAgent 去官方化（阶段 3）：非 mock 分支的 Web OAuth 登出随登录域删除（无会话可退）。
+    // JGHarness 去官方化（阶段 3）：非 mock 分支的 Web OAuth 登出随登录域删除（无会话可退）。
   };
   root.render(
     <ConversationShareLandingLoader
       shareCode={shareCode}
       client={client}
       getAccessToken={() => getMockToken()}
-      // JGAgent 去官方化（阶段 3）：Web OAuth 登录入口不再提供（onLogin 不传，受限分享显示提示而无按钮）。
+      // JGHarness 去官方化（阶段 3）：Web OAuth 登录入口不再提供（onLogin 不传，受限分享显示提示而无按钮）。
       onLogout={onLogout}
       locale={routeLocale}
       theme={resolveWebThemePreference("zai-light")}
@@ -586,7 +586,7 @@ function createWebPlatform(options?: {
           : Promise.reject(new Error("Temporary text attachments require a desktop host")),
     onRemoteConnectionLog: () => () => {},
     onRemoteSessionClosed: () => () => {},
-    // JGAgent：onBotRemoteWorkspaceReconnected 随官方 V2 bot 链路移除。
+    // JGHarness：onBotRemoteWorkspaceReconnected 随官方 V2 bot 链路移除。
     // Web 端无多窗口管理
     activateOrSetWorkspace: () => Promise.resolve({ activated: false }),
     // Bugfix: Web 远程控制模式虽然复用了 web UI，但它背后其实挂着 desktop。
@@ -1038,12 +1038,12 @@ export function createHomeOnlyWebRemoteControlServices(): RootServices {
       recentProjects: [],
       locale: resolveWebRemoteControlScreenLocale(navigator.language),
     }),
-    // JGAgent：个性化指令由桌面端管理；Web home-only 服务在桥接前不可用，返回空态。
+    // JGHarness：个性化指令由桌面端管理；Web home-only 服务在桥接前不可用，返回空态。
     getUserInstructions: async () => ({ content: "", filePath: "" }),
     saveUserInstructions: async () => ({ filePath: "" }),
     update: async () => {},
     updateDataBaseDir: async () => {},
-    // JGAgent：ensureDefaultProject 随 project 域接管移除。
+    // JGHarness：ensureDefaultProject 随 project 域接管移除。
   };
 
   const emptyGitSummary = (workspacePath: string) => ({
@@ -1271,7 +1271,7 @@ export function createHomeOnlyWebRemoteControlServices(): RootServices {
       createUnsupportedHomeOnlyService<RootServices["feedbackService"]>("feedbackService"),
     settingsSyncService:
       createUnsupportedHomeOnlyService<RootServices["settingsSyncService"]>("settingsSyncService"),
-    // JGAgent：source-server 域为上游 v3.16.x 新增必填服务；Web 端无 SSH source server 场景，
+    // JGHarness：source-server 域为上游 v3.16.x 新增必填服务；Web 端无 SSH source server 场景，
     // 以 unsupported stub 满足 IServiceAccessor 形状。
     sourceServerWorkspaceService:
       createUnsupportedHomeOnlyService<RootServices["sourceServerWorkspaceService"]>(
@@ -1428,7 +1428,7 @@ function WebBootstrapErrorScreen({ message }: { message: string }) {
 }
 
 function renderWebBootstrapError(error: unknown): void {
-  document.title = "JGAgent - Web";
+  document.title = "JGHarness - Web";
   root.render(
     <WebBootstrapErrorScreen message={error instanceof Error ? error.message : String(error)} />,
   );
@@ -1795,7 +1795,7 @@ async function bootstrapExternalRelayWebRemoteControl(params: URLSearchParams): 
   const requestBootstrap = async (): Promise<WebRemoteControlWindowBootstrapResult> => {
     const requestId = createWebRemoteControlRequestId("bootstrap");
     const response = await requestAppPayload(
-      // JGAgent V1：bootstrap 请求不携带 terminalClientSessionId（V2 terminal 页面会话语义不适用）。
+      // JGHarness V1：bootstrap 请求不携带 terminalClientSessionId（V2 terminal 页面会话语义不适用）。
       { zcode_type: "bootstrap-request", requestId },
       (
         payload,
@@ -2449,7 +2449,7 @@ async function bootstrapWebApp() {
       onClose: () => {},
     });
     const platform = createWebPlatform();
-    document.title = "JGAgent - Web + Server";
+    document.title = "JGHarness - Web + Server";
 
     root.render(
       <AppErrorBoundary>

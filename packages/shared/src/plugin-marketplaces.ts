@@ -38,12 +38,12 @@ export const DEFAULT_ENABLED_OFFICIAL_PLUGIN_IDS: ReadonlySet<string> = new Set(
 
 export const DEFAULT_PLUGIN_MARKETPLACES: DefaultPluginMarketplace[] = [
   {
-    // JGAgent de-officialization: official market CDN source points to a reserved non-resolving domain, local seed shards still available,
+    // JGHarness de-officialization: official market CDN source points to a reserved non-resolving domain, local seed shards still available,
     // CDN refresh fails silently. When self-hosting a company plugin source, replace with the company marketplace.json address.
     id: ZCODE_OFFICIAL_PLUGIN_MARKETPLACE_ID,
-    source: "https://cdn.jgagent.invalid/jgagent/official-plugin/marketplace.json",
+    source: "https://cdn.jgharness.invalid/jgharness/official-plugin/marketplace.json",
     name: ZCODE_OFFICIAL_PLUGIN_MARKETPLACE_ID,
-    description: "Official JGAgent plugins marketplace: built-in and community plugins for JGAgent.",
+    description: "Official JGHarness plugins marketplace: built-in and community plugins for JGHarness.",
     pluginCount: 0,
   },
   {
@@ -57,7 +57,7 @@ export const DEFAULT_PLUGIN_MARKETPLACES: DefaultPluginMarketplace[] = [
   },
 ];
 
-// 商店「公开」分段只有一个 JGAgent 官方市场 id，内置与 CDN 不再拆分身份。
+// 商店「公开」分段只有一个 JGHarness 官方市场 id，内置与 CDN 不再拆分身份。
 export const PUBLIC_STORE_MARKETPLACE_IDS = [ZCODE_OFFICIAL_PLUGIN_MARKETPLACE_ID] as const;
 
 export function isPublicStoreMarketplaceId(id: string): boolean {

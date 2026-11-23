@@ -1,4 +1,4 @@
-// JGAgent 去官方化（阶段 3）：账号鉴权服务实装（createAccountRequestAuthService /
+// JGHarness 去官方化（阶段 3）：账号鉴权服务实装（createAccountRequestAuthService /
 // accountProviderRequestAuthService）随账号域删除；本文件仅保留上游类型面，
 // 供 zcodeAgentService 等处对齐官方签名（我方装配恒走 AccountRequestAuthOptions 的
 // undefined 分支，不注入实现）。

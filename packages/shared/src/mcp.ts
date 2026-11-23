@@ -1,5 +1,5 @@
 /**
- * MCP (Model Context Protocol) types for JGAgent
+ * MCP (Model Context Protocol) types for JGHarness
  * Based on the original Tauri implementation
  */
 

@@ -163,7 +163,7 @@ export class ZCodeProtocolNdjsonConnection {
       this.buffer = "";
     }
     this.draining = true;
-    this.notifyTransportClosed(new Error("JGAgent Protocol client connection closed"));
+    this.notifyTransportClosed(new Error("JGHarness Protocol client connection closed"));
     // EOF 保留短请求半关闭响应，但挂起 handler 不能让进程永久保活。
     this.drainTimer = setTimeout(() => this.finish(), PROTOCOL_EOF_DRAIN_MS);
     void Promise.all([this.processing, ...this.presentationReads]).then(
@@ -173,7 +173,7 @@ export class ZCodeProtocolNdjsonConnection {
   };
 
   private readonly onAbort = (): void => {
-    this.notifyTransportClosed(new Error("JGAgent Protocol runtime stopping"));
+    this.notifyTransportClosed(new Error("JGHarness Protocol runtime stopping"));
     this.finish();
   };
 
@@ -307,7 +307,7 @@ export class ZCodeProtocolNdjsonConnection {
     try {
       decoded = JSON.parse(line);
     } catch (error) {
-      this.options.logger?.warn("JGAgent Protocol JSON parse failed", {
+      this.options.logger?.warn("JGHarness Protocol JSON parse failed", {
         error: error instanceof Error ? error.message : String(error),
         event: "zcode_protocol.parse.failed",
         module: "bootstrap.zcode_protocol",
@@ -319,7 +319,7 @@ export class ZCodeProtocolNdjsonConnection {
 
     const parsed = zcodeProtocolMessageSchema.safeParse(decoded);
     if (!parsed.success) {
-      this.sendError("invalid-message", -32600, "Invalid JGAgent Protocol message", {
+      this.sendError("invalid-message", -32600, "Invalid JGHarness Protocol message", {
         issues: parsed.error.issues,
       });
       return null;

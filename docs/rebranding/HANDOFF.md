@@ -1,4 +1,4 @@
-# JGAgent 工作交接文档
+# JGHarness 工作交接文档
 
 > **用途**：跨设备 / 跨会话交接。新 AI 会话从这份文档开始即可接手全部上下文，不需要重看历史对话。
 > **最后更新**：2026-09-26（v0.2.0 preview 上线后）
@@ -8,7 +8,7 @@
 
 ## 1. 项目背景（一段话版）
 
-捷关公司要基于开源项目 ZCode（github.com/zai-org/ZCode，Apache-2.0，AI 编程工作台，约 90 万行 TS 的 pnpm monorepo）二次开发公司自有 Agent 工具 **JGAgent**。改造分四个阶段：环境落位 ✅ → 品牌替换 ✅ → 端点与网络收口 ✅ → 账号与商业化摘除 ✅（2026-09-23 完成，四个批次）→ 发布工程 🟡（v0.2.0 Windows 预览版已于 2026-09-26 上线，剩余项见清单第七节）。已完成部分均已提交推送。
+捷关公司要基于开源项目 ZCode（github.com/zai-org/ZCode，Apache-2.0，AI 编程工作台，约 90 万行 TS 的 pnpm monorepo）二次开发公司自有 Agent 工具 **JGHarness**。改造分四个阶段：环境落位 ✅ → 品牌替换 ✅ → 端点与网络收口 ✅ → 账号与商业化摘除 ✅（2026-09-23 完成，四个批次）→ 发布工程 🟡（v0.2.0 Windows 预览版已于 2026-09-26 上线，剩余项见清单第七节）。已完成部分均已提交推送。
 
 阶段 3 全量删除约 **3.8 万行**（批次 1+2：-1279；批次 3a+3b：-6760；批次 3c：-30103）。终验：typecheck exit 0、lint 0 错误 72 警告（全存量）、architecture 0 违规、dev 启动冒烟通过 + 官方域名请求 0。
 
@@ -22,16 +22,16 @@
 
 ## 2. 仓库与 Git
 
-- 本地路径（旧机器）：`D:\NenniuProjects\JGAgent`；ZCode 原仓库（只读参照）在同目录 `D:\NenniuProjects\ZCode`
-- **origin**：`git@github.com:yak33/JGAgent.git`（公司仓库，**私有**，2026-09-26 由公开改为私有；仓库内含网关与服务器地址，勿再改回公开）
+- 本地路径（旧机器）：`D:\NenniuProjects\JGHarness`；ZCode 原仓库（只读参照）在同目录 `D:\NenniuProjects\ZCode`
+- **origin**：`git@github.com:yak33/JGHarness.git`（公司仓库，**私有**，2026-09-26 由公开改为私有；仓库内含网关与服务器地址，勿再改回公开）
 - **upstream**：`git@github.com:zai-org/ZCode.git`（官方源，只读）。⚠️ 本仓是快照导入（根提交 `c959f68`，无官方 git 历史），**不能用 `git merge upstream/main`**（无共同祖先，强并会全仓库 add/add 冲突）；同步用 `git diff <基线> upstream/main > patch` 后 `git apply --3way patch`，详见 [docs/release/README.md](../release/README.md) 第七节
-- 关键提交：`c959f68` 基线导入 → `a909fa1` 阶段 1 品牌替换 → `867bfe8` 阶段 2 端点收口 → `6d6e055`…`889e292` 阶段 3 四批摘除 → `d700dbf` 数据根迁 `~/.jgagent` → `b1edf61` v0.2.0 → `57d2e64` 官网 → `3163715` 同步上游 v3.14.3（v0.3.0）→ `a2df793` 反馈管理台 v0.3.3 → **`sync/upstream-v3.15.1` 分支：同步上游 v3.15.1（2026-10-14，UI Plugin/Gen UI/Web 远控增强；反馈功能保持自建未合入官方版；typecheck/lint/architecture 全过；v0.4.0 已于 2026-10-14 合并 main 并上线官网，推送用 --no-verify——官方新测试与 JGAgent 改造的断言冲突约 548 用例待批量适配，详见 release README 第七节"单测适配债"）**
+- 关键提交：`c959f68` 基线导入 → `a909fa1` 阶段 1 品牌替换 → `867bfe8` 阶段 2 端点收口 → `6d6e055`…`889e292` 阶段 3 四批摘除 → `d700dbf` 数据根迁 `~/.jgharness` → `b1edf61` v0.2.0 → `57d2e64` 官网 → `3163715` 同步上游 v3.14.3（v0.3.0）→ `a2df793` 反馈管理台 v0.3.3 → **`sync/upstream-v3.15.1` 分支：同步上游 v3.15.1（2026-10-14，UI Plugin/Gen UI/Web 远控增强；反馈功能保持自建未合入官方版；typecheck/lint/architecture 全过；v0.4.0 已于 2026-10-14 合并 main 并上线官网，推送用 --no-verify——官方新测试与 JGHarness 改造的断言冲突约 548 用例待批量适配，详见 release README 第七节"单测适配债"）**
 
 **换新电脑步骤**：
 
 ```bash
-git clone git@github.com:yak33/JGAgent.git   # SSH（HTTPS 推送会 Connection reset）
-cd JGAgent && pnpm install                    # Node 24.14.0 + pnpm 10.33.2（mise.toml 为准）
+git clone git@github.com:yak33/JGHarness.git   # SSH（HTTPS 推送会 Connection reset）
+cd JGHarness && pnpm install                    # Node 24.14.0 + pnpm 10.33.2（mise.toml 为准）
 pnpm typecheck                                # 验证：exit 0
 pnpm lint                                     # 验证：0 错误、72 警告（阶段 3 终验基线，全存量）
 ```
@@ -41,8 +41,8 @@ pnpm lint                                     # 验证：0 错误、72 警告（
 ### 阶段 1 品牌替换（`a909fa1`，392 文件）
 
 - 全套图标（PNG/ICO/ICNS/favicon/DMG 背景）替换为公司 "JG" 标识图，**透明圆角**（22.5% 比例，接近系统图标规格）；再生成脚本在 [tools/gen-icons.cjs](tools/gen-icons.cjs)（用法：`NODE_PATH=<sharp目录>/node_modules node gen-icons.cjs <源图> <仓库根> [圆角比例，默认0.225，0为直角]`）
-- 产品名 JGAgent、appId `com.jieguan.jgagent`、Linux 可执行名 `jgagent`；单一身份源 `packages/desktop/scripts/desktop-product-identity.mjs`
-- **1073 处** `ZCode` → `JGAgent`，词边界正则（`(?<![A-Za-z0-9_])ZCode(?![A-Za-z0-9_])`），自动跳过代码标识符
+- 产品名 JGHarness、appId `com.jieguan.jgharness`、Linux 可执行名 `jgharness`；单一身份源 `packages/desktop/scripts/desktop-product-identity.mjs`
+- **1073 处** `ZCode` → `JGHarness`，词边界正则（`(?<![A-Za-z0-9_])ZCode(?![A-Za-z0-9_])`），自动跳过代码标识符
 - Web 启动页 Z 闪电 logo → 斜体 JG 字标；README 中英文重写（注明基于 ZCode 二开）
 
 ### 阶段 2 端点收口（`867bfe8`，10 文件）
@@ -69,10 +69,10 @@ pnpm lint                                     # 验证：0 错误、72 警告（
 
 | 主题 | 提交 | 要点 |
 | --- | --- | --- |
-| 公司模型网关 | `f31e1c0` | `jgagent-gateway` 模板，OpenAI 兼容，14 个模型 |
+| 公司模型网关 | `f31e1c0` | `jgharness-gateway` 模板，OpenAI 兼容，14 个模型 |
 | 欢迎页 | `3c342ec`、`993eb64`、`0be9ae3` | API Key 表单：捷关网关 + 自定义供应商（URL+Key，复用 `createPersonalProvider`），创建时传入 locale |
 | 模型供应商设置页 | `fec0cfa`、`f93d737`、`82c277b` | 模板选择器分「捷关」「其他」两组；导航删智谱 OAuth 预设卡，改为「捷关」「自定义供应商」两组常驻，空配置显示空态 |
-| 数据隔离 | `0781467`、`d700dbf` | 会话库等 7 处路径跟随 `ZCODE_DATA_BASE_DIR`；主目录数据根改为 `~/.jgagent`，不迁移不回读 `~/.zcode`（spec：`docs/specs/storage-root-isolation.md`） |
+| 数据隔离 | `0781467`、`d700dbf` | 会话库等 7 处路径跟随 `ZCODE_DATA_BASE_DIR`；主目录数据根改为 `~/.jgharness`，不迁移不回读 `~/.zcode`（spec：`docs/specs/storage-root-isolation.md`） |
 | 品牌残留 | `3c342ec`→`535bd6a` 共 6 次 | 标题栏、启动画面、About、新建任务空态等处 Z 标的独立副本逐个替换为 JG 字标 |
 | Agent 提示词 | `ca930f3`、`876fb6c` | 身份改为中文"捷关 Agent"，定位从编程助手调整为全能 AI 助手 |
 | 本地身份 | `ab48017` | 左下角头像颜色 + 用户名 + 个性化设置（无账号体系） |
@@ -92,13 +92,13 @@ pnpm lint                                     # 验证：0 错误、72 警告（
 
 | 占位值 | 位置 | 待确认内容 |
 | --- | --- | --- |
-| `com.jieguan.jgagent` | `desktop-product-identity.mjs`（含 .preview/.dev 变体） | 公司正式反向域名 |
+| `com.jieguan.jgharness` | `desktop-product-identity.mjs`（含 .preview/.dev 变体） | 公司正式反向域名 |
 | 版权主体"捷关 / JieGuan" | `about.ts` | 公司注册全称 |
-| `https://jgagent.invalid` | `zcodeEndpoint.ts` | 公司业务服务端地址 |
-| ✅ `http://106.15.120.94:9527/v1`（14 个模型：glm 全系 + claude 系） | `config/provider/zcode-builtin.json` 的 jgagent-gateway 模板 | 已接通（2026-09-23 实测 /v1/models 返回正常）；每人在网关上有独立 api-key，在应用设置页粘贴即可 |
-| `https://cdn.jgagent.invalid` | `remoteCdn.ts`、`plugin-marketplaces.ts` 等 | 公司 CDN / 插件市场源 |
+| `https://jgharness.invalid` | `zcodeEndpoint.ts` | 公司业务服务端地址 |
+| ✅ `http://106.15.120.94:9527/v1`（14 个模型：glm 全系 + claude 系） | `config/provider/zcode-builtin.json` 的 jgharness-gateway 模板 | 已接通（2026-09-23 实测 /v1/models 返回正常）；每人在网关上有独立 api-key，在应用设置页粘贴即可 |
+| `https://cdn.jgharness.invalid` | `remoteCdn.ts`、`plugin-marketplaces.ts` 等 | 公司 CDN / 插件市场源 |
 | `config/default.json` 空链接 | feedback_url / community_urls | 公司内部反馈与社群地址 |
-| `https://jgagent.invalid/docs` | `packages/ui/src/lib/productDocs.ts` | 公司文档站 |
+| `https://jgharness.invalid/docs` | `packages/ui/src/lib/productDocs.ts` | 公司文档站 |
 
 替换方法：全局搜 `.invalid` 逐项换，或优先用环境变量（`ZCODE_BASE_URL`、`ZCODE_CDN_BASE_URL` 等，见 `.env.example`）。
 
@@ -107,14 +107,14 @@ pnpm lint                                     # 验证：0 错误、72 警告（
 - **dev 启动必须用隔离数据目录**（已实测踩坑）：
   ```powershell
   # PowerShell（Windows 默认终端）
-  $env:ZCODE_DATA_BASE_DIR="C:/Users/<用户>/.jgagent-dev-home"; pnpm dev:desktop
+  $env:ZCODE_DATA_BASE_DIR="C:/Users/<用户>/.jgharness-dev-home"; pnpm dev:desktop
   ```
   ```bash
   # Git Bash / macOS / Linux
-  ZCODE_DATA_BASE_DIR="$HOME/.jgagent-dev-home" pnpm dev:desktop
+  ZCODE_DATA_BASE_DIR="$HOME/.jgharness-dev-home" pnpm dev:desktop
   ```
   注意 PowerShell 不支持 bash 的 `VAR=value 命令` 前缀语法，必须用 `$env:VAR` 先设置。
-  自 `d700dbf` 起默认数据根为 `~/.jgagent`，不再读 ZCode 原版的 `~/.zcode`（早期踩过的"遗留官方账号 provider 启动时真实外发 `zcode.z.ai` 余额查询"这类问题已从源头消失）。但本机若装了 JGAgent 正式版，dev 不设隔离会与它共用 `~/.jgagent`，两边的 provider 配置、会话库互相污染，所以 dev 仍需隔离。
+  自 `d700dbf` 起默认数据根为 `~/.jgharness`，不再读 ZCode 原版的 `~/.zcode`（早期踩过的"遗留官方账号 provider 启动时真实外发 `zcode.z.ai` 余额查询"这类问题已从源头消失）。但本机若装了 JGHarness 正式版，dev 不设隔离会与它共用 `~/.jgharness`，两边的 provider 配置、会话库互相污染，所以 dev 仍需隔离。
 - **端口残留**：异常退出后 vite（5174）可能残留，`netstat -ano | grep 5174` 找 PID kill 后再启
 - **Node 24.14.0 / pnpm 10.33.2** 以 `mise.toml` 为准；`pnpm install` 约 50 秒（有全局 store 时）；shell 实际 Node 24.19 也可跑（仅 engine 警告）
 - **推送用 SSH**：该网络环境下 HTTPS 推 GitHub 报 `Connection was reset`，SSH key 已配置（yak33 账户）
@@ -136,7 +136,7 @@ pnpm lint                                     # 验证：0 错误、72 警告（
 | `apps/zcode-cli/packages/adapters/src/model/official-coding-plan-gateway.ts` | 官方网关转发（已禁用，机制保留） |
 | `docs/rebranding/README.md` | 改造清单（阶段 3 文件级地图、阶段 4 进度） |
 | `docs/release/README.md` | 发版流程、官网、服务器运维 |
-| `packages/services/src/paths.ts` | 主目录数据根 `~/.jgagent` 唯一定义（`getZCodeDataRootDir`） |
+| `packages/services/src/paths.ts` | 主目录数据根 `~/.jgharness` 唯一定义（`getZCodeDataRootDir`） |
 | `docs/rebranding/tools/gen-icons.cjs` | 图标再生成脚本 |
 
 ## 9. 工作约定（沿用自公司全局规范）

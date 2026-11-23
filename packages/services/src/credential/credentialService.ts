@@ -78,7 +78,7 @@ async function readAllUnchecked(credentialsFile: string): Promise<Record<string,
     if (getErrorCode(error) === "ENOENT") {
       return {};
     }
-    throw new Error(`Unable to read JGAgent credentials: ${credentialsFile}`, { cause: error });
+    throw new Error(`Unable to read JGHarness credentials: ${credentialsFile}`, { cause: error });
   }
 
   try {
@@ -93,7 +93,7 @@ async function readAllUnchecked(credentialsFile: string): Promise<Record<string,
       backupPath,
       credentialsFile,
     });
-    throw new Error(`JGAgent credentials are corrupt: ${credentialsFile}`, { cause: error });
+    throw new Error(`JGHarness credentials are corrupt: ${credentialsFile}`, { cause: error });
   }
 }
 

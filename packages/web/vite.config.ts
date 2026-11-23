@@ -75,7 +75,7 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 5173,
       proxy: {
-        // JGAgent 去官方化（阶段 3）：/api/v1/oauth/token 调试代理随 OAuth 登录域移除。
+        // JGHarness 去官方化（阶段 3）：/api/v1/oauth/token 调试代理随 OAuth 登录域移除。
         // /api/v1/remote 是 Web 远控 relay 调试代理（ws），必须放在 `/api` 通配代理之前。
         "/api/v1/remote": {
           target: zcodeEndpointOrigin,

@@ -193,7 +193,7 @@ export function resolveCodingPlanEntitlementState({
       subscriptionExpireTime,
       subscriptionDetails,
       quotaLimits: snapshot?.quota?.limits ?? [],
-      // JGAgent 去官方化（阶段 3）：官方 Server MCP 额度展示移除（订阅域删除）。
+      // JGHarness 去官方化（阶段 3）：官方 Server MCP 额度展示移除（订阅域删除）。
     };
   }
 
@@ -239,7 +239,7 @@ export function resolveCodingPlanEntitlementState({
     subscriptionExpireTime,
     subscriptionDetails,
     quotaLimits: snapshot?.quota?.limits ?? [],
-    // JGAgent 去官方化（阶段 3）：官方 Server MCP 额度展示移除（订阅域删除）。
+    // JGHarness 去官方化（阶段 3）：官方 Server MCP 额度展示移除（订阅域删除）。
   };
 }
 

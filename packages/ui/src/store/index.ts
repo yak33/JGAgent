@@ -9,7 +9,7 @@ import type { IBroadcastService, BroadcastMessage } from "@zcode/services";
 import type { OAuthProviderId, UserInfo } from "@zcode/shared";
 import type { CodePreviewSettings } from "@/lib/codePreviewSettings.js";
 
-// JGAgent 去官方化（阶段 3）：删除 Coding Plan 额度重置 store 集成
+// JGHarness 去官方化（阶段 3）：删除 Coding Plan 额度重置 store 集成
 // （store/codingPlanQuotaResetState.ts 与 lib/codingPlanQuotaResetUi.js 随订阅域移除）。
 
 import { DEFAULT_CODE_PREVIEW_SETTINGS } from "@/lib/codePreviewSettings.js";
@@ -167,7 +167,7 @@ export interface ZCodeState {
   authSessionSeq: number;
   setUser: (user: UserInfo | null) => void;
 
-  // JGAgent 去官方化（阶段 3）：移除 isRestoringOAuthSession / oauthError / oauthPollingActive /
+  // JGHarness 去官方化（阶段 3）：移除 isRestoringOAuthSession / oauthError / oauthPollingActive /
   // oauthSuccessSeq / lastOAuthSuccessProvider 等 OAuth 会话字段；Root 层 OAuth effects 摘除后已无写入方。
   apiKeyLoginSuccessSeq: number;
   lastApiKeyLoginModel: string | null;
@@ -234,7 +234,7 @@ const STATE_CHANNEL_PREFIX = "state:";
  * @param broadcastService - 广播服务。Desktop 走 RPC，Web 可传 no-op 实现
  */
 export function createZCodeStore(broadcastService: IBroadcastService) {
-  // JGAgent 去官方化（阶段 3）：移除 initialIsRestoringOAuthSession 选项，OAuth 会话恢复门禁已随 Root OAuth effects 摘除。
+  // JGHarness 去官方化（阶段 3）：移除 initialIsRestoringOAuthSession 选项，OAuth 会话恢复门禁已随 Root OAuth effects 摘除。
   /** 标记：正在应用来自广播的更新，此时不再重复广播（防止循环） */
   let applyingBroadcast = false;
   let loginEntryRequestSeq = 0;

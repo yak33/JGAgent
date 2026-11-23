@@ -1,4 +1,4 @@
-// JGAgent 去官方化（阶段 3）：删除 OAuth 登录流程（loginZCodeCli / loginBigmodelCodingPlan /
+// JGHarness 去官方化（阶段 3）：删除 OAuth 登录流程（loginZCodeCli / loginBigmodelCodingPlan /
 // createOAuthClient / pollUntilReady / resolveCodingPlanApiKey）——cli-oauth 与
 // bigmodel-oauth 客户端随账号域移除；本模块保留 API Key 配置、登出与已配置检测。
 import {

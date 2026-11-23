@@ -194,8 +194,8 @@ const enUS: Record<string, string> = {
     "Projects on this computer can be restored later from Removed projects on this page.",
   "projectManagement.confirm.restoreRemote":
     "To bring back a remote project later, add it again from its device.",
-  "projectManagement.confirm.data.option": "Also delete their JGAgent data",
-  "projectManagement.confirm.data.optionOne": "Also delete its JGAgent data",
+  "projectManagement.confirm.data.option": "Also delete their JGHarness data",
+  "projectManagement.confirm.data.optionOne": "Also delete its JGHarness data",
   "projectManagement.confirm.data.note":
     "Sessions, session files, checkpoints and memory of the {count} projects on this computer.",
   "projectManagement.confirm.data.noteOne":
@@ -277,8 +277,8 @@ const enUS: Record<string, string> = {
   "project.hasUnread": "Project has unread tasks",
   "project.projectOrder": "Project order",
   "project.taskOrder": "Task order",
-  "project.browseHint": "JGAgent can read and edit these folders",
-  "project.connectAndBrowseHint": "Device status: {status}. JGAgent connects first.",
+  "project.browseHint": "JGHarness can read and edit these folders",
+  "project.connectAndBrowseHint": "Device status: {status}. JGHarness connects first.",
   "project.selectHost": "Choose a remote connection",
   "project.back": "Back",
   "project.next": "Next",
@@ -291,7 +291,7 @@ const enUS: Record<string, string> = {
   "project.trustFolderTitle": "Trust this folder?",
   "project.trustFoldersTitle": "Trust these folders?",
   "project.trustFoldersDescription":
-    "JGAgent can read and edit files in these folders and run commands within your current permission settings. Continue only if you trust every folder listed.",
+    "JGHarness can read and edit files in these folders and run commands within your current permission settings. Continue only if you trust every folder listed.",
   "project.trustFoldersAndCreate": "Trust folders and create",
   "project.trustFoldersAndRestore": "Trust folders and restore",
   "project.existingOnDeviceHint": "Already have projects on this device?",
@@ -374,7 +374,7 @@ const enUS: Record<string, string> = {
   "git.managedWorktree.error.bucket-exhausted": "Couldn't allocate a worktree folder",
   "git.managedWorktree.error.worktree-dirty": "The worktree has uncommitted changes",
   "git.managedWorktree.error.worktree-in-use": "A task is using this worktree",
-  "git.managedWorktree.error.not-managed": "This folder isn't a worktree managed by JGAgent",
+  "git.managedWorktree.error.not-managed": "This folder isn't a worktree managed by JGHarness",
   "git.managedWorktree.error.local-only": "Worktrees are available only for local projects",
   "git.managedWorktree.error.git-failed": "The Git operation failed",
   "git.managedWorktree.error.task-immovable": "Worktree tasks can't be moved to another project",
@@ -414,7 +414,7 @@ const enUS: Record<string, string> = {
     "Couldn't confirm whether the task started. Nothing was deleted. Try again later.",
   "git.managedWorktree.error.removing": "This worktree is being deleted. Try again later.",
   "git.managedWorktree.dialog.title": "Worktrees",
-  "git.managedWorktree.dialog.description": "Worktrees that JGAgent manages for {project}",
+  "git.managedWorktree.dialog.description": "Worktrees that JGHarness manages for {project}",
   "git.managedWorktree.dialog.loadFailed": "Couldn't load worktrees",
   "git.managedWorktree.dialog.empty": "No worktrees yet",
   "git.managedWorktree.dialog.detached": "detached · {sha}",
@@ -511,7 +511,7 @@ const enUS: Record<string, string> = {
   "remote.action.downgrade-server": "Switch remote to {version}",
   "remote.downgradeConfirmTitle": "Switch the remote to {version}?",
   "remote.downgradeConfirmDescription":
-    "The remote JGAgent service will switch from {current} to {version}, the same version as this desktop app. Devices that still use the newer desktop app must update the remote again when they connect. The older version may not fully show content that the newer version wrote.",
+    "The remote JGHarness service will switch from {current} to {version}, the same version as this desktop app. Devices that still use the newer desktop app must update the remote again when they connect. The older version may not fully show content that the newer version wrote.",
   "remote.downgradeConfirm": "Switch",
   "remote.downgradedHint":
     "An older desktop app switched this remote from {from} to the current version. The remote updates only after you confirm.",
@@ -662,7 +662,7 @@ const enUS: Record<string, string> = {
   "startPlan.recommendation.dismiss": "Don’t show again",
   "occupationOnboarding.stepMode": "UI mode",
   "occupationOnboarding.modeTitle": "Choose your UI mode",
-  "occupationOnboarding.modeDescription": "How would you like JGAgent to show its work?",
+  "occupationOnboarding.modeDescription": "How would you like JGHarness to show its work?",
   "occupationOnboarding.coding": "Coding mode",
   "occupationOnboarding.codingDescription":
     "I want to see code, command output, and change details throughout the development process.",
@@ -713,14 +713,14 @@ const enUS: Record<string, string> = {
   "occupationOnboarding.migration": "Migrate conversations",
   "occupationOnboarding.migrationDescription": "Migrate conversation history from Claude Code",
   "occupationOnboarding.memory": "Enable Workspace Memory",
-  "occupationOnboarding.memoryDescription": "Let JGAgent remember your preferences and work context.",
+  "occupationOnboarding.memoryDescription": "Let JGHarness remember your preferences and work context.",
   "occupationOnboarding.suggestions": "Enable proactive task suggestions",
   "occupationOnboarding.suggestionsDescription":
     "Show suggestions in new conversations. Click to fill the composer.",
   "occupationOnboarding.close": "Exit onboarding",
-  "startup.global.silent": "Starting JGAgent",
+  "startup.global.silent": "Starting JGHarness",
   "plugin.discovery.confirmTitle": "Official plugin recommendation",
-  "plugin.discovery.official": "JGAgent official marketplace",
+  "plugin.discovery.official": "JGHarness official marketplace",
   "plugin.discovery.workspaceEnable": "Enable this plugin in the current workspace.",
   "plugin.discovery.userInstall":
     "Installed plugins are saved for this user. Configuration or authorization may still be required.",
@@ -734,15 +734,15 @@ const enUS: Record<string, string> = {
   "startup.global.saving": "Saving updates",
   "startup.global.finishing": "Finishing startup",
   "startup.global.servicesFailed":
-    "Local data is ready, but app services failed to start. Copy the diagnostics, then exit and reopen JGAgent.",
+    "Local data is ready, but app services failed to start. Copy the diagnostics, then exit and reopen JGHarness.",
   "startup.global.starting": "Preparing local data",
   "startup.global.preparing_host_storage": "Preparing task index",
   "startup.global.preparing_session_storage": "Preparing chat history",
-  "startup.global.starting_services": "Starting JGAgent",
+  "startup.global.starting_services": "Starting JGHarness",
   "startup.global.ready": "Local data is ready",
   "startup.global.failed": "Startup preparation failed",
   "startup.global.help":
-    "JGAgent will open when preparation finishes. Large histories may take longer. Please keep the app running.",
+    "JGHarness will open when preparation finishes. Large histories may take longer. Please keep the app running.",
   "startup.global.diagnostic": "Diagnostic ID",
   "startup.global.copy": "Copy diagnostics",
   "startup.global.exportLogs": "Export logs",
@@ -767,15 +767,15 @@ const enUS: Record<string, string> = {
   "startup.global.error.open_failed":
     "The database could not be opened. Check that the data directory exists and is accessible, then retry.",
   "startup.global.error.lock_timeout":
-    "Waiting for the database write lock timed out. Another JGAgent or CLI process may be updating data. Retry after it finishes.",
+    "Waiting for the database write lock timed out. Another JGHarness or CLI process may be updating data. Retry after it finishes.",
   "startup.global.error.sql_failed":
     "Preparation did not finish. Copy the diagnostics and check the logs. Resolve the issue, then retry manually. The app will not retry automatically.",
   "startup.global.error.startup_status_timeout":
-    "No startup status was received. Exit and reopen JGAgent. If it fails again, provide the diagnostics to support.",
+    "No startup status was received. Exit and reopen JGHarness. If it fails again, provide the diagnostics to support.",
   "startup.global.error.transport_closed":
-    "The preparation process exited or disconnected. Exit and reopen JGAgent to check the migration records again.",
+    "The preparation process exited or disconnected. Exit and reopen JGHarness to check the migration records again.",
   "startup.global.error.unsupported_runtime":
-    "The configured Agent does not support storage preparation. Restore the bundled Agent, then reopen JGAgent.",
+    "The configured Agent does not support storage preparation. Restore the bundled Agent, then reopen JGHarness.",
 
   "startup.database.checking": "Checking history",
   "startup.database.waiting_for_lock": "Waiting for another window to prepare data",
@@ -831,7 +831,7 @@ const enUS: Record<string, string> = {
   "offPeak.chatCreated.queuedAt": "#{position} in queue",
   "offPeak.chatCreated.open": "Go to idle-time tasks",
   "settings.computerUse.disabledToast":
-    "Computer Use is disabled. Existing conversations require a JGAgent restart to take effect.",
+    "Computer Use is disabled. Existing conversations require a JGHarness restart to take effect.",
   "settings.modelProvider.connectionUnavailableNotice": "The current plan is unavailable.",
   "settings.modelProvider.switchConnection": "Switch to “{connection}”",
   "settings.modelProvider.connectionSuggestionStale":
@@ -943,7 +943,7 @@ const enUS: Record<string, string> = {
   "manualClaimPlan.claim.share.copyImageSucceeded": "Image copied",
   "manualClaimPlan.claim.share.actionFailed": "Share action failed. Please try again.",
   "manualClaimPlan.claim.share.twitterText":
-    "I claimed {subtitle} on JGAgent. Download and install JGAgent to claim yours. https://zcode.z.ai",
+    "I claimed {subtitle} on JGHarness. Download and install JGHarness to claim yours. https://zcode.z.ai",
   "manualClaimPlan.claim.share.twitterTextLabel": "Twitter/X post text",
   // Common
   "common.loading": "Loading...",
@@ -993,7 +993,7 @@ const enUS: Record<string, string> = {
   "conversationShare.readonly.artifactPreview": "Download file",
   "conversationShare.readonly.markerCompact": "Context compacted",
   "conversationShare.readonly.markerModelChange": "Model switched",
-  "conversation.row.unreadable": "This message requires a newer version of JGAgent",
+  "conversation.row.unreadable": "This message requires a newer version of JGHarness",
   "conversationShare.workflowSnapshot": "Snapshot at tool execution; does not update live",
   "conversationShare.shareTitle": "Share title",
   "conversationShare.permissionLabel": "Access",
@@ -1030,7 +1030,7 @@ const enUS: Record<string, string> = {
   "conversationShare.error.preparationExpired": "Share preparation expired. Generate a new link.",
   "conversationShare.import.notAllowed":
     "This share is view-only. Ask the author to enable importing.",
-  "conversationShare.import.unsupportedVersion": "This share format is unsupported. Update JGAgent.",
+  "conversationShare.import.unsupportedVersion": "This share format is unsupported. Update JGHarness.",
   "conversationShare.issue.ruleLabel": "Validation rule",
   "conversationShare.issue.pathLabel": "Field path",
   "conversationShare.issue.fieldLabel": "Field",
@@ -1038,7 +1038,7 @@ const enUS: Record<string, string> = {
   "conversationShare.issue.rowKindLabel": "Content type",
   "conversationShare.publishFailed": "Could not generate the share link. Try again.",
   "conversationShare.error.authenticationRequired":
-    "Sign in to JGAgent before sharing. If you're already signed in, sign in again and retry.",
+    "Sign in to JGHarness before sharing. If you're already signed in, sign in again and retry.",
   "conversationShare.error.featureDisabled": "Sharing is currently unavailable. Try again later.",
   "conversationShare.error.artifactNotAllowed":
     "A previewed file type is not supported for sharing. Deselect that conversation and retry.",
@@ -1048,7 +1048,7 @@ const enUS: Record<string, string> = {
   "conversationShare.error.invalidContractHttp":
     "The share service returned HTTP {status}. Retry, and provide the error details if the problem persists.",
   "conversationShare.error.invalidContract":
-    "JGAgent could not read the share service’s response, so sharing could not finish. Try again later. If it still fails, copy the request ID from Error details and contact support.",
+    "JGHarness could not read the share service’s response, so sharing could not finish. Try again later. If it still fails, copy the request ID from Error details and contact support.",
   "conversationShare.issue.clientRequestIdLabel": "Client request ID",
   "conversationShare.issue.codeLabel": "Error code",
   "conversationShare.error.network":
@@ -1250,7 +1250,7 @@ const enUS: Record<string, string> = {
   "conversationShare.import.committing": "Creating the shared conversation",
   "conversationShare.import.complete": "Share import complete",
   "conversationShare.import.loginRequired":
-    "This share cannot be imported anonymously. Sign in to JGAgent and try again",
+    "This share cannot be imported anonymously. Sign in to JGHarness and try again",
   "conversationShare.import.notFound":
     "Share not found or access denied. Check the link and your account.",
   "conversationShare.import.expired": "The share expired. Ask the author to create a new one",
@@ -1481,7 +1481,7 @@ const enUS: Record<string, string> = {
     "The operation or list refresh failed. Refresh to check the remaining tasks.",
   "taskList.noArchivedTasks": "No archived tasks",
   "bots.title": "Bots",
-  "bots.description": "Connect external chats and webhooks to JGAgent bots.",
+  "bots.description": "Connect external chats and webhooks to JGHarness bots.",
   "bots.listTitle": "Bots",
   "bots.addBot": "New bot",
   "bots.addBinding": "Add binding",
@@ -1535,9 +1535,9 @@ const enUS: Record<string, string> = {
   "bots.setup.guide.weixin.create.1":
     "Start Weixin QR login, scan the QR code with Weixin, then confirm on your phone.",
   "bots.setup.guide.weixin.create.2":
-    "JGAgent saves the bot_token returned by iLink automatically; after scanning, send any message to the bot in Weixin to activate the chat.",
+    "JGHarness saves the bot_token returned by iLink automatically; after scanning, send any message to the bot in Weixin to activate the chat.",
   "bots.setup.guide.weixin.create.3":
-    "JGAgent uses a built-in iLink client: `/ilink/bot/getupdates` for long polling and `/ilink/bot/sendmessage` for replies.",
+    "JGHarness uses a built-in iLink client: `/ilink/bot/getupdates` for long polling and `/ilink/bot/sendmessage` for replies.",
   "bots.setup.guide.weixin.bind.1": "Open the Weixin direct chat you want to bind.",
   "bots.setup.guide.weixin.bind.2": "Send {command}.",
   "bots.setup.guide.weixin.bind.3":
@@ -1554,13 +1554,13 @@ const enUS: Record<string, string> = {
   "bots.setup.guide.feishu.bind.3":
     "Return here after the bind succeeds to finish the workspace and CLI defaults.",
   "bots.setup.guide.webhook.create.1":
-    "Webhook mode does not require a native bot in the third-party product; your integration only needs to POST messages to JGAgent.",
+    "Webhook mode does not require a native bot in the third-party product; your integration only needs to POST messages to JGHarness.",
   "bots.setup.guide.webhook.create.2":
     "Set a shared secret first; add an outbound webhook URL as well if you want asynchronous replies pushed back.",
   "bots.setup.guide.webhook.create.3":
     "Keep one stable userId per external user so binding and future context resolve to the same person.",
   "bots.setup.guide.webhook.bind.1":
-    "POST a private-message callback to JGAgent's `/api/bots/webhook` endpoint.",
+    "POST a private-message callback to JGHarness's `/api/bots/webhook` endpoint.",
   "bots.setup.guide.webhook.bind.2":
     'The payload should at least include this botId, a stable userId, `chatType: "private"`, and set text to {command}.',
   "bots.setup.guide.webhook.bind.3":
@@ -1699,7 +1699,7 @@ const enUS: Record<string, string> = {
   "bots.runtime.telegramLongPollingStarting": "Telegram long polling is starting.",
   "bots.runtime.telegramLongPollingStopped": "Telegram long polling is stopped.",
   "bots.runtime.telegramLongPollingHandledElsewhere":
-    "Telegram long polling is handled by another JGAgent window.",
+    "Telegram long polling is handled by another JGHarness window.",
   "bots.runtime.telegramTokenMissing": "Telegram bot credential is missing.",
   "bots.runtime.telegramPollingFailedRetrying": "Telegram polling failed; retrying.",
   "bots.runtime.feishuWebSocketStarting": "Feishu WebSocket is starting.",
@@ -1787,14 +1787,14 @@ const enUS: Record<string, string> = {
   "bots.deleteFailed": "Failed to delete bot: {error}",
 
   // Welcome / Login
-  "welcome.title": "Welcome to JGAgent",
+  "welcome.title": "Welcome to JGHarness",
   "welcome.username": "Username",
   "welcome.password": "Password",
   "welcome.login": "Login",
   "welcome.loggingIn": "Logging in...",
   "welcome.loginFailed": "Login failed",
-  "login.title": "Welcome to JGAgent",
-  "login.description": "Connect your account to start using JGAgent",
+  "login.title": "Welcome to JGHarness",
+  "login.description": "Connect your account to start using JGHarness",
   "login.oauth.activeProviderHint":
     "Current active provider: {provider}. Signing in again replaces the current identity.",
   "login.credentialStore.title": "Credential storage needs recovery",
@@ -1854,7 +1854,7 @@ const enUS: Record<string, string> = {
   "app.currentTheme": "Current: {theme}",
   "app.login": "Connect",
   "app.logout": "Disconnect",
-  "logout.confirm.title": "Disconnect and restart JGAgent?",
+  "logout.confirm.title": "Disconnect and restart JGHarness?",
   "logout.confirm.descriptionWithRunningSessions":
     "{count} session(s) are currently running. Disconnecting will interrupt them and restart the app.",
   "logout.confirm.descriptionDefault":
@@ -2209,7 +2209,7 @@ const enUS: Record<string, string> = {
   "modelTrajectory.refresh": "Refresh",
   "modelTrajectory.close": "Close",
   "modelTrajectory.loading": "Loading trajectory…",
-  "modelTrajectory.empty": "No model calls recorded (only JGAgent Agent writes model-io)",
+  "modelTrajectory.empty": "No model calls recorded (only JGHarness Agent writes model-io)",
   "modelTrajectory.error": "Failed to load trajectory",
   "modelTrajectory.truncatedNotice": "Too many records, showing the most recent calls",
   "modelTrajectory.summaryCalls": "{count} calls",
@@ -2700,7 +2700,7 @@ const enUS: Record<string, string> = {
   "titleBar.menu.view.actualSize": "Actual size",
   "titleBar.menu.view.zoomIn": "Zoom in",
   "titleBar.menu.view.zoomOut": "Zoom out",
-  "titleBar.menu.help.about": "About JGAgent",
+  "titleBar.menu.help.about": "About JGHarness",
   "titleBar.menu.help.checkForUpdates": "Check for updates",
   "titleBar.menu.help.feedback": "Feedback",
   "sidebar.menu.community": "Community",
@@ -2758,7 +2758,7 @@ const enUS: Record<string, string> = {
   "update.toast.ready": "v{version} downloaded, restart to install",
   "update.toast.devSkipped": "Updates are disabled in dev builds",
   "update.toast.error": "Update check failed: {error}",
-  "forceUpdate.title": "Update JGAgent to continue",
+  "forceUpdate.title": "Update JGHarness to continue",
   "forceUpdate.description":
     "Your current version v{currentVersion} is below the minimum supported version v{minimalVersion}. Update first before continuing with this client.",
   "forceUpdate.currentVersion": "Current version",
@@ -2848,7 +2848,7 @@ const enUS: Record<string, string> = {
   "remote.error.credentialsRequired":
     "No usable SSH password or private-key credential is available. Return to settings to add one.",
   "remote.error.sourceServerUpgradeRequired":
-    "remote device is incompatible with this JGAgent Desktop version and must be upgraded.",
+    "remote device is incompatible with this JGHarness Desktop version and must be upgraded.",
   "remote.error.sourceServerRunningTasks":
     "remote device still has running tasks. Wait for them to finish or confirm a forced update.",
   "remote.error.sourceServerDowngradeUnconfirmed":
@@ -2890,7 +2890,7 @@ const enUS: Record<string, string> = {
   "remote.error.retryableHint": "You can try again later.",
   "remote.error.connectionClosed": "The remote connection was closed",
   "workspaceSidebar.unavailableLocalDirectory":
-    "The workspace directory does not exist or cannot be accessed. You can only view history for now. Restore the directory and restart JGAgent to continue.",
+    "The workspace directory does not exist or cannot be accessed. You can only view history for now. Restore the directory and restart JGHarness to continue.",
   "workspaceSidebar.toggleSidebar": "Toggle sidebar",
   "workspaceSidebar.resizeSidebar": "Resize sidebar",
   "workspaceSidebar.showFileTree": "Show files",
@@ -2927,7 +2927,7 @@ const enUS: Record<string, string> = {
   "ssh.assetInstallMode.local-download-upload": "Download locally, then upload",
   "ssh.assetInstallMode.remote-download": "Download on remote server",
   "ssh.assetInstallModeDescription":
-    "Remote server download reduces upload waiting, but the server must reach the JGAgent CDN and have download, extract, and checksum tools.",
+    "Remote server download reduces upload waiting, but the server must reach the JGHarness CDN and have download, extract, and checksum tools.",
   "ssh.password": "Password",
   "ssh.passwordPlaceholder": "Enter your SSH password",
   "ssh.privateKey": "Private key",
@@ -3019,7 +3019,7 @@ const enUS: Record<string, string> = {
     "Connection failed · retry, or adjust the configuration and try again",
   "remote.phase.channel": "Connect to device",
   "remote.phase.identify": "Identify device",
-  "remote.phase.deploy": "Install JGAgent Server",
+  "remote.phase.deploy": "Install JGHarness Server",
   "remote.phase.handshake": "Start and check compatibility",
   "remote.phase.workspace": "Open project folder",
   "remote.phaseSub.workspaceReading": "Reading {path}",
@@ -3029,7 +3029,7 @@ const enUS: Record<string, string> = {
   "remote.progress.copyError": "Copy error details",
   "remote.progress.copied": "Copied",
   "remote.link.local": "This device",
-  "remote.link.localVersion": "JGAgent v{version}",
+  "remote.link.localVersion": "JGHarness v{version}",
   "remote.link.deviceHint": "Device details appear after connecting",
   "remote.link.devicePending": "Remote device",
   "remote.recognizedDevice": "Connected to device {device}",
@@ -3061,7 +3061,7 @@ const enUS: Record<string, string> = {
   "remote.phaseSub.channelEstablished.docker": "Connected to the container",
   "remote.phaseSub.channelEstablished": "Connected to device",
   "remote.phaseSub.identifyExisting": "Connected to device {device}",
-  "remote.phaseSub.identifyNew": "New device · JGAgent Server not installed",
+  "remote.phaseSub.identifyNew": "New device · JGHarness Server not installed",
   "remote.phaseSub.deploySkipped": "Remote already on v{version} · deployment skipped",
   "remote.phaseSub.deployWaitingConfirm": "Waiting for install confirmation…",
   "remote.phaseSub.deployUploading": "Uploading {file} · {sent} / {total}",
@@ -3186,7 +3186,7 @@ const enUS: Record<string, string> = {
   "remote.kind.wsl": "WSL",
   "remote.kind.docker": "Docker",
   "remote.kind.server.note":
-    "Server (direct connection to a running JGAgent service) is shown only in development builds.",
+    "Server (direct connection to a running JGHarness service) is shown only in development builds.",
   "remote.addAndConnect": "Add and connect",
   "remote.connect": "Connect",
   "remote.connecting": "Connecting...",
@@ -3197,16 +3197,16 @@ const enUS: Record<string, string> = {
   "remote.connectionLog": "Connection log",
   "remote.connectionLogEmpty": "waiting for connection output...",
   "remote.connectingConfirmTitle": "Stop the current connection?",
-  "remote.sourceServerInstallTitle": "JGAgent Server installation required",
+  "remote.sourceServerInstallTitle": "JGHarness Server installation required",
   "remote.sourceServerInstallDescription":
-    "JGAgent will upload the matching release, install it under ~/.zcode/server, and start the remote service. Existing legacy remote files will be preserved.",
+    "JGHarness will upload the matching release, install it under ~/.zcode/server, and start the remote service. Existing legacy remote files will be preserved.",
   "remote.sourceServerInstallConfirm": "Install and continue",
   "remote.installTarget": "Target account",
   "remote.installVersion": "Install version",
   "remote.installLocation": "Install location",
   "remote.sourceServerBoundaryTitle": "Local offline, tasks keep running",
   "remote.sourceServerBoundaryDescription":
-    "Remote tasks keep running, even when you close JGAgent or put your computer to sleep.",
+    "Remote tasks keep running, even when you close JGHarness or put your computer to sleep.",
   "remote.sourceServerBoundaryEyebrow": "New remote connection",
   "remote.sourceServerBoundaryLocalDevice": "This computer",
   "remote.sourceServerBoundaryLocalStatus": "Sleeping / closed",
@@ -3230,7 +3230,7 @@ const enUS: Record<string, string> = {
   "settings.source.retiredEntryNote": "Connection target changed; new identity confirmed",
   "settings.source.retiredNameSuffix": " (old)",
   "settings.source.reinstallRequired":
-    "JGAgent Server was uninstalled remotely; connection and task records remain on this device.",
+    "JGHarness Server was uninstalled remotely; connection and task records remain on this device.",
   "settings.source.reinstallAndConnect": "Reinstall and connect",
   "settings.source.copyDeviceId": "Copy device ID",
   "common.justNow": "just now",
@@ -3252,7 +3252,7 @@ const enUS: Record<string, string> = {
     "Uses this computer's version. Projects and tasks are kept.",
   "settings.source.reinstallRemoteServiceTitle": "Reinstall the remote service?",
   "settings.source.reinstallRemoteServiceDescription":
-    "JGAgent Server {version} will be reinstalled on {source}. Damaged program files are replaced. Projects, tasks, settings, and sign-in information are kept.",
+    "JGHarness Server {version} will be reinstalled on {source}. Damaged program files are replaced. Projects, tasks, settings, and sign-in information are kept.",
   "settings.source.reinstallRemoteServiceConfirm": "Reinstall",
   "settings.source.stopRemoteService": "Stop remote service",
   "settings.source.stopRemoteServiceTitle": "Stop the remote service?",
@@ -3261,9 +3261,9 @@ const enUS: Record<string, string> = {
   "settings.source.remoteServiceRunningTasksUnavailable": "The device didn't provide a task list.",
   "settings.source.remoteServiceNoRunningTasks": "No tasks are running on this device right now.",
   "settings.source.remoteServiceOtherClientsNotice":
-    "If JGAgent on another computer is connected to this device, it may start the remote service again.",
+    "If JGHarness on another computer is connected to this device, it may start the remote service again.",
   "settings.source.stopRemoteServiceStartupReconnectNotice":
-    "“Reconnect automatically at startup” is on, so the remote service will start again the next time you open JGAgent.",
+    "“Reconnect automatically at startup” is on, so the remote service will start again the next time you open JGHarness.",
   "settings.source.remoteServiceUpdateRequired": "Available after updating the remote service",
   "settings.source.removeOpenProjects": "These open projects will be disconnected:\n{projects}",
   "settings.source.noOpenProjects": "This device has no open projects.",
@@ -3271,7 +3271,7 @@ const enUS: Record<string, string> = {
   "settings.machine.unknownRemote": "Remote device",
   "settings.source.connectionName": "Connection name",
   "settings.source.connectionAddress": "Address",
-  "settings.source.connectionNameHint": "Used only to distinguish this connection in JGAgent.",
+  "settings.source.connectionNameHint": "Used only to distinguish this connection in JGHarness.",
   "settings.source.deviceNameRequired": "Device name is required.",
   "settings.source.error.connection-profile-unavailable":
     "This connection is no longer available. Refresh and try again.",
@@ -3317,7 +3317,7 @@ const enUS: Record<string, string> = {
   "settings.source.updatePhase.checking": "Checking the device and update files",
   "settings.source.updatePhase.downloading": "Downloading update files",
   "settings.source.updatePhase.uploading": "Uploading update files",
-  "settings.source.updatePhase.installing": "Installing JGAgent Server",
+  "settings.source.updatePhase.installing": "Installing JGHarness Server",
   "settings.source.updatePhase.reconnecting": "Starting the service and reconnecting",
   "settings.source.updatePhase.completed": "Update complete",
   "settings.source.updateLog": "Update log ({count})",
@@ -3383,13 +3383,13 @@ const enUS: Record<string, string> = {
   "sourceServer.restartFailedToast":
     "Couldn't restart the remote service on {source}. View details.",
   "sourceServer.controllerUpdateAvailableToast":
-    "JGAgent has an update for {source}\nDesktop {current} → {available}; update JGAgent to match this Source.",
+    "JGHarness has an update for {source}\nDesktop {current} → {available}; update JGHarness to match this Source.",
   "settings.source.forceUpdate": "Force update",
   "settings.source.forceUpdateTitle": "Force-update this device?",
   "settings.source.forceUpdateDescription":
     "A forced update stops tasks that are still running on this device. Confirm that those tasks may be interrupted.",
   "settings.source.controllerUpdateRequired":
-    "Update this JGAgent Desktop first; the Server cannot be updated from here.",
+    "Update this JGHarness Desktop first; the Server cannot be updated from here.",
   "settings.source.neverConnected": "Not connected",
   "settings.source.unidentifiedProfiles": "Not connected",
   "settings.source.unidentifiedProfilesDescription":
@@ -3452,7 +3452,7 @@ const enUS: Record<string, string> = {
   "remote.log.requestingSession": "Requesting the host process to create a remote session...",
   "remote.log.sessionReady":
     "Remote session created successfully. You can choose a directory next.",
-  "server.description": "Connect to an already running JGAgent server.",
+  "server.description": "Connect to an already running JGHarness server.",
   "server.url": "Server URL",
   "server.urlPlaceholder": "e.g. https://studio.example.com:3030",
   "server.name": "Display name",
@@ -3617,7 +3617,7 @@ const enUS: Record<string, string> = {
   "chat.changeSummary.reverted": "Undone",
   "chat.changeSummary.rewindDialog.title": "Undo file changes",
   "chat.changeSummary.rewindDialog.description":
-    "JGAgent checks current file content again before writing. If another process changed a file, no files will be written.",
+    "JGHarness checks current file content again before writing. If another process changed a file, no files will be written.",
   "chat.changeSummary.rewindDialog.loading": "Checking reversible files…",
   "chat.changeSummary.rewindDialog.safeTitle": "Safe to undo {count}",
   "chat.changeSummary.rewindDialog.unsafeTitle": "Unsafe to undo {count}",
@@ -3661,7 +3661,7 @@ const enUS: Record<string, string> = {
   "chat.previewCards.video": "Video",
   "chat.previewCards.audio": "Audio",
   "chat.previewCards.openExternal": "Open in browser",
-  "chat.message.link.openInZCode": "Open in JGAgent",
+  "chat.message.link.openInZCode": "Open in JGHarness",
   "chat.previewCards.previewInSidePane": "Preview",
   "chat.previewCards.openDefaultApp": "Open with default app",
   "chat.previewCards.openWith": "Open with",
@@ -3807,7 +3807,7 @@ const enUS: Record<string, string> = {
     "When launching the built-in terminal, inherit login shell environment, proxy, Kubernetes variables, and local terminal font when possible.",
   "settings.terminalFontFamily": "Terminal font",
   "settings.terminalFontFamilyDescription":
-    "Leave blank to auto-detect system terminal settings; set a value to override the JGAgent terminal font.",
+    "Leave blank to auto-detect system terminal settings; set a value to override the JGHarness terminal font.",
   "settings.terminalFontFamilyPlaceholder": "Leave blank to inherit, e.g. MesloLGS NF, monospace",
   "settings.integratedTerminalShell": "Integrated terminal shell",
   "settings.integratedTerminalShellDescription":
@@ -3917,7 +3917,7 @@ const enUS: Record<string, string> = {
     "When notifications are enabled, you can mute the task notification sound separately.",
   "settings.mobilePush": "Mobile push notifications",
   "settings.mobilePushDescription":
-    "When you are away from this desktop, completed, failed, or waiting tasks are pushed to the signed-in JGAgent App.",
+    "When you are away from this desktop, completed, failed, or waiting tasks are pushed to the signed-in JGHarness App.",
   "notification.taskWithTitle": "Task: {title}",
   "notification.taskWaiting": "Task waiting for your confirmation",
   "notification.completed": "Task completed",
@@ -3946,7 +3946,7 @@ const enUS: Record<string, string> = {
   "settings.messageStreamShowTodosDescription": "Show Todo tool cards inside the message stream. ",
   "settings.zcodeInteractionBehavior": "Interaction behavior",
   "settings.zcodeInteractionBehaviorDescription":
-    "While JGAgent is running, add follow-up actions to the queue or guide them to run after the next tool call.",
+    "While JGHarness is running, add follow-up actions to the queue or guide them to run after the next tool call.",
   "settings.zcodeInteractionBehavior.option.queue": "Queue",
   "settings.zcodeInteractionBehavior.option.guide": "Guide",
   "settings.pluginAutoRecommendation": "Automatic plugin recommendations",
@@ -3987,14 +3987,14 @@ const enUS: Record<string, string> = {
   "settings.taskAutoArchiveDays.option.30": "Archive after 30 days",
   "settings.dataBaseDir": "Data storage path",
   "settings.dataBaseDirDescription":
-    "Root directory for app data (defaults to user home directory). Existing data will be copied to the new location. The .jgagent/v2 suffix cannot be changed.",
+    "Root directory for app data (defaults to user home directory). Existing data will be copied to the new location. The .jgharness/v2 suffix cannot be changed.",
   "settings.dataBaseDirPlaceholder": "Default: user home directory",
   "settings.dataBaseDirBrowse": "Choose folder",
   "settings.dataBaseDirSave": "Save",
   "settings.dataBaseDirCopying": "Copying data, please do not close the app...",
   "settings.dataBaseDirCopyFailed": "Data copy failed. Path was not changed.",
   "settings.dataBaseDirForbiddenInstallDir":
-    "The data directory cannot be the JGAgent installation folder on Windows. Choose a folder outside the app install location.",
+    "The data directory cannot be the JGHarness installation folder on Windows. Choose a folder outside the app install location.",
   "settings.dataBaseDirRestartRequired": "Data saved. Please restart the app to take effect.",
   "settings.locale.system": "System default",
   "settings.locale.zh-CN": "中文简体",
@@ -4010,7 +4010,7 @@ const enUS: Record<string, string> = {
   "settings.migration.title": "Migration",
   "settings.migration.sectionTitle": "Claude History Migration",
   "settings.migration.sectionDescription":
-    "Scan native Claude Code history on this machine, optionally filter by workspace and activity window, then import the selected sessions into their matching JGAgent task lists.",
+    "Scan native Claude Code history on this machine, optionally filter by workspace and activity window, then import the selected sessions into their matching JGHarness task lists.",
   "settings.migration.badge.localOnly": "Local Claude records",
   "settings.migration.badge.manualOnly": "Manual only",
   "settings.migration.currentWorkspace": "Current workspace",
@@ -4064,14 +4064,14 @@ const enUS: Record<string, string> = {
   "settings.usageTitle": "Usage stats",
   "settings.usageDescription":
     "Review rough activity and model usage aggregated from local sessions.",
-  "resourceManager.storage.summaryTotal": "Total used by JGAgent",
+  "resourceManager.storage.summaryTotal": "Total used by JGHarness",
   "resourceManager.storage.scanning": "Calculating…",
   "resourceManager.storage.lastScanned": "Last calculated {time}",
   "resourceManager.storage.idle": "Not calculated yet",
   "resourceManager.storage.failed": "Calculation failed",
   "resourceManager.storage.rescan": "Recalculate",
   "resourceManager.storage.disk": "Disk",
-  "resourceManager.storage.diskUsage": "JGAgent uses {used}",
+  "resourceManager.storage.diskUsage": "JGHarness uses {used}",
   "resourceManager.storage.diskFree": "{free} free of {total}",
   "resourceManager.storage.diskUnknown": "Disk capacity unavailable",
   "resourceManager.storage.roots": "Data directories",
@@ -4144,7 +4144,7 @@ const enUS: Record<string, string> = {
   "settings.embeddedBrowserAllowInsecureCertificatesSavedHint":
     "Certificate setting saved. Restart the app to take effect.",
   "settings.browser.data.section": "Browser data",
-  "settings.browser.desktopOnly": "Browser data can only be managed in the JGAgent desktop app.",
+  "settings.browser.desktopOnly": "Browser data can only be managed in the JGHarness desktop app.",
   "settings.browser.import.title": "Import Chrome sign-in state",
   "settings.browser.import.description":
     "Bring your Chrome sign-in state into the built-in browser once, so the AI can open sites you are already signed in to and work more smoothly.",
@@ -4162,13 +4162,13 @@ const enUS: Record<string, string> = {
   "settings.browser.import.elevationCancelled":
     "Windows administrator access was canceled. No cookies were imported.",
   "settings.browser.import.helperVerificationFailed":
-    "JGAgent could not verify its Windows secure import component. Reinstall or update JGAgent before importing cookies.",
+    "JGHarness could not verify its Windows secure import component. Reinstall or update JGHarness before importing cookies.",
   "settings.browser.import.appBoundFailed":
     "Windows could not unlock Chrome's App-Bound cookies. No cookies were imported.",
   "settings.browser.import.adminConfirmTitle":
     "Allow administrator access to import Chrome cookies?",
   "settings.browser.import.adminConfirmDescription":
-    "Chrome protects cookies with App-Bound encryption on Windows. For this import only, JGAgent will request administrator access, start a temporary system service, and delete it immediately afterward. Chrome passwords are never read or imported.",
+    "Chrome protects cookies with App-Bound encryption on Windows. For this import only, JGHarness will request administrator access, start a temporary system service, and delete it immediately afterward. Chrome passwords are never read or imported.",
   "settings.browser.import.adminConsent":
     "I confirm administrator access for this cookie import only",
   "settings.browser.import.adminConfirmAction": "Continue and request access",
@@ -4227,7 +4227,7 @@ const enUS: Record<string, string> = {
   "settings.previewBadge.dark": "Dark",
   "settings.modelProviderTitle": "Model settings",
   "settings.mcpTitle": "MCP Servers",
-  "settings.mcp.description": "Manage MCP server configurations used by JGAgent Agent.",
+  "settings.mcp.description": "Manage MCP server configurations used by JGHarness Agent.",
   "settings.mcp.trust.action": "Trust",
   "settings.mcp.trust.revoke": "Revoke trust",
   "settings.mcp.trust.title": "Trust workspace MCP: {name}",
@@ -4263,7 +4263,7 @@ const enUS: Record<string, string> = {
     "This plugin MCP server is loaded but not currently connected.",
   "settings.mcp.host.active": "Host built-in",
   "settings.mcp.host.activeDescription":
-    "JGAgent provides this MCP server for the {pluginName} plugin. Its runtime identity is managed by the host.",
+    "JGHarness provides this MCP server for the {pluginName} plugin. Its runtime identity is managed by the host.",
   "settings.mcp.plugin.disabled": "Plugin disabled",
   "settings.mcp.plugin.disabledDescription":
     "This MCP server is built into a plugin. Enable the plugin to load it.",
@@ -4275,7 +4275,7 @@ const enUS: Record<string, string> = {
     "Open authorization to finish connecting this plugin MCP server.",
   "settings.mcp.oauth.openAuthorization": "Open authorization",
   "settings.mcp.statusOnlyUnsupported":
-    "This JGAgent Agent cannot refresh OAuth status. Upgrade or restart JGAgent, then reopen MCP settings to run a full refresh.",
+    "This JGHarness Agent cannot refresh OAuth status. Upgrade or restart JGHarness, then reopen MCP settings to run a full refresh.",
   "settings.mcp.refreshFailed": "Failed to refresh MCP status: {error}",
   "settings.mcp.status.toolCount": "{count} tools",
   "settings.mcp.status.connectedReason": "Connected and available.",
@@ -4302,7 +4302,7 @@ const enUS: Record<string, string> = {
   "settings.mcp.failure.official_origin_untrusted":
     "The MCP server URL failed the security check. The connection was blocked.",
   "settings.mcp.failure.not_authenticated":
-    "You are not signed in. Sign in to JGAgent to use this MCP server.",
+    "You are not signed in. Sign in to JGHarness to use this MCP server.",
   "settings.mcp.failure.coding_plan_required":
     "This account has no Coding Plan. Purchase or configure a Coding Plan to use this MCP server.",
   "settings.mcp.failure.server_not_found":
@@ -4320,7 +4320,7 @@ const enUS: Record<string, string> = {
   "settings.mcp.failureAdvice.config_invalid":
     "Check the MCP command, arguments, server address, and environment variables. Correct the configuration, then refresh the status.",
   "settings.mcp.failureAdvice.runtime_unavailable":
-    "On the device running this MCP, install or configure its required runtime and make sure JGAgent can find the startup command.",
+    "On the device running this MCP, install or configure its required runtime and make sure JGHarness can find the startup command.",
   "settings.mcp.failureAdvice.process_start_failed":
     "On the device running this MCP, check the startup command, working directory, script paths, and execute permissions. Install Python dependencies from the plugin’s requirements file (such as requirements.txt), using the interpreter or virtual environment of that command. For Node MCPs, check Node.js and package dependencies. Refresh after fixing the environment.",
   "settings.mcp.failureAdvice.network_unreachable":
@@ -4334,11 +4334,11 @@ const enUS: Record<string, string> = {
   "settings.mcp.failureAdvice.unexpected_disconnect":
     "Review the error below and server logs. Check whether the process exited, a dependency is missing, or the connection was interrupted, then refresh the status.",
   "settings.mcp.failureAdvice.oauth_authorization_failed":
-    "Open this MCP server’s authorization link again. Complete browser authorization, then return to JGAgent and refresh the status.",
+    "Open this MCP server’s authorization link again. Complete browser authorization, then return to JGHarness and refresh the status.",
   "settings.mcp.failureAdvice.official_origin_untrusted":
     "Check that the plugin and server address come from trusted configuration. Do not disable security checks or enter login credentials for an unknown address.",
   "settings.mcp.failureAdvice.not_authenticated":
-    "Sign in to JGAgent, then refresh the MCP status. If the account still appears signed in, sign in again and retry.",
+    "Sign in to JGHarness, then refresh the MCP status. If the account still appears signed in, sign in again and retry.",
   "settings.mcp.failureAdvice.coding_plan_required":
     "In model settings, check the account’s Coding Plan and selected team or project. Refresh after confirming access is active.",
   "settings.mcp.failureAdvice.server_not_found":
@@ -4412,7 +4412,7 @@ const enUS: Record<string, string> = {
   "settings.mcpServers.import.targetLabel": "Import target",
   "settings.mcpServers.import.target.global": "Import to Global",
   "settings.mcpServers.import.target.project": "Import to Project",
-  "settings.mcpServers.import.importing": "Importing MCP servers into JGAgent",
+  "settings.mcpServers.import.importing": "Importing MCP servers into JGHarness",
   "settings.mcpServers.import.imported": "Imported",
   "settings.mcpServers.import.skipped": "Skipped",
   "settings.mcpServers.import.failed": "Failed",
@@ -4552,7 +4552,7 @@ const enUS: Record<string, string> = {
   "settings.modelProvider.startPlan.highlight.trial.label": "Trial period",
   "settings.modelProvider.startPlan.highlight.trial.value": "5 calendar days",
   "settings.modelProvider.startPlan.highlight.trial.description":
-    "Timing starts after signing in to JGAgent 3.x.",
+    "Timing starts after signing in to JGHarness 3.x.",
   "settings.modelProvider.startPlan.highlight.quota.label": "Daily quota",
   "settings.modelProvider.startPlan.highlight.quota.value": "3M tokens daily",
   "settings.modelProvider.startPlan.highlight.quota.description":
@@ -4562,7 +4562,7 @@ const enUS: Record<string, string> = {
   "settings.modelProvider.startPlan.highlight.metering.description":
     "Metered only after using platform GLM flagship models.",
   "settings.modelProvider.startPlan.compatibility":
-    "Supports BYOK and BYOA. Base URL, API format, and API Key are maintained by JGAgent automatically.",
+    "Supports BYOK and BYOA. Base URL, API format, and API Key are maintained by JGHarness automatically.",
   "settings.modelProvider.codingPlan.title": "{provider} - Coding Plan",
   "settings.modelProvider.codingPlan.webview.title": "Upgrade Plan",
   "settings.modelProvider.codingPlan.webview.authInjectFailed":
@@ -4701,7 +4701,7 @@ const enUS: Record<string, string> = {
   "settings.modelProvider.codingPlan.purchase.teamMemberNoticeTitle":
     "Assign members to your team plan",
   "settings.modelProvider.codingPlan.purchase.teamMemberNoticeDescription":
-    "Add yourself or other members on the BigModel team plan management page. Once assigned, the team quota will be available in JGAgent.",
+    "Add yourself or other members on the BigModel team plan management page. Once assigned, the team quota will be available in JGHarness.",
   "settings.modelProvider.codingPlan.purchase.manageTeamPlan": "Manage team plan",
   "settings.modelProvider.codingPlan.manage": "Manage",
   "settings.modelProvider.planCard.codingPlan": "Coding Plan",
@@ -5084,7 +5084,7 @@ const enUS: Record<string, string> = {
   "settings.modelProvider.resetForm": "Reset form",
   "settings.modelProvider.fieldHelp": "About {field}",
   "settings.modelProvider.help.contextWindow":
-    "The context capacity the model can process at once, in tokens. JGAgent uses this to manage context.\nDo not exceed the model's actual limit.",
+    "The context capacity the model can process at once, in tokens. JGHarness uses this to manage context.\nDo not exceed the model's actual limit.",
   "settings.modelProvider.help.maxOutputTokens":
     "The maximum number of tokens a single model request may generate.\nDo not exceed the model's actual limit.",
   "settings.modelProvider.help.inputModalities":
@@ -5100,7 +5100,7 @@ const enUS: Record<string, string> = {
   "settings.modelProvider.help.advanced":
     "**MFJS tool schema**: Enables Moonshot Flavored JSON Schema compatibility, commonly used by Moonshot's Kimi model API. Enable only when the model API requires this format.",
   "settings.modelProvider.help.followRecommendedConfig":
-    "Matches recommended configuration using the model ID, Base URL, and API format. JGAgent continually updates recommendations and automatically syncs them to you.\nWhen you manually change a setting, that setting becomes manually managed and stops following recommendation updates; other settings remain managed by smart configuration.",
+    "Matches recommended configuration using the model ID, Base URL, and API format. JGHarness continually updates recommendations and automatically syncs them to you.\nWhen you manually change a setting, that setting becomes manually managed and stops following recommendation updates; other settings remain managed by smart configuration.",
   "settings.modelProvider.modelDefaultsLoaded": "Smart configuration matched for this model",
   "settings.modelProvider.modelConfigIncomplete": "Model configuration is incomplete",
   "settings.modelProvider.models": "Model list",
@@ -5181,7 +5181,7 @@ const enUS: Record<string, string> = {
   "settings.usage.sourceProvider": "Source: {provider}",
   "settings.usage.billingBanner.title": "{provider} Coding Plan",
   "settings.usage.billingBanner.description":
-    "Connect your {provider} account to query Coding Plan entitlement, then keep coding in JGAgent after purchase or setup.",
+    "Connect your {provider} account to query Coding Plan entitlement, then keep coding in JGHarness after purchase or setup.",
   "settings.usage.billingBanner.compactDescription":
     "Connect your {provider} account to sync usage.",
   "settings.usage.billingBanner.buy": "Buy Coding Plan",
@@ -5248,7 +5248,7 @@ const enUS: Record<string, string> = {
   "settings.usage.entitlementFiveHourUsage": "5-hour remaining",
   "settings.usage.entitlementWeeklyUsage": "Weekly remaining",
   "settings.usage.entitlementMonthlyMcpUsage": "Tool calls",
-  "settings.usage.entitlementServerMcpUsage": "JGAgent MCP",
+  "settings.usage.entitlementServerMcpUsage": "JGHarness MCP",
   "settings.usage.entitlementResetAt": "Resets {time}",
   "settings.usage.entitlementUsageDetails": "Tool usage detail",
   "settings.usage.entitlementPromptCap": "5-hour prompt pool",
@@ -5306,9 +5306,9 @@ const enUS: Record<string, string> = {
   "sidebar.usage.plan.fiveHour": "5 hours",
   "sidebar.usage.plan.weekly": "Weekly",
   "sidebar.usage.plan.toolCalls": "Tool calls",
-  "sidebar.usage.plan.mcp": "JGAgent MCP",
-  "sidebar.usage.plan.zcodeMcp": "JGAgent MCP",
-  "sidebar.usage.plan.zcodeMcpDescription": "Daily aggregate quota for JGAgent built-in plugin MCPs",
+  "sidebar.usage.plan.mcp": "JGHarness MCP",
+  "sidebar.usage.plan.zcodeMcp": "JGHarness MCP",
+  "sidebar.usage.plan.zcodeMcpDescription": "Daily aggregate quota for JGHarness built-in plugin MCPs",
   "chat.planUsage.title": "Plan usage",
   "chat.planUsage.titleWithPlan": "{plan} Plan usage",
   "chat.planUsage.providerFallback": "Current provider",
@@ -5493,7 +5493,7 @@ const enUS: Record<string, string> = {
   "settings.skills.delete.title": "Delete skill",
   "settings.skills.delete.description":
     'Delete "{name}"? This removes the skill folder from disk and cannot be undone.',
-  "settings.skills.agent.glm": "JGAgent Agent",
+  "settings.skills.agent.glm": "JGHarness Agent",
   "settings.skills.agent.unknown": "Unknown source",
   "settings.skills.create.open": "New skill",
   "settings.skills.create.taskCreateFailed":
@@ -5534,10 +5534,10 @@ const enUS: Record<string, string> = {
   "settings.skills.import.mode.copy": "Copy",
   "settings.skills.import.mode.symlink": "Symlink",
   "settings.skills.import.mode.copy.description":
-    "Copy the full skill directory into JGAgent. Later changes in the external agent directory will not sync automatically.",
+    "Copy the full skill directory into JGHarness. Later changes in the external agent directory will not sync automatically.",
   "settings.skills.import.mode.symlink.description":
-    "Create a directory link to the external agent skill. JGAgent follows later source changes, but the skill depends on that source path remaining available.",
-  "settings.skills.import.importing": "Importing skills into JGAgent",
+    "Create a directory link to the external agent skill. JGHarness follows later source changes, but the skill depends on that source path remaining available.",
+  "settings.skills.import.importing": "Importing skills into JGHarness",
   "settings.skills.import.imported": "Imported",
   "settings.skills.import.skipped": "Skipped",
   "settings.skills.import.failed": "Failed",
@@ -5584,7 +5584,7 @@ const enUS: Record<string, string> = {
   "settings.skills.diagnostics.code.skill_not_found": "Skill not found",
   "settings.subagents.title": "Subagents",
   "settings.subagents.description":
-    "Manage user-level subagent Markdown files consumed by JGAgent Agent.",
+    "Manage user-level subagent Markdown files consumed by JGHarness Agent.",
   "settings.subagents.workspaceScopeUnsupported":
     "Workspace-level creation or editing is unsupported",
   "settings.subagents.searchPlaceholder": "Search subagents...",
@@ -5765,12 +5765,12 @@ const enUS: Record<string, string> = {
   "settings.plugins.store.viewMoreFew": "See {names}",
   "settings.plugins.store.showLess": "Show less",
   "settings.plugins.store.install": "Install",
-  "settings.plugins.store.extension.requiresUpdate": "Requires newer JGAgent",
+  "settings.plugins.store.extension.requiresUpdate": "Requires newer JGHarness",
   "settings.plugins.store.extension.incompatibleHint":
-    "This plugin needs a newer version of JGAgent. Update JGAgent, then install it.",
+    "This plugin needs a newer version of JGHarness. Update JGHarness, then install it.",
   "settings.plugins.store.extension.title": "Includes resident code",
   "settings.plugins.store.extension.description":
-    "When enabled, the plugin's extension code keeps running inside JGAgent.",
+    "When enabled, the plugin's extension code keeps running inside JGHarness.",
   "settings.plugins.store.extension.grantsTitle": "Requested permissions",
   "settings.plugins.store.extension.noGrants": "No permissions requested",
   "settings.plugins.store.extension.consentNote":
@@ -5973,10 +5973,10 @@ const enUS: Record<string, string> = {
   "settings.plugins.import.mode.copy": "Copy",
   "settings.plugins.import.mode.symlink": "Symlink",
   "settings.plugins.import.mode.copy.description":
-    "Copy the full plugin directory into JGAgent and register it in plugins.dirs. Later changes in the external agent directory will not sync automatically.",
+    "Copy the full plugin directory into JGHarness and register it in plugins.dirs. Later changes in the external agent directory will not sync automatically.",
   "settings.plugins.import.mode.symlink.description":
-    "Create a directory link to the external agent plugin and register it in plugins.dirs. JGAgent follows later source changes, but the plugin depends on that source path remaining available.",
-  "settings.plugins.import.importing": "Importing plugins into JGAgent",
+    "Create a directory link to the external agent plugin and register it in plugins.dirs. JGHarness follows later source changes, but the plugin depends on that source path remaining available.",
+  "settings.plugins.import.importing": "Importing plugins into JGHarness",
   "settings.plugins.import.imported": "Imported",
   "settings.plugins.import.skipped": "Skipped",
   "settings.plugins.import.failed": "Failed",
@@ -5985,9 +5985,9 @@ const enUS: Record<string, string> = {
   "settings.plugins.import.finish": "Done",
   "settings.commands.title": "Commands",
   "settings.commands.description":
-    "Manage JGAgent Agent .md command files. Commands can be invoked with /command-name in chat.",
+    "Manage JGHarness Agent .md command files. Commands can be invoked with /command-name in chat.",
   "settings.commands.sourceFilterLabel": "Source filter",
-  "settings.commands.source.zcodeAgent": "JGAgent Agent",
+  "settings.commands.source.zcodeAgent": "JGHarness Agent",
   "settings.commands.add": "New",
   "settings.commands.addNew": "New command",
   "settings.commands.addDescription":
@@ -6047,10 +6047,10 @@ const enUS: Record<string, string> = {
   "settings.commands.import.mode.copy": "Copy",
   "settings.commands.import.mode.symlink": "Symlink",
   "settings.commands.import.mode.copy.description":
-    "Copy the command file into JGAgent. Later changes in the external agent file will not sync automatically.",
+    "Copy the command file into JGHarness. Later changes in the external agent file will not sync automatically.",
   "settings.commands.import.mode.symlink.description":
-    "Create a file link to the external agent command. JGAgent follows later source changes, but the command depends on that source path remaining available.",
-  "settings.commands.import.importing": "Importing commands into JGAgent",
+    "Create a file link to the external agent command. JGHarness follows later source changes, but the command depends on that source path remaining available.",
+  "settings.commands.import.importing": "Importing commands into JGHarness",
   "settings.commands.import.imported": "Imported",
   "settings.commands.import.skipped": "Skipped",
   "settings.commands.import.failed": "Failed",
@@ -6138,7 +6138,7 @@ const enUS: Record<string, string> = {
   "settings.hooks.customJson": "Custom fields JSON",
   "settings.hooks.customJsonObjectError": "Custom fields must be a JSON object.",
   "settings.hooks.customJsonParseError": "Custom fields JSON parsing failed.",
-  "settings.plugins.zcodeOnly": "JGAgent Agent only",
+  "settings.plugins.zcodeOnly": "JGHarness Agent only",
   "settingsSync.dialog.title": "Import Settings",
   "settingsSync.dialog.description":
     "Only missing items will be imported. Existing settings will be skipped automatically.",
@@ -6147,8 +6147,8 @@ const enUS: Record<string, string> = {
   "settingsSync.action.rescanning": "Scanning...",
   "settingsSync.action.importSelected": "Import selected",
   "settingsSync.action.importing": "Importing...",
-  "settingsSync.action.finish": "Start using JGAgent",
-  "settingsSync.agent.zcode": "JGAgent Agent",
+  "settingsSync.action.finish": "Start using JGHarness",
+  "settingsSync.agent.zcode": "JGHarness Agent",
   "settingsSync.agent.claudeCode": "Claude Code",
   "settingsSync.agent.codexCli": "Codex CLI",
   "settingsSync.agent.openCode": "OpenCode",
@@ -6197,17 +6197,17 @@ const enUS: Record<string, string> = {
   "settingsSync.discovery.description":
     "Importable agent settings are no longer scanned automatically.",
   "settingsSync.discovery.helper":
-    "Only missing items will be imported and your current JGAgent settings will not be overwritten.",
+    "Only missing items will be imported and your current JGHarness settings will not be overwritten.",
   "settingsSync.discovery.agentCount": "Agents found: {count}",
   "settingsSync.discovery.categoryCount": "Categories found: {count}",
   "settingsSync.discovery.error": "Scan failed: {error}",
   "settingsSync.discovery.continue": "Continue",
-  "onboarding.dialog.title": "Welcome to JGAgent",
+  "onboarding.dialog.title": "Welcome to JGHarness",
   "onboarding.dialog.description": "Choose how to start your first session.",
   "onboarding.wizard.label": "Migration guide",
   "onboarding.welcome.eyebrow": "First run setup",
-  "onboarding.welcome.title": "Welcome to JGAgent",
-  "onboarding.welcome.start": "Start JGAgent",
+  "onboarding.welcome.title": "Welcome to JGHarness",
+  "onboarding.welcome.start": "Start JGHarness",
   "onboarding.welcome.migrate": "Migration Guide",
   "onboarding.welcome.helper":
     "Import existing tool settings now, or skip and continue later from Settings.",
@@ -6231,7 +6231,7 @@ const enUS: Record<string, string> = {
     "Import selected commands from external agents before the final migration.",
   "onboarding.stepDescription.agentSettings": "Choose which agents' providers to bring in.",
   "onboarding.stepDescription.migration":
-    "Start migration and wait while JGAgent imports your selections.",
+    "Start migration and wait while JGHarness imports your selections.",
   "onboarding.sessions.empty":
     "No workspaces yet. Scan local history, then pick workspaces to migrate.",
   "onboarding.sessions.count": "{count} sessions",
@@ -6250,7 +6250,7 @@ const enUS: Record<string, string> = {
   "onboarding.agentsFile.error": "Could not check AGENTS.md migration status: {error}",
   "onboarding.agentsFile.confirmTitle": "Overwrite default AGENTS.md?",
   "onboarding.agentsFile.confirmDescription":
-    "JGAgent will copy {source} to {target}.\nIf the target file already exists, the JGAgent default AGENTS configuration will be overwritten.",
+    "JGHarness will copy {source} to {target}.\nIf the target file already exists, the JGHarness default AGENTS configuration will be overwritten.",
   "onboarding.agentsFile.confirmAction": "Overwrite and migrate",
   "onboarding.finish.summary.label.imported": "Imported",
   "onboarding.finish.summary.label.skipped": "Skipped",
@@ -6340,8 +6340,8 @@ const enUS: Record<string, string> = {
   "chat.emptyResult.description":
     "This task finished without any chat content. It may have been stopped before the model produced a response.",
   "chat.placeholder.newTask":
-    "Ask JGAgent anything, @ to add context, / for commands or capabilities",
-  "chat.placeholder.newTaskMobile": "Ask JGAgent anything…",
+    "Ask JGHarness anything, @ to add context, / for commands or capabilities",
+  "chat.placeholder.newTaskMobile": "Ask JGHarness anything…",
   "chat.placeholder.followUpAsk": "Ask for follow-up changes",
   "chat.placeholder.followUpQueue": "Keep typing to queue follow-up changes",
   "chat.placeholder.loading": "Initializing task...",
@@ -6669,7 +6669,7 @@ const enUS: Record<string, string> = {
   "chat.compact.duplicateBlocked": "A compaction is already running or queued.",
   "chat.modelSwitch.contextWindowGuard.title": "Compress context before switching models",
   "chat.modelSwitch.contextWindowGuard.description":
-    "This conversation has used {used} tokens, which exceeds {modelName}'s available context of {target} tokens after reserving maximum output.\nCompress the current conversation with the current model first. If the compressed context fits, JGAgent will continue switching models.",
+    "This conversation has used {used} tokens, which exceeds {modelName}'s available context of {target} tokens after reserving maximum output.\nCompress the current conversation with the current model first. If the compressed context fits, JGHarness will continue switching models.",
   "chat.modelSwitch.contextWindowGuard.compress": "Compress",
   "chat.modelSwitch.contextWindowGuard.runningBlocked":
     "This conversation has used more context than the target model's available context after reserving maximum output. The conversation must be compressed before switching models, but the current task is still running and context compression cannot run now. Wait for the task to finish, then switch models again.",
@@ -6682,11 +6682,11 @@ const enUS: Record<string, string> = {
     "Computer Use is idle — it will start automatically on first use",
   "chat.toolbar.computerUse.tooltip.starting": "Enabling Computer Use plugin…",
   "chat.toolbar.computerUse.tooltip.ready":
-    "Computer Use ready — just describe what you want JGAgent to do",
+    "Computer Use ready — just describe what you want JGHarness to do",
   "chat.toolbar.computerUse.tooltip.permissionRequired":
     "Missing macOS permissions — click to grant",
   "chat.toolbar.computerUse.tooltip.error":
-    "Computer Use enablement failed. Please restart JGAgent app and retry, or ask JGAgent to investigate the logs",
+    "Computer Use enablement failed. Please restart JGHarness app and retry, or ask JGHarness to investigate the logs",
   "chat.toolbar.computerUse.tooltip.sessionBusy":
     "A conversation is running. Computer Use can't be toggled right now — try again after it finishes.",
   "chat.toolbar.mode.description":
@@ -7073,7 +7073,7 @@ const enUS: Record<string, string> = {
     "Could not reach the local agent; global workflows are unavailable.",
   "workflows.hub.empty.title": "No saved workflows in your open projects yet",
   "workflows.hub.empty.hint":
-    "Design a workflow with JGAgent in chat, then have it save the workflow to a project once it works. Projects that aren't open don't appear here.",
+    "Design a workflow with JGHarness in chat, then have it save the workflow to a project once it works. Projects that aren't open don't appear here.",
   "workflows.hub.noWorkspace": "Open a workspace to see its workflows.",
   "workflows.hub.loadError": "Could not read workflows: {error}",
   "workflows.hub.invalid": "{count} files could not be read",
@@ -7136,7 +7136,7 @@ const enUS: Record<string, string> = {
   "workflows.hub.detail.description": "Description",
   "workflows.hub.detail.whenToUse": "When to use",
   "workflows.hub.detail.whenToUse.help":
-    "A routing hint for JGAgent: when this workflow is the right pick.",
+    "A routing hint for JGHarness: when this workflow is the right pick.",
   "workflows.hub.detail.args": "Arguments",
   "workflows.hub.detail.args.name": "Name",
   "workflows.hub.detail.args.type": "Type",
@@ -7157,7 +7157,7 @@ const enUS: Record<string, string> = {
   "workflows.hub.detail.meta.descriptionRequired": "Description is required",
   "workflows.hub.detail.script": "Script",
   "workflows.hub.detail.script.note":
-    "The script is read-only. To change it, revise it with JGAgent in chat and save a new version.",
+    "The script is read-only. To change it, revise it with JGHarness in chat and save a new version.",
   "workflows.hub.detail.script.copy": "Copy script",
   "workflows.hub.detail.loadError": "Could not read this workflow: {reason}",
   "workflows.hub.detail.notFound": "This workflow is no longer in the project.",
@@ -7345,7 +7345,7 @@ const enUS: Record<string, string> = {
   // 「配置」弹层（docs/dynamic-workflow/presentation.md「The settings popover」）：改子代理模型与最大并发数，
   // 应用即一次 GUI 修订（新 run 接着跑，旧 run 停下，已完成的步骤作缓存带过去）。
   // 完成卡与 run 侧板上的「保存 / 再次运行」（docs/dynamic-workflow/transcript-and-notifications.md
-  // 「Saving the run, and running it again」）。两条路：交给 JGAgent 提炼，或按原样直接写下去。
+  // 「Saving the run, and running it again」）。两条路：交给 JGHarness 提炼，或按原样直接写下去。
   "chat.toolCall.workflow.saveRun.action": "Save",
   "chat.toolCall.workflow.saveRun.runAgain": "Run again",
   "chat.toolCall.workflow.saveRun.starting": "Starting…",
@@ -7354,10 +7354,10 @@ const enUS: Record<string, string> = {
   "chat.toolCall.workflow.saveRun.announce.project": "Saved to the project",
   "chat.toolCall.workflow.saveRun.announce.global": "Saved as a global workflow",
   "chat.toolCall.workflow.saveRun.title": "Save workflow",
-  "chat.toolCall.workflow.saveRun.lead": "Let JGAgent refine and save it",
+  "chat.toolCall.workflow.saveRun.lead": "Let JGHarness refine and save it",
   "chat.toolCall.workflow.saveRun.lead.hint":
-    "JGAgent distills a reusable workflow for you, then asks you to confirm.",
-  "chat.toolCall.workflow.saveRun.lead.sending": "Handed to JGAgent…",
+    "JGHarness distills a reusable workflow for you, then asks you to confirm.",
+  "chat.toolCall.workflow.saveRun.lead.sending": "Handed to JGHarness…",
   "chat.toolCall.workflow.saveRun.lead.unsupported": "This agent cannot save directly.",
   "chat.toolCall.workflow.saveRun.or": "or save it as is",
   "chat.toolCall.workflow.saveRun.name": "Name",
@@ -7729,7 +7729,7 @@ const enUS: Record<string, string> = {
   "chat.slash.subagents.title": "Agents",
   "chat.slash.subagents.empty": "No matching agents",
   "chat.slash.emptyUnavailable":
-    "No slash commands have been broadcast for the current JGAgent Agent session",
+    "No slash commands have been broadcast for the current JGHarness Agent session",
   "chat.slash.emptyResults": "No matching slash commands",
   // Errors
   "chat.error.connectionLost": "Connection to agent lost",
@@ -7774,9 +7774,9 @@ const enUS: Record<string, string> = {
   "chat.quota.startPlan.concurrentLimit.switchModel":
     "The current model request concurrency limit has been reached. Switch models to continue your current task.",
   "chat.quota.mcp.quotaExhausted":
-    'JGAgent MCP "{server}" has used up today\'s quota. It resets tomorrow.',
+    'JGHarness MCP "{server}" has used up today\'s quota. It resets tomorrow.',
   "chat.quota.mcp.codingPlanRequired":
-    'No JGAgent MCP "{server}" quota. Sign in or get a Coding Plan to use it.',
+    'No JGHarness MCP "{server}" quota. Sign in or get a Coding Plan to use it.',
   "chat.quota.providerLimited":
     "The current account quota or plan limit has been reached. Upgrade or adjust the plan to continue.",
   "chat.quota.action.upgrade": "Upgrade",
@@ -7977,7 +7977,7 @@ const enUS: Record<string, string> = {
   "planTool.guidance.enterMode": "Entered plan mode",
   "chat.permission.switchMode.placeholder": "Implementation plan",
 
-  // JGAgent Agent
+  // JGHarness Agent
   "zcode.unavailable": "AI agent not available",
   "zcode.initFailed": "Failed to start AI agent",
   "zcode.error.TASK_OWNED_BY_OTHER_HOST": "This task is already running in another connected view.",
@@ -8053,7 +8053,7 @@ const enUS: Record<string, string> = {
   "resourceManager.network.empty": "Waiting for new network requests…",
   "resourceManager.network.noMatches": "No matching requests",
   "resourceManager.storage": "Storage",
-  "resourceManager.appUsage": "JGAgent",
+  "resourceManager.appUsage": "JGHarness",
   "resourceManager.systemUsage": "System",
   "resourceManager.category.base": "Base services",
   "resourceManager.category.task": "Task processes",
@@ -8298,7 +8298,7 @@ const enUS: Record<string, string> = {
   "feedback.submit.template.section.errorSummaryLine": "Error Summary: {message}",
   "feedback.submit.template.section.errorDetail": "Error Details",
   "feedback.submit.template.section.errorTraceId": "TraceID: {traceId}",
-  "feedback.submit.template.section.copyErrorHeading": "JGAgent Error Info",
+  "feedback.submit.template.section.copyErrorHeading": "JGHarness Error Info",
   "feedback.submit.template.section.notProvided": "Not provided",
   "feedback.submit.template.section.remoteLogEmpty": "No connection logs captured",
   "feedback.submit.template.section.taskFeedbackTitle": "Feedback about task: {title}",
@@ -8460,7 +8460,7 @@ const enUS: Record<string, string> = {
   "automations.statusFilter.completed": "Completed",
   "automations.statusFilter.failed": "Failed",
   "automations.statusFilter.empty": "No tasks match this filter",
-  "offPeak.keepAwakeBanner": "Keep your computer awake while JGAgent is running a chat.",
+  "offPeak.keepAwakeBanner": "Keep your computer awake while JGHarness is running a chat.",
   "offPeak.sectionTitle": "Idle-time tasks",
   "offPeak.createButton": "Create idle-time task",
   "offPeak.templates.sectionTitle": "Idle-time task template",
@@ -8517,7 +8517,7 @@ const enUS: Record<string, string> = {
   "offPeak.form.titlePlaceholder": "e.g. Nightly refactor",
   "offPeak.form.instructionsLabel": "Instructions",
   "offPeak.form.instructionsPlaceholder":
-    "Describe a task JGAgent can work on in the background, including the expected result and any constraints…",
+    "Describe a task JGHarness can work on in the background, including the expected result and any constraints…",
   "offPeak.form.permissionWarning":
     "Idle-time runs are unattended. Actions that need confirmation will pause the task until you respond.",
   "offPeak.form.modelLabel": "Model",
@@ -8712,9 +8712,9 @@ const enUS: Record<string, string> = {
   "automations.runs.nextPage": "Next",
   // CUA (Computer Use)
   "chat.cuaReadiness.toolsNotLoaded":
-    "JGAgent Computer Use is still preparing — its tools aren't loaded yet ({count} loaded). Grant the permissions below; tools appear once the helper is ready.",
+    "JGHarness Computer Use is still preparing — its tools aren't loaded yet ({count} loaded). Grant the permissions below; tools appear once the helper is ready.",
   "chat.cuaReadiness.toolsPreparing":
-    "JGAgent Computer Use is still preparing — its tools aren't loaded yet. Grant the permissions below; tools appear once the helper is ready.",
+    "JGHarness Computer Use is still preparing — its tools aren't loaded yet. Grant the permissions below; tools appear once the helper is ready.",
   "chat.toolCall.cua.requestAccess": "Check Computer Use access",
   "chat.toolCall.cua.appName": "Computer Use",
   "chat.toolCall.cua.listApps": "List running apps",
@@ -8837,9 +8837,9 @@ const enUS: Record<string, string> = {
   "cuaPermission.modal.restartButton": "Restart Helper",
   "cuaPermission.modal.restarting": "Restarting Helper…",
   "cuaPermission.modal.restartFailed": "Couldn't restart Helper: {error}",
-  "cuaPermission.modal.relaunchAppButton": "Restart JGAgent",
+  "cuaPermission.modal.relaunchAppButton": "Restart JGHarness",
   "cuaPermission.modal.relaunchAppHint":
-    "Still not working after restarting Helper? Restart JGAgent to fully reload the Helper process.",
+    "Still not working after restarting Helper? Restart JGHarness to fully reload the Helper process.",
   "cuaPermission.status.granted": "Granted",
   "cuaPermission.status.missing": "Missing",
   "cuaPermission.status.unknown": "Unknown",
@@ -8853,7 +8853,7 @@ const enUS: Record<string, string> = {
   "cuaPermission.tools.agentUpdateRequired":
     "The connected Agent is too old for a safe readiness check. Update or restart it, then check again.",
   "cuaPermission.tools.untrustedRuntime":
-    "Computer Use tools were found, but they did not come from the verified JGAgent plugin. Review the plugin installation, then check again.",
+    "Computer Use tools were found, but they did not come from the verified JGHarness plugin. Review the plugin installation, then check again.",
   "cuaPermission.perm.accessibility": "Accessibility",
   "cuaPermission.perm.accessibility.purpose": "Read/drive UI elements + synthesize input",
   "cuaPermission.perm.screenRecording": "Screen Recording",
@@ -8864,7 +8864,7 @@ const enUS: Record<string, string> = {
     "Please upgrade macOS before using it. Permission setup cannot be completed on older versions.",
   "cuaPermission.ready": "Permissions ready",
   "cuaPermission.ready.sessionValidationHint":
-    "JGAgent will verify the Computer Use tools against the exact session when your first session starts.",
+    "JGHarness will verify the Computer Use tools against the exact session when your first session starts.",
   "settings.computerUse.title": "Computer Use",
   "settings.computerUse.toggleLabel": "Enable Computer Use",
   "settings.computerUse.toggleDescription":
@@ -8915,13 +8915,13 @@ const enUS: Record<string, string> = {
   "globalNotice.highspeed.textCopied": "Share text copied",
   "globalNotice.highspeed.textCopyFailed": "Could not copy share text. Try again.",
   "globalNotice.highspeed.copyImage": "Copy image",
-  "globalNotice.highspeed.badge": "JGAgent & Coding Plan Exclusive Benefits",
+  "globalNotice.highspeed.badge": "JGHarness & Coding Plan Exclusive Benefits",
   "globalNotice.highspeed.standardTaskSpeed": "Standard generation speed",
   "globalNotice.highspeed.relativeTaskDuration": "Relative generation time",
   "globalNotice.highspeed.speedSummary": "HighSpeed · {duration}",
   "globalNotice.highspeed.lessWaiting": "{percent}% less waiting",
   "globalNotice.highspeed.copySummary":
-    "I used the JGAgent Highspeed card and saved {duration}s. Give it a try. Download JGAgent https://zcode.z.ai",
+    "I used the JGHarness Highspeed card and saved {duration}s. Give it a try. Download JGHarness https://zcode.z.ai",
   "globalNotice.highspeed.imageSummary": "{tokens} tokens · {duration}s saved",
   "globalNotice.highspeed.close": "Close Highspeed share card",
   "remoteSync.title": "Data sync",
@@ -9061,12 +9061,12 @@ const enUS: Record<string, string> = {
   "voiceInput.action.openSoundSettings": "Open Sound Settings",
   "voiceInput.permission.title": "Microphone access needed",
   "voiceInput.permission.description.mac":
-    'Click "Request again", then choose "Allow" in the system dialog. You can also turn on JGAgent in System Settings › Privacy & Security › Microphone.',
+    'Click "Request again", then choose "Allow" in the system dialog. You can also turn on JGHarness in System Settings › Privacy & Security › Microphone.',
   "voiceInput.permission.reauthorize": "Request again",
-  "voiceInput.permission.restartTitle": "Restart JGAgent",
+  "voiceInput.permission.restartTitle": "Restart JGHarness",
   "voiceInput.permission.restartDescription":
-    'The microphone permission was reset. Restart JGAgent, click the microphone, then choose "Allow" in the system dialog.',
-  "voiceInput.permission.relaunch": "Restart JGAgent",
+    'The microphone permission was reset. Restart JGHarness, click the microphone, then choose "Allow" in the system dialog.',
+  "voiceInput.permission.relaunch": "Restart JGHarness",
   "voiceInput.permission.granted":
     "Microphone access is on. Click the microphone to start voice input.",
   "voiceInput.permission.description.windows":

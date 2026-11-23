@@ -1,20 +1,20 @@
-# JGAgent
+# JGHarness
 
 <div align="center">
-  <img src="public/logo/icons/1024x1024.png" alt="JGAgent" width="128" height="128" />
+  <img src="public/logo/icons/1024x1024.png" alt="JGHarness" width="128" height="128" />
 </div>
 <p align="center">
   <a href="README.md">简体中文</a> | English
 </p>
 
-JGAgent is an AI workbench built by JieGuan — not just for coding: the **coding mode** goes deep into terminals, Git, and every line of code change for developers, while the **office mode** focuses on summaries and results for daily work. It ships as a desktop app, a browser interface, and a terminal Agent, connecting to the JieGuan model gateway out of the box. This repository contains the clients, backend services, shared UI, and the Agent CLI with its runtime sources.
+JGHarness is an AI workbench built by JieGuan — not just for coding: the **coding mode** goes deep into terminals, Git, and every line of code change for developers, while the **office mode** focuses on summaries and results for daily work. It ships as a desktop app, a browser interface, and a terminal Agent, connecting to the JieGuan model gateway out of the box. This repository contains the clients, backend services, shared UI, and the Agent CLI with its runtime sources.
 
 > This project is a secondary development based on the open-source [ZCode](https://github.com/zai-org/ZCode) (Apache-2.0). Thanks to the upstream community.
 
 | Entry                | Purpose                                                          | Command                             |
 | -------------------- | ---------------------------------------------------------------- | ----------------------------------- |
 | Desktop              | Electron desktop app                                             | `pnpm dev:desktop`                  |
-| Web / JGAgent CLI    | Terminal and browser workbench; bundles TUI, Web, backend, Agent  | `pnpm dev:web`                      |
+| Web / JGHarness CLI    | Terminal and browser workbench; bundles TUI, Web, backend, Agent  | `pnpm dev:web`                      |
 | Agent CLI            | Use `zcode` in the terminal; also the Agent runtime for Desktop/Web | `pnpm --filter @zcode/cli dev`   |
 
 ## Setup
@@ -51,7 +51,7 @@ pnpm dev:desktop:test
 Use `ZCODE_DATA_BASE_DIR` for an isolated data directory, e.g. on macOS / Linux:
 
 ```bash
-ZCODE_DATA_BASE_DIR="$HOME/.jgagent-dev-home" pnpm dev:desktop:test
+ZCODE_DATA_BASE_DIR="$HOME/.jgharness-dev-home" pnpm dev:desktop:test
 ```
 
 ### Remote features (SSH/WSL)
@@ -71,7 +71,7 @@ This starts the Web dev server (default `http://localhost:5173`) and the backend
 
 After changing Agent sources, run `pnpm --filter @zcode/cli... build` and restart the server.
 
-### JGAgent CLI distribution
+### JGHarness CLI distribution
 
 The CLI distribution bundles TUI, Web, and Agent behind a single `zcode` command: no arguments opens the TUI; `--web` starts the Web UI; other arguments are passed to the Agent CLI. Both modes run locally without Electron.
 
@@ -108,7 +108,7 @@ See [.env.example](.env.example) for service endpoints and build configuration; 
 
 | Variable                             | Purpose                                                  |
 | ------------------------------------ | -------------------------------------------------------- |
-| `ZCODE_DATA_BASE_DIR`                | Base data directory (data goes under `.jgagent/`)        |
+| `ZCODE_DATA_BASE_DIR`                | Base data directory (data goes under `.jgharness/`)        |
 | `ZCODE_SERVER_WORKSPACE`             | Workspace path for the Web backend                       |
 | `ZCODE_BUILTIN_PROVIDER_CONFIG_FILE` | Local provider config file; built-in config if unset     |
 | `ZCODE_DIST_BASE_URL`                | Download root used by the CLI install script             |
@@ -126,10 +126,10 @@ pnpm bundle:desktop -- --os win --arch x64
 
 Default target is macOS arm64; output goes to `packages/desktop/dist/`. `--os` supports `mac`, `win`, `linux`; `--arch` supports `x64`, `arm64`. Actual packaging and signing require platform-specific tooling.
 
-### JGAgent CLI package
+### JGHarness CLI package
 
 ```bash
-pnpm build:zcode --base-url https://downloads.example.com/jgagent/
+pnpm build:zcode --base-url https://downloads.example.com/jgharness/
 ```
 
 `ZCODE_DIST_BASE_URL` must be set (env, `.env`, or `--base-url`). Output lands in `dist/zcode/`: the runtime package, sha256 digest, `latest.json` index, and `install.sh`. The directory can be uploaded to your download root.
@@ -152,7 +152,7 @@ pnpm build:zcode --base-url https://downloads.example.com/jgagent/
 
 ## Download
 
-Internal users can get the Windows installer from the [download site](http://82.157.149.224/) (in-app auto-update since v0.3.2). On first launch, choose "JieGuan Model Gateway" in the welcome screen and paste your API key; the model list syncs automatically. All data stays local under `~/.jgagent`.
+Internal users can get the Windows installer from the [download site](http://82.157.149.224/) (in-app auto-update since v0.3.2). On first launch, choose "JieGuan Model Gateway" in the welcome screen and paste your API key; the model list syncs automatically. All data stays local under `~/.jgharness`.
 
 ## Notices
 

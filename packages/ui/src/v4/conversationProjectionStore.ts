@@ -55,7 +55,7 @@ export function requiresAcceptedInputProjection(type: string): boolean {
 }
 
 /** 退避耗尽时展示给用户的 lastError（无底层 error 对象可引用的换代路径）。 */
-const RUNTIME_RECYCLED_ERROR = "JGAgent agent runtime 已被回收，重连未成功";
+const RUNTIME_RECYCLED_ERROR = "JGHarness agent runtime 已被回收，重连未成功";
 
 /** recovery flight 的起因。只由调用点显式给出，不从状态反推，否则日志会把两种原因混成一个。 */
 type RecoveryReason =
@@ -86,10 +86,10 @@ function isRuntimeRecycleError(error: unknown): boolean {
   return (
     // 冷订阅可能亲自拉起新 runtime；restart 令在途 ACK 失效后仍须有界重订，不能停在 error。
     message.includes("fault.subscription.runtimeRestarted") ||
-    message.includes("JGAgent agent transport closed") ||
-    message.includes("JGAgent Protocol client disposed") ||
-    message.includes("JGAgent Protocol client is disposed") ||
-    message.includes("JGAgent Agent runtime is not running")
+    message.includes("JGHarness agent transport closed") ||
+    message.includes("JGHarness Protocol client disposed") ||
+    message.includes("JGHarness Protocol client is disposed") ||
+    message.includes("JGHarness Agent runtime is not running")
   );
 }
 

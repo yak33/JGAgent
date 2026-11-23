@@ -58,13 +58,13 @@ export function buildCliZCodeSourceHeaders(
   const timezone = normalizePrintableHeaderValue(Intl.DateTimeFormat().resolvedOptions().timeZone);
   return {
     "HTTP-Referer": resolveRuntimeZCodeEndpointOrigin(env),
-    "User-Agent": `JGAgent/${appVersion ?? "unknown"}`,
-    ...(appVersion ? { "X-JGAgent-App-Version": appVersion } : {}),
+    "User-Agent": `JGHarness/${appVersion ?? "unknown"}`,
+    ...(appVersion ? { "X-JGHarness-App-Version": appVersion } : {}),
     "X-Title": `Z Code@${sourceTitle}`,
     "X-Release-Channel": resolveRuntimeZCodeEnv(env),
     "X-Client-Language": locale ?? "unknown",
     "X-Client-Timezone": timezone ?? "unknown",
-    "X-JGAgent-Agent": "glm",
+    "X-JGHarness-Agent": "glm",
     ...createRuntimePlatformHeaders(),
   };
 }

@@ -172,7 +172,7 @@ export function useModelProviderNavigation({
 
   const navigationGroups = useMemo<ModelProviderNavGroup[]>(() => {
     // 账号/OAuth 摘除后官方 zai/bigmodel 预设卡不再进导航；
-    // 捷关网关供应商（创建自 jgagent-gateway 模板）单独归入「捷关」组。
+    // 捷关网关供应商（创建自 jgharness-gateway 模板）单独归入「捷关」组。
     const toCustomItems = (providers: readonly ProviderSettingsFormProvider[]) =>
       providers.map((provider) => ({
         key: createCustomProviderNodeKey(provider.providerId),
@@ -186,14 +186,14 @@ export function useModelProviderNavigation({
         id: "jieguan",
         title: intl.formatMessage({ id: "settings.modelProvider.templateGroup.jieguan" }),
         items: toCustomItems(
-          customProviders.filter((provider) => provider.templateId === "jgagent-gateway"),
+          customProviders.filter((provider) => provider.templateId === "jgharness-gateway"),
         ),
       },
       {
         id: "custom",
         title: intl.formatMessage({ id: "settings.modelProvider.customTitle" }),
         items: toCustomItems(
-          customProviders.filter((provider) => provider.templateId !== "jgagent-gateway"),
+          customProviders.filter((provider) => provider.templateId !== "jgharness-gateway"),
         ),
       },
     ];
@@ -316,9 +316,9 @@ function resolveFallbackModelProviderNodeKey({
     Exclude<ModelProviderNavGroup["items"][number], { type: "codingPlanLoading" }>
   >;
 }): string | null {
-  // JGAgent 去官方化：初始回退只允许落在真实侧栏条目上。上游会把 Start Plan 等
+  // JGHarness 去官方化：初始回退只允许落在真实侧栏条目上。上游会把 Start Plan 等
   // 套餐连接节点混进 selectableNavigationItems 并优先选中；账号域摘除后这些节点
-  // 在 JGAgent 没有真实数据也不在侧栏展示，选中它们会出现左侧无高亮、右侧
+  // 在 JGHarness 没有真实数据也不在侧栏展示，选中它们会出现左侧无高亮、右侧
   // "暂无模型供应商"的空页面（v0.3.0 用户实测）。因此初始优先级一律基于侧栏条目。
   const initialConnectionItem = pickInitialConnectionNavigationItem(
     selectableSideNavigationItems,

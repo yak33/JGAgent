@@ -352,7 +352,7 @@ export function SettingsPage({
   const setNotificationEnabled = useZCodeStore((state) => state.setNotificationEnabled);
   const notificationSoundEnabled = useZCodeStore((state) => state.notificationSoundEnabled);
   const setNotificationSoundEnabled = useZCodeStore((state) => state.setNotificationSoundEnabled);
-  // JGAgent 去官方化（阶段 3）：账号域摘除后无 Coding Plan entitlement / 企业商品目录可装配，
+  // JGHarness 去官方化（阶段 3）：账号域摘除后无 Coding Plan entitlement / 企业商品目录可装配，
   // usage 分区仅保留应用级统计（UsageStatsSection 内部为 AppUsagePanel）；
   // 官方 zai/bigmodel 个人与团队 usage 来源、codingPlan tab 解析链路全部不接线。
   const [initialModelProviderTarget] = useState(() => consumePendingSettingsModelProviderTarget());
@@ -501,7 +501,7 @@ export function SettingsPage({
   const [defaultHomeDir, setDefaultHomeDir] = useState("");
   const [hostPlatform, setHostPlatform] = useState("");
 
-  // JGAgent 去官方化（阶段 3）：usage tab 回退 effect 与 codingPlan tab 意图解析
+  // JGHarness 去官方化（阶段 3）：usage tab 回退 effect 与 codingPlan tab 意图解析
   // 随订阅域移除（usageActiveTab 恒 "app"）；usageTab 跳转意图不再消费。
 
   useEffect(
@@ -517,7 +517,7 @@ export function SettingsPage({
         setTargetSourceServerDetails(
           section === "remoteDevices" && detail?.sourceServerDetails === true,
         );
-        // JGAgent：usageTab 意图不再消费（usage 恒 App 统计 tab）。
+        // JGHarness：usageTab 意图不再消费（usage 恒 App 统计 tab）。
         if (resolveSettingsSection(section) === "plugin" && detail?.pluginTab) {
           setPluginTab(detail.pluginTab);
           setPluginNavigationOrigin(detail.pluginOrigin);
@@ -1385,7 +1385,7 @@ export function SettingsPage({
                                   })}
                                 </span>
                               ) : null}
-                              {/* JGAgent 去官方化（阶段 3）：usage 的 Coding Plan tabs 头随订阅域移除。 */}
+                              {/* JGHarness 去官方化（阶段 3）：usage 的 Coding Plan tabs 头随订阅域移除。 */}
                             </div>
                             {activeSection === "projects" ? (
                               <p className="mt-2 max-w-2xl text-ui-base text-foreground-subtle">
@@ -1778,7 +1778,7 @@ export function SettingsPage({
                               onOpenTask={onOpenTask}
                             />
                           ) : activeSection === "usage" ? (
-                            /* JGAgent：应用级统计面板，无订阅来源 props。 */
+                            /* JGHarness：应用级统计面板，无订阅来源 props。 */
                             <UsageStatsSection />
                           ) : activeSection === "subagents" ? (
                             <SubagentsSection

@@ -27,7 +27,7 @@ export interface ServerLayout {
 
 export function getDefaultServerDataRoot(): string {
   const configured = process.env.ZCODE_DATA_BASE_DIR?.trim();
-  return join(configured || homedir(), ".jgagent", "server");
+  return join(configured || homedir(), ".jgharness", "server");
 }
 
 export function resolveServerLayout(serverRoot = getDefaultServerDataRoot()): ServerLayout {

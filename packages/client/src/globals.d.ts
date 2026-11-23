@@ -275,7 +275,7 @@ declare global {
       openInFileManager(path: string): Promise<{ success: boolean; error?: string }>;
       /** 使用系统默认应用打开本地文件 */
       openExternalFile(path: string): Promise<{ success: boolean; error?: string }>;
-      /** 打开 JGAgent Computer Use 完整权限引导 */
+      /** 打开 JGHarness Computer Use 完整权限引导 */
       openCuaPermissionOnboarding?(
         options?: OpenCuaPermissionOnboardingOptions,
       ): Promise<CuaAccessibilitySettingsResult>;

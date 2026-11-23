@@ -148,8 +148,8 @@ export function DesktopTopOverlay({
                   data-desktop-logo-visual
                   className="flex size-5 items-center justify-center transition-opacity duration-150 group-hover:opacity-0 group-focus-visible:opacity-0"
                 >
-                  {/* JGAgent：标题栏 logo 用应用品牌图标，不随上游 ZCodeStartupLogoBadge。 */}
-                  <img src={appLogoUrl} alt="JGAgent" className="size-5" draggable={false} />
+                  {/* JGHarness：标题栏 logo 用应用品牌图标，不随上游 ZCodeStartupLogoBadge。 */}
+                  <img src={appLogoUrl} alt="JGHarness" className="size-5" draggable={false} />
                 </span>
                 <SidebarToggleIcon className="absolute inset-0 m-auto size-4 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100" />
               </DesktopTopOverlayActionButton>

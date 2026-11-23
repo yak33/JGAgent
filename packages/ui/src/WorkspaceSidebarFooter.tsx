@@ -72,7 +72,7 @@ export const WorkspaceSidebarFooter = memo(function WorkspaceSidebarFooterCompon
   onLocaleChange: (value: string) => void;
   onThemeChange: (value: string) => void;
   onSettingsButtonClick?: () => void;
-  /** JGAgent：直达设置-模型供应商分区（更换 API Key / 供应商）。 */
+  /** JGHarness：直达设置-模型供应商分区（更换 API Key / 供应商）。 */
   onProviderSettingsClick?: () => void;
   settingsButtonMode?: "settings" | "back";
   workspacePath?: string;
@@ -83,9 +83,9 @@ export const WorkspaceSidebarFooter = memo(function WorkspaceSidebarFooterCompon
   banner?: ReactNode;
   className?: string;
 }) {
-  // JGAgent 去官方化（阶段 3）：账号体系摘除后，footer 头像/套餐徽标/用量/登录登出
-  // 整体移除，原「头像菜单」改为「JGAgent 偏好菜单」，语言/主题/界面模式/缩放保留。
-  // JGAgent 本地身份（2026-09-26）：左下角改为本地头像+用户名，菜单顶部加个性化区块（docs/specs/local-profile.md）。
+  // JGHarness 去官方化（阶段 3）：账号体系摘除后，footer 头像/套餐徽标/用量/登录登出
+  // 整体移除，原「头像菜单」改为「JGHarness 偏好菜单」，语言/主题/界面模式/缩放保留。
+  // JGHarness 本地身份（2026-09-26）：左下角改为本地头像+用户名，菜单顶部加个性化区块（docs/specs/local-profile.md）。
   // workspace* / activeTaskId 等 props 为公共调用签名保留（父组件仍在传递，后续批次统一清理）。
   const { intl } = useZCodeIntl();
   const { profile, setName, setColorIndex, rollName } = useLocalProfile();

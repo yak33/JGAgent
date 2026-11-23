@@ -28,7 +28,7 @@ export type SettingsSectionId =
   | "automations"
   | "shortcuts";
 
-// JGAgent 去官方化（阶段 3）：移除 pending usage tab 机制（SettingsUsageTabTarget /
+// JGHarness 去官方化（阶段 3）：移除 pending usage tab 机制（SettingsUsageTabTarget /
 // SETTINGS_USAGE_TAB_INTENT_KEY / consumePendingSettingsUsageTab / shouldFallbackSettingsTabToApp /
 // setPendingSettingsUsageCodingPlanIntent），codingPlan 统计 tab 跳转链路已死。
 
@@ -233,7 +233,7 @@ export function setPendingSettingsSectionIntent(
     modelProviderId?: string;
     sourceServerId?: string;
     sourceServerDetails?: boolean;
-    /** JGAgent：usage tab 机制已摘除，占位保持接口兼容；调用方不再传值。 */
+    /** JGHarness：usage tab 机制已摘除，占位保持接口兼容；调用方不再传值。 */
     usageTab?: never;
   } = {},
 ): void {
@@ -259,7 +259,7 @@ export function setPendingSettingsSectionIntent(
     } else {
       window.sessionStorage.removeItem(SETTINGS_PLUGIN_SCOPE_KEY_INTENT_KEY);
     }
-    // JGAgent：usage tab 意图不落盘（机制已随订阅域摘除）。
+    // JGHarness：usage tab 意图不落盘（机制已随订阅域摘除）。
     if (section === "remoteDevices" && options.sourceServerId?.trim()) {
       window.sessionStorage.setItem(
         SETTINGS_SOURCE_SERVER_ID_INTENT_KEY,
@@ -316,7 +316,7 @@ function clearPendingSettingsSectionIntent(): void {
     window.sessionStorage.removeItem(SETTINGS_SECTION_INTENT_KEY);
     window.sessionStorage.removeItem(SETTINGS_SOURCE_SERVER_ID_INTENT_KEY);
     window.sessionStorage.removeItem(SETTINGS_SOURCE_SERVER_DETAILS_INTENT_KEY);
-    // JGAgent：SETTINGS_USAGE_TAB_INTENT_KEY 已随 usage tab 机制移除。
+    // JGHarness：SETTINGS_USAGE_TAB_INTENT_KEY 已随 usage tab 机制移除。
     window.sessionStorage.removeItem(SETTINGS_MODEL_PROVIDER_ID_INTENT_KEY);
     window.sessionStorage.removeItem(SETTINGS_PLUGIN_TAB_INTENT_KEY);
     window.sessionStorage.removeItem(SETTINGS_PLUGIN_ORIGIN_INTENT_KEY);

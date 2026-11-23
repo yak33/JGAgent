@@ -1,5 +1,5 @@
 /* eslint-disable max-lines -- Model Provider 详情页当前集中编排 Plan Card、API Key 表单和 OAuth 套餐态；后续稳定后再按 family/API/OAuth 拆分。 */
-// JGAgent 去官方化（阶段 3）：移除升级弹窗入口（useCodingPlanUpgradeDialog / useCodingPlanEntryGate）
+// JGHarness 去官方化（阶段 3）：移除升级弹窗入口（useCodingPlanUpgradeDialog / useCodingPlanEntryGate）
 // 与个人/团队购买横幅（CodingPlanPurchaseChoiceBanners）。
 import {
   BIGMODEL_PROVIDER_ID,
@@ -35,7 +35,7 @@ import {
   ProviderFamilyHeader,
   ProviderFamilyPlanModeSwitch,
 } from "./ProviderFamilyModeHeader.js";
-// JGAgent 去官方化（阶段 3）：useUsageEntitlement（订阅权益快照）随账号域删除。
+// JGHarness 去官方化（阶段 3）：useUsageEntitlement（订阅权益快照）随账号域删除。
 // Detail 页的 Team Plan 权益管道保留形状但恒为空：账号体系移除后不会再产生
 // teamPlan 导航项，resolveTeamScopedPlanNavItem 走 item 原样返回分支。
 type TeamPlanEntitlementStub = {
@@ -76,7 +76,7 @@ function hasTeamPlanContext(item: ModelProviderNavItem | null): item is Extract<
   );
 }
 
-// JGAgent 去官方化（阶段 3）：Team Plan 权益快照随订阅域删除（恒为空），
+// JGHarness 去官方化（阶段 3）：Team Plan 权益快照随订阅域删除（恒为空），
 // resolveTeamScopedPlanNavItem 的额度/订阅分支不再可达，团队导航项按原样返回。
 function resolveTeamScopedPlanNavItem(
   item: Extract<ModelProviderNavItem, { type: "codingPlan" | "teamPlan" }>,
@@ -145,7 +145,7 @@ export function ModelProviderSectionDetail({
   onRetryCodingPlan,
   onCodingPlanDisconnect,
   onOpenApiKeyUrl,
-  // JGAgent 去官方化（阶段 3）：onOpenBigModelRegistration 随注册 hint（authError 链路）移除。
+  // JGHarness 去官方化（阶段 3）：onOpenBigModelRegistration 随注册 hint（authError 链路）移除。
   onCodingPlanPurchaseComplete,
   onSelectNavItem,
   providerSettingsView: providerSettingsViewOverride,
@@ -156,7 +156,7 @@ export function ModelProviderSectionDetail({
   connectionSelections?: ProviderFamilyConnectionSelectionSettings;
   startPlanSubscriptionCount?: number;
   presetLoading: boolean;
-  // JGAgent 去官方化（阶段 3）：购买 token 判定 prop（codingPlanPurchaseTokenAuthenticatedByProviderId）随购买横幅移除。
+  // JGHarness 去官方化（阶段 3）：购买 token 判定 prop（codingPlanPurchaseTokenAuthenticatedByProviderId）随购买横幅移除。
   presetSubscriptionProviderId: BuiltinModelProviderId | null;
   codingPlanStatusSyncProviderId: BuiltinModelProviderId | null;
   codingPlanDisconnectProviderId: BuiltinModelProviderId | null;
@@ -338,7 +338,7 @@ export function ModelProviderSectionDetail({
       providerId: selectedNavItem.presetId,
       fallback: selectedNavItem.provider,
     });
-    // JGAgent 去官方化（阶段 3）：购买 token 判定（codingPlanPurchaseTokenAuthenticated）随购买横幅移除。
+    // JGHarness 去官方化（阶段 3）：购买 token 判定（codingPlanPurchaseTokenAuthenticated）随购买横幅移除。
     const codingPlanLoginPending = presetSubscriptionProviderId === selectedNavItem.presetId;
     const codingPlanStatusSyncPending = codingPlanStatusSyncProviderId === selectedNavItem.presetId;
     const codingPlanDisconnectPending = codingPlanDisconnectProviderId === selectedNavItem.presetId;
@@ -422,7 +422,7 @@ export function ModelProviderSectionDetail({
             provider.accountState.entitled,
         ),
     );
-    // JGAgent 去官方化（阶段 3）：移除个人/团队购买横幅（CodingPlanPurchaseChoiceBanners），
+    // JGHarness 去官方化（阶段 3）：移除个人/团队购买横幅（CodingPlanPurchaseChoiceBanners），
     // 补充内容仅保留未连接/未开通的说明横幅。
     const planSupplementalContent =
       isStartPlanProvider && hasActivePaidPlan ? null : accessBanner ? (

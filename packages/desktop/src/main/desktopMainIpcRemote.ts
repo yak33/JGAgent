@@ -332,7 +332,7 @@ export function registerRemoteIpcHandlers(options: {
     reportRemoteUsageEvent,
     webRemoteControlManager: options.webRemoteControlManager,
   });
-  // JGAgent 去官方化（阶段 3）：OAuthRegisterState IPC 挂载随登录体系移除
+  // JGHarness 去官方化（阶段 3）：OAuthRegisterState IPC 挂载随登录体系移除
   // （renderer 不再发起 OAuth 登录，state 注册无消费方）。
   ipcMain.on(PlatformChannels.OpenExternal, (event, payload: unknown) => {
     const request = parseOpenExternalRequest(payload);
@@ -382,7 +382,7 @@ export function registerRemoteIpcHandlers(options: {
 
   ipcMain.on(PlatformChannels.RendererReady, (event) => {
     deliverPendingDeepLink(event.sender);
-    // JGAgent 去官方化（阶段 3）：OAuth pending 回调删除后恒为 false，遥测沿用常量。
+    // JGHarness 去官方化（阶段 3）：OAuth pending 回调删除后恒为 false，遥测沿用常量。
     const hasPendingOAuthCallback = false;
     options.appTelemetryRuntime.onRendererReady({
       hasPendingOAuthCallback,

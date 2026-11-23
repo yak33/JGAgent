@@ -40,7 +40,7 @@ export interface UserMcpRecord {
 const ZCODE_MCP_DESCRIPTOR: DirectoryMcpDescriptor = {
   source: "zcode",
   directorySource: "zcode",
-  userConfigDirSegments: [".jgagent", "cli"],
+  userConfigDirSegments: [".jgharness", "cli"],
   workspaceConfigDirSegments: [".zcode"],
   fileName: "config.json",
   configKeyName: "mcp.servers",

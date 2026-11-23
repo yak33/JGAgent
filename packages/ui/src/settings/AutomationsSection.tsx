@@ -1,9 +1,9 @@
 /* eslint-disable max-lines -- 定时任务主视图集中维护列表、创建/编辑整页路由与启停/删除操作，集中更利于交互一致。 */
-// JGAgent 去官方化（阶段 3）：移除升级弹窗入口（useCodingPlanUpgradeDialog / useCodingPlanEntryGate）。
+// JGHarness 去官方化（阶段 3）：移除升级弹窗入口（useCodingPlanUpgradeDialog / useCodingPlanEntryGate）。
 import {
   useCallback,
   useEffect,
-  // JGAgent 去官方化（阶段 3）：useMemo/useRef 随闲时任务域删除后不再使用。
+  // JGHarness 去官方化（阶段 3）：useMemo/useRef 随闲时任务域删除后不再使用。
   useState,
   type ComponentType,
   type SVGProps,
@@ -161,7 +161,7 @@ function toast(message: string, options?: ToastOptions): number {
   });
 }
 
-// JGAgent 去官方化（阶段 3）：闲时任务（Idle tab / Off-Peak 创建、编辑、列表、模板）
+// JGHarness 去官方化（阶段 3）：闲时任务（Idle tab / Off-Peak 创建、编辑、列表、模板）
 // 随账号与订阅服务域整体摘除；自动化页只保留定时任务（Scheduled）。
 /** 创建表单的预填草稿(来自「More ideas」模板)。 */
 export interface AutomationDraft {
@@ -176,7 +176,7 @@ type AutomationsView =
   | { mode: "list" }
   | { mode: "create"; draft: AutomationDraft | null }
   | { mode: "edit"; automation: ZCodeAutomation }
-  // JGAgent 去官方化（阶段 3）：offpeak-create / offpeak-edit 视图随闲时任务域删除。
+  // JGHarness 去官方化（阶段 3）：offpeak-create / offpeak-edit 视图随闲时任务域删除。
 
 /** 主视图标签页：Scheduled 常驻，Idle-time 受灰度控制（D31）；不设 All 混排视图。 */
 export type AutomationsTab = "scheduled" | "idle";
@@ -188,7 +188,7 @@ export function resolveVisibleAutomationTabs({
 }: {
   hasAnyTasks: boolean;
 }): readonly AutomationsTab[] {
-  // JGAgent 去官方化（阶段 3）：闲时 tab 移除，只剩 Scheduled。
+  // JGHarness 去官方化（阶段 3）：闲时 tab 移除，只剩 Scheduled。
   if (!hasAnyTasks) return [];
   return SCHEDULED_ONLY_AUTOMATION_TABS;
 }
@@ -216,7 +216,7 @@ export function resolveAutomationTemplateVisibility({
 }): {
   showScheduledTemplates: boolean;
 } {
-  // JGAgent 去官方化（阶段 3）：闲时模板区移除，仅保留 Scheduled 模板。
+  // JGHarness 去官方化（阶段 3）：闲时模板区移除，仅保留 Scheduled 模板。
   return { showScheduledTemplates: !hasAnyTasks || true };
 }
 
@@ -456,7 +456,7 @@ export function AutomationsSection({
   const refresh = useAutomationManagementStore((state) => state.refresh);
 
   const automationTemplates = useAutomationTemplates(clientScenesService);
-  // JGAgent 去官方化（阶段 3）：useOffPeakTaskStore 选择器与派生状态随闲时任务域删除。
+  // JGHarness 去官方化（阶段 3）：useOffPeakTaskStore 选择器与派生状态随闲时任务域删除。
   const [refreshing, setRefreshing] = useState(false);
   const [view, setView] = useState<AutomationsView>({ mode: "list" });
   // tab 与状态筛选同居一个状态：所有 setTab 调用都经 resolveAutomationTabState 归约，
@@ -509,7 +509,7 @@ export function AutomationsSection({
   // 相对时间基准;刷新列表时更新,避免频繁 setInterval。
   const [now, setNow] = useState(() => Date.now());
 
-  // JGAgent 去官方化（阶段 3）：闲时创建准入（offPeakCreateGrey）随闲时任务域删除。
+  // JGHarness 去官方化（阶段 3）：闲时创建准入（offPeakCreateGrey）随闲时任务域删除。
   // 列表按当前项目加载(主视图由 WorkspaceShellLayout 传入当前 workspace)。
   useEffect(() => {
     if (!workspacePath) return;
@@ -584,7 +584,7 @@ export function AutomationsSection({
     }
   }, [refresh, zcodeAgentService]);
 
-  // JGAgent 去官方化（阶段 3）：闲时创建草稿消费与远端 tab 重置 effect 随闲时任务域删除。
+  // JGHarness 去官方化（阶段 3）：闲时创建草稿消费与远端 tab 重置 effect 随闲时任务域删除。
 
   const showAutomationCreateLimitToast = useCallback(() => {
     toast(
@@ -595,7 +595,7 @@ export function AutomationsSection({
     );
   }, [intl]);
 
-// JGAgent 去官方化（阶段 3）：offPeak 导航强制刷新状态与 effect 随闲时任务域删除。
+// JGHarness 去官方化（阶段 3）：offPeak 导航强制刷新状态与 effect 随闲时任务域删除。
 
 
 
@@ -886,7 +886,7 @@ export function AutomationsSection({
     [confirmDialog, deleteAutomation, intl, platform, providerSettingsView, zcodeAgentService],
   );
 
-  // JGAgent 去官方化（阶段 3）：闲时任务 handlers（打开/取消/删除/提交）随闲时任务域删除。
+  // JGHarness 去官方化（阶段 3）：闲时任务 handlers（打开/取消/删除/提交）随闲时任务域删除。
   if (!workspacePath) {
     return (
       <div className="rounded-lg border border-card-border bg-card px-3 py-2 text-ui-base text-foreground-subtle">
@@ -895,7 +895,7 @@ export function AutomationsSection({
     );
   }
 
-  // JGAgent 去官方化（阶段 3）：offpeak-create / offpeak-edit 整页视图随闲时任务域删除。
+  // JGHarness 去官方化（阶段 3）：offpeak-create / offpeak-edit 整页视图随闲时任务域删除。
   // 创建/编辑整页(带 Settings/History tab)。
   if (view.mode !== "list") {
     return (
@@ -990,7 +990,7 @@ export function AutomationsSection({
       {visibleTabs.length > 0 ? (
         <div className="mt-8 flex items-center justify-between">
           {/* tab 曾与右侧操作组共用 12px 间距，未体现最新设计要求的 8px 紧凑节奏。*/}
-          {/* JGAgent 去官方化（阶段 3）：tab 容器保留（仅 Scheduled）。 */}
+          {/* JGHarness 去官方化（阶段 3）：tab 容器保留（仅 Scheduled）。 */}
           <div className="flex items-center gap-2">
             {/* 未选中态不强制显示 surface 背景，以便与 hover、选中态形成层级。*/}
             {visibleTabs.map((key) => (
@@ -1092,7 +1092,7 @@ export function AutomationsSection({
 
             {/* 去掉 All 混排视图后两类任务不再共用统一 grid；保留该锚点标记任务区起点。 */}
             <div data-automations-task-grid className="contents">
-              {/* JGAgent 去官方化（阶段 3）：闲时任务列表随闲时任务域删除。 */}
+              {/* JGHarness 去官方化（阶段 3）：闲时任务列表随闲时任务域删除。 */}
               {/* Task created：当前项目已创建的真实定时任务(全部)。点整张卡片进编辑。
                  闲时任务 tab 下整个定时任务区（卡片/空状态/通过对话创建）都不渲染。 */}
               {automations.length > 0 ? (
@@ -1302,7 +1302,7 @@ export function AutomationsSection({
                         onViaChat={handleCreateViaChat}
                         onManually={handleCreateManually}
                       />
-                      {/* JGAgent 去官方化（阶段 3）：空态闲时创建按钮随闲时任务域删除。 */}
+                      {/* JGHarness 去官方化（阶段 3）：空态闲时创建按钮随闲时任务域删除。 */}
                     </div>
                   </div>
                 </div>
@@ -1335,7 +1335,7 @@ export function AutomationsSection({
             </div>
           ) : null}
 
-          {/* JGAgent 去官方化（阶段 3）：闲时任务模板区随闲时任务域删除。 */}
+          {/* JGHarness 去官方化（阶段 3）：闲时任务模板区随闲时任务域删除。 */}
           {/* Scheduled task template：Client Scenes 候选目录；点击只预填新建整页。闲时任务 tab 不显示。 */}
           {showScheduledTemplates ? (
             <section

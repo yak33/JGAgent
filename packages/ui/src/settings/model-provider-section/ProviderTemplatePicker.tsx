@@ -36,7 +36,7 @@ export function ProviderTemplatePicker({
   const { dismissFeedback, showFeedback } = useProviderDetailFeedback();
   const customLabel = intl.formatMessage({ id: "settings.modelProvider.newProviderName" });
   // 捷关网关模板独占「捷关」组；其余模板（含恢复的智谱 z.ai/BigModel API 模板）归入「其他」。
-  const jieguanIds = ["jgagent-gateway"];
+  const jieguanIds = ["jgharness-gateway"];
   const groups = [
     {
       id: "jieguan",

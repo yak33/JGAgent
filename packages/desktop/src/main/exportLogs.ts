@@ -34,7 +34,7 @@ function getZCodeDataDir() {
 }
 
 function getZCodeCliDir() {
-  return join(homedir(), ".jgagent", "cli");
+  return join(homedir(), ".jgharness", "cli");
 }
 
 function getZCodeCliLogDir() {
@@ -47,7 +47,7 @@ function getZCodeCliLogDir() {
  * helperExitLogPathFor）。同目录下还有 `.tokens` broker 凭据，收集时必须按文件名白名单。
  */
 function getCuaHelperRunDir() {
-  return join(homedir(), ".jgagent", "computer-use", "run");
+  return join(homedir(), ".jgharness", "computer-use", "run");
 }
 
 function isCuaHelperDiagnosticFileName(fileName: string): boolean {
@@ -1024,14 +1024,14 @@ function isExcludedRelativePath(relativePath: string): boolean {
     return true;
   }
   // debug 目录通常是模型/运行时高频轨迹，不是用户要交付的日志包材料。
-  // 过去显式收集 ~/.jgagent/cli/debug 会把这类上下文带进手动导出和反馈完整日志，这里按目录段统一跳过。
+  // 过去显式收集 ~/.jgharness/cli/debug 会把这类上下文带进手动导出和反馈完整日志，这里按目录段统一跳过。
   if (isExcludedDirectoryArchivePath(normalizedRelativePath)) {
     return true;
   }
   if (isNonLogStateArchivePath(normalizedRelativePath)) {
     return true;
   }
-  // ~/.jgagent/v2/dev 保存 stdio-traffic 等高频协议流，真实机器上会累计到 GB 级。
+  // ~/.jgharness/v2/dev 保存 stdio-traffic 等高频协议流，真实机器上会累计到 GB 级。
   // 远超反馈附件的大小上限，不应随诊断包带出。
   if (isHighVolumeRuntimeArchivePath(normalizedRelativePath)) {
     return true;
@@ -1255,11 +1255,11 @@ export async function createLogArchiveArtifacts(
   await collectLogArchiveFilesFromDirectory(sourceDir, "", visitedDirs, files);
 
   const zcodeCliLogDir = getZCodeCliLogDir();
-  // GLM / zcode-cli 的运行日志写在 ~/.jgagent/cli/log，不在应用主数据目录 ~/.jgagent/v2 下。
+  // GLM / zcode-cli 的运行日志写在 ~/.jgharness/cli/log，不在应用主数据目录 ~/.jgharness/v2 下。
   // 如果导出日志只扫描 v2，定位 agent CLI 启动、协议或崩溃问题时会缺少最关键的原生侧日志。
   await collectLogArchiveFilesFromDirectory(
     zcodeCliLogDir,
-    posix.join(".jgagent", "cli", "log"),
+    posix.join(".jgharness", "cli", "log"),
     visitedDirs,
     files,
   );
@@ -1273,15 +1273,15 @@ export async function createLogArchiveArtifacts(
   );
   // 排查 agent CLI 问题还需要它的运行配置与模型 IO 轨迹。
   // config.json 是当前生效配置；rollout 是 model-io 调用轨迹，
-  // 二者都不在 ~/.jgagent/cli/log 下，需要额外收集才能完整还原现场。
+  // 二者都不在 ~/.jgharness/cli/log 下，需要额外收集才能完整还原现场。
   await collectLogArchiveFile(
     join(zcodeCliDir, "config.json"),
-    posix.join(".jgagent", "cli", "config.json"),
+    posix.join(".jgharness", "cli", "config.json"),
     files,
   );
   await collectLogArchiveFilesFromDirectory(
     join(zcodeCliDir, "rollout"),
-    posix.join(".jgagent", "cli", "rollout"),
+    posix.join(".jgharness", "cli", "rollout"),
     visitedDirs,
     files,
   );
@@ -1289,11 +1289,11 @@ export async function createLogArchiveArtifacts(
   // Computer Use Helper 的结构化诊断必须进日志包：否则反馈包里
   // grep "background keyboard begin rejected" 命中 0，
   // 因为 Helper 由 LaunchServices 启动、stderr 被系统丢弃，它把诊断 tee 到
-  // ~/.jgagent/computer-use/run/<socket>.exit.log，既不在 app data 也不在 ~/.jgagent/cli 下。
+  // ~/.jgharness/computer-use/run/<socket>.exit.log，既不在 app data 也不在 ~/.jgharness/cli 下。
   // 同目录下有 .tokens broker 凭据，因此按文件名白名单只收 *.exit.log，不递归该目录。
   await collectLogArchiveFilesByName(
     getCuaHelperRunDir(),
-    posix.join(".jgagent", "computer-use", "run"),
+    posix.join(".jgharness", "computer-use", "run"),
     isCuaHelperDiagnosticFileName,
     files,
   );
@@ -1445,7 +1445,7 @@ export async function createFeedbackLogArchiveFromExportLogs(
     sources: [
       {
         directory: join(getZCodeCliDir(), CLI_MEMORY_DIAGNOSTIC_DIRECTORY),
-        archivePrefix: ".jgagent/cli/memory-diagnostics",
+        archivePrefix: ".jgharness/cli/memory-diagnostics",
         contentPolicy: "cli-memory",
         onlyCurrentDay: false,
       },

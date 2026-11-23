@@ -4,7 +4,7 @@ import { isAbsolute, resolve } from "node:path";
 import { app, BrowserWindow, dialog } from "electron";
 import type { WebContents } from "electron";
 import { type Locale, PlatformChannels } from "@zcode/shared";
-// JGAgent 去官方化（阶段 3）：删除 OAuth 回调 deep link 分支（登录体系移除）；
+// JGHarness 去官方化（阶段 3）：删除 OAuth 回调 deep link 分支（登录体系移除）；
 // open-workspace / share import / payment 回调路由保留。
 import {
   extractWorkspaceOpenPath,
@@ -106,16 +106,16 @@ export function resolveExternalWorkspaceOpenDialogCopy(
   if (locale === "zh-CN") {
     return {
       buttons: ["打开文件夹", "取消"],
-      title: "打开外部 JGAgent 链接？",
-      message: "是否在 JGAgent 中打开此文件夹？",
+      title: "打开外部 JGHarness 链接？",
+      message: "是否在 JGHarness 中打开此文件夹？",
       detail: (path) => `${path}\n\n只打开你信任来源的文件夹。项目设置可能影响 agent runtime。`,
     };
   }
 
   return {
     buttons: ["Open folder", "Cancel"],
-    title: "Open external JGAgent link?",
-    message: "Open this folder in JGAgent?",
+    title: "Open external JGHarness link?",
+    message: "Open this folder in JGHarness?",
     detail: (path) =>
       `${path}\n\nOnly open folders from sources you trust. Project settings may affect the agent runtime.`,
   };
@@ -241,7 +241,7 @@ export function handleDeepLink(
       ? options.resolveApplicationWindow()
       : (BrowserWindow.getFocusedWindow() ?? BrowserWindow.getAllWindows()[0] ?? null);
     // zcode://workspace/open 来自浏览器/IM 等外部应用，不能等同于用户在
-    // JGAgent 内部选择目录；确认必须发生在 statSync 之前，避免项目配置被静默信任。
+    // JGHarness 内部选择目录；确认必须发生在 statSync 之前，避免项目配置被静默信任。
     if (
       !confirmExternalWorkspaceOpen(workspacePath, logger, targetWindow, options.confirmationCopy)
     ) {
@@ -314,7 +314,7 @@ export function handleDeepLink(
     return false;
   }
 
-  // JGAgent 去官方化（阶段 3）：zcode://oauth/callback 回调路由随登录体系删除，
+  // JGHarness 去官方化（阶段 3）：zcode://oauth/callback 回调路由随登录体系删除，
   // 非工作区/支付/分享的 deep link 一律按未知 URL 忽略。
   return false;
 }
@@ -400,7 +400,7 @@ export function deliverPendingDeepLink(webContents: WebContents): boolean {
     webContents.send(PlatformChannels.OpenWorkspacePath, pendingOpenWorkspaceRequest.path);
     pendingOpenWorkspaceRequest = null;
   }
-  // JGAgent 去官方化（阶段 3）：OAuth pending 回调删除后恒无待投递回调。
+  // JGHarness 去官方化（阶段 3）：OAuth pending 回调删除后恒无待投递回调。
   return false;
 }
 

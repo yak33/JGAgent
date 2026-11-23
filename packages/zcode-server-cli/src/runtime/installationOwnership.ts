@@ -20,12 +20,12 @@ export type ServerInstallOwnership = z.infer<typeof serverInstallOwnershipSchema
 async function readOwnership(layout: ServerLayout): Promise<ServerInstallOwnership> {
   const markerStat = await lstat(layout.installFile).catch(() => null);
   if (!markerStat?.isFile()) {
-    throw new Error(`JGAgent Server ownership marker is missing or invalid: ${layout.installFile}`);
+    throw new Error(`JGHarness Server ownership marker is missing or invalid: ${layout.installFile}`);
   }
   try {
     return serverInstallOwnershipSchema.parse(JSON.parse(await readFile(layout.installFile, "utf8")));
   } catch (error) {
-    throw new Error(`JGAgent Server ownership marker is invalid: ${layout.installFile}`, {
+    throw new Error(`JGHarness Server ownership marker is invalid: ${layout.installFile}`, {
       cause: error,
     });
   }
@@ -67,14 +67,14 @@ export async function validateServerInstallOwnership(layout: ServerLayout): Prom
   const [ownership, canonicalServerRoot] = await Promise.all([
     readOwnership(layout),
     realpath(layout.serverRoot).catch((error: unknown) => {
-      throw new Error(`JGAgent Server ownership root cannot be resolved: ${layout.serverRoot}`, {
+      throw new Error(`JGHarness Server ownership root cannot be resolved: ${layout.serverRoot}`, {
         cause: error,
       });
     }),
   ]);
   if (ownership.canonicalServerRoot !== canonicalServerRoot) {
     throw new Error(
-      `JGAgent Server ownership root mismatch: expected ${ownership.canonicalServerRoot}, received ${canonicalServerRoot}`,
+      `JGHarness Server ownership root mismatch: expected ${ownership.canonicalServerRoot}, received ${canonicalServerRoot}`,
     );
   }
   return ownership;

@@ -5,7 +5,7 @@
     "providerConfigRules": {
       "templateRules": [
         {
-          "templateId": "jgagent-gateway",
+          "templateId": "jgharness-gateway",
           "templateNameMap": {
             "zh-CN": "捷关模型网关",
             "en-US": "JieGuan Model Gateway"
