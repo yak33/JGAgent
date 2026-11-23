@@ -381,6 +381,16 @@ git apply --3way /tmp/v3.14.3.patch   # 用 872ad96 的 blob 做基准三方合�
 疑被主机安全 agent 包装，不可信——用 md5sum 或 sha256sum 对照）；服务器带宽 ~3.6Mbps，
 148MB 全量下载需 5-6 分钟且连接偶发闪断（curl exit 18），带重试可完成，差分下载影响小。
 
+## 七·八、v0.7.0 更名发版记录（捷关Agent → 捷关Harness，2026-11-24 完成）
+
+用户决策全等替换：捷关Agent=捷关Harness、JGAgent=jgharness。主体提交 `c733bccc`（560 文件 9200+ 处，changelog 历史条目与本文档历史节保留旧名）。
+
+- **存储根迁移**：`~/.jgagent` → `~/.jgharness`，desktop main 的 whenReady 首行 `migrateLegacyJGAgentDataRoot()` 整目录 rename（新根已存在则不动旧目录，失败不阻断）。appId/productName/安装包名/npm 包名/占位域同步更换；`jgagent-gateway` 模板 id 改 `jgharness-gateway`（老 provider 配置失效，预览期接受）。
+- **⚠️ feed 空烧入根因（重要教训）**：tsup 的 `loadEnvFiles()` 只认 `.env` 文件，process.env 覆盖白名单漏了 `ZCODE_UPDATE_FEED_URL`——**v0.5.0 起 shell/CI 传的 feed 全部被静默忽略**（自动更新一直回退 endpoint manifest 静默失败，v0.6.0 的"烧入"实为错觉）。已在 tsup.config.ts 补白名单并创建 `.env`（gitignore）。**发版必须 grep asar 验证 feed URL 真实烧入**，命令行注入不再可靠这一课已写入检查习惯。
+- **批量替换漏网教训**：替换脚本曾排除 `.vitepress` 目录（为避开 cache/dist），导致官网标题漏改——排除目录要精确到 cache/dist 而非整个父目录。
+- 打包产物：`JGHarness-0.7.0-win-x64.exe`（204MB，feed 烧入验证 `jg-agent.vercel.app/downloads/latest.yml` 存在于 asar）；Release v0.7.0 五资产已发布；官网（Vercel）标题/版本/changelog 全量更新为 JGHarness。
+- 线上验证（走 VPN 代理）：latest.yml（version 0.7.0、sha512 一致）、`/downloads/JGHarness-latest-win-x64.exe`（200、字节数一致）、`/downloads/JGAgent-0.6.0-win-x64.exe` 历史兼容链 200。
+- 旧品牌残留甄别：asar 内 `migrateLegacyJGAgentDataRoot`（迁移函数名，故意保留）与 82 反馈域 fallback 两处（服务已下线走本地降级，待反馈服务重建时一并换址）。
 ## 八、反馈收集服务（运维手册）【服务端随 82 服务器回收已下线：客户端提交走本地降级存 tickets.json 不丢失；管理台与工单数据已不可达，重建方案待定】
 
 > 2026-09-27 上线。承接客户端「问题上报 / 给产品提需求」，工单集中存官网服务器，
