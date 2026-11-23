@@ -24,3 +24,9 @@ third-party/inventory.json linguist-generated=true
 # Gen UI 离线运行时资产按字节保存：构建期做 sha256 校验（gen-ui-runtime-assets.mjs），
 # Windows autocrlf 的行尾转换会破坏哈希。覆盖整个 assets 目录（含 vendor 与非 vendor 资产）。
 apps/zcode-cli/packages/visualize-plugin/skills/visualize/assets/** -text
+
+# design 内置插件：第三方设计资源保持上游原字节（许可登记按原文哈希校验）；
+# SessionStart hook 是 sh/cmd 双写法脚本，CRLF 会让 sh 解析失败，固定 LF。
+apps/zcode-cli/packages/design-plugin/skills/design/design-resources/** -text -whitespace linguist-vendored=true
+apps/zcode-cli/packages/design-plugin/hooks/design-rules text eol=lf
+apps/zcode-cli/packages/design-plugin/hooks/run-hook.cmd text eol=lf

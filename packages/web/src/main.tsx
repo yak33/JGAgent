@@ -1,4 +1,18 @@
-import { sessionCreateTelemetrySchema, type RendererTelemetryEventPayload } from "@zcode/shared";
+// 远控 / 分享网页运行在用户自己的浏览器里，版本不受我们控制。
+// ZCT-2118215639243444224：Chrome 109 没有 Array.prototype.toSorted，Hook 详情组件渲染时抛
+// TypeError，区域错误边界显示“这块界面出了点问题”。Vite 只降级语法、不补运行时 API，
+// 这里只补产物实际用到、且高于构建语法基线的 API；core-js 会先检测原生实现，不覆盖新版浏览器。
+// 必须放在最前面：ES module 按 import 顺序求值，其他模块执行前 API 需已就绪。
+// 范围与新增规则见 docs/web-remote-control/web-browser-support.md。
+import "core-js/stable/array/to-sorted";
+import "core-js/stable/array/to-reversed";
+import "core-js/stable/object/group-by";
+import {
+  type RemoteTarget,
+  type WebRemoteControlStatus,
+  sessionCreateTelemetrySchema,
+  type RendererTelemetryEventPayload,
+} from "@zcode/shared";
 /* eslint-disable max-lines -- Web 远程控制启动、错误页和 web 平台桥接暂时集中在入口编排。 */
 import { createRoot } from "react-dom/client";
 import {
@@ -6,7 +20,6 @@ import {
   Root,
   ZCodeIntlProvider,
   generateMobileDeviceFingerprint,
-  installDocumentHiddenMotionPause,
   playTaskNotificationSound,
   setStreamClientId,
   setWebRemoteControlTerminalTransportState,
@@ -58,10 +71,8 @@ import type {
   WebRemoteControlMobileNavigationIntent,
   WebRemoteControlTaskTarget,
   WebRemoteControlWorkspaceSwitchOptions,
-  WebRemoteControlStatus,
   WebRemoteControlAppPayload,
   WebRemoteControlExternalWorkspaceBridge,
-  RemoteTarget,
   ServerRemoteInfo,
   UserInfo,
 } from "@zcode/shared";
@@ -217,8 +228,6 @@ async function resolveFeedbackUrl(): Promise<string | undefined> {
   return (await resolveWebHelpConfig()).feedback_url;
 }
 
-// 浏览器标签页 / 手机切后台时禁用 CSS 动画，避免 DocumentTimeline 持有已卸载的 DOM 子树。
-installDocumentHiddenMotionPause();
 const root = createRoot(document.getElementById("root")!);
 
 // 初始化 Web 端流式 clientId，确保所有 hook 在首次渲染前就使用稳定 ID
@@ -1029,6 +1038,9 @@ export function createHomeOnlyWebRemoteControlServices(): RootServices {
       recentProjects: [],
       locale: resolveWebRemoteControlScreenLocale(navigator.language),
     }),
+    // JGAgent：个性化指令由桌面端管理；Web home-only 服务在桥接前不可用，返回空态。
+    getUserInstructions: async () => ({ content: "", filePath: "" }),
+    saveUserInstructions: async () => ({ filePath: "" }),
     update: async () => {},
     updateDataBaseDir: async () => {},
     // JGAgent：ensureDefaultProject 随 project 域接管移除。
@@ -1100,6 +1112,8 @@ export function createHomeOnlyWebRemoteControlServices(): RootServices {
         "fileService.applyWorkspaceFileSearchIgnoreTransform",
       ),
       writeWorkspaceFileSearchIgnore: unsupported("fileService.writeWorkspaceFileSearchIgnore"),
+      readDesignSourceFile: unsupported("fileService.readDesignSourceFile"),
+      writeDesignSourceFile: unsupported("fileService.writeDesignSourceFile"),
     },
     mediaPreviewService:
       createUnsupportedHomeOnlyService<NonNullable<RootServices["mediaPreviewService"]>>(
@@ -1215,6 +1229,10 @@ export function createHomeOnlyWebRemoteControlServices(): RootServices {
       createUnsupportedHomeOnlyService<RootServices["mcpSyncService"]>("mcpSyncService"),
     pluginSyncService:
       createUnsupportedHomeOnlyService<RootServices["pluginSyncService"]>("pluginSyncService"),
+    userConfigSyncService:
+      createUnsupportedHomeOnlyService<RootServices["userConfigSyncService"]>(
+        "userConfigSyncService",
+      ),
     pluginsService: createEmptyHomeOnlyService<RootServices["pluginsService"]>({
       list: async () => [],
     }),
@@ -1591,7 +1609,7 @@ async function bootstrapExternalRelayWebRemoteControl(params: URLSearchParams): 
     const preferredWorkspaceKey = currentWorkspaceKey;
     const preferredTaskId = currentTaskId;
     currentRecoveryId = createWebRemoteControlRequestId("recovery");
-    const requiresBridgeRebuild =
+    let requiresBridgeRebuild =
       !isLifecycleRecoveryReason(reason) || activeRelayProtocol?.isDegraded() === true;
     if (requiresBridgeRebuild) {
       activeRelayProtocol?.markDegraded();
@@ -1625,6 +1643,8 @@ async function bootstrapExternalRelayWebRemoteControl(params: URLSearchParams): 
           return;
         }
       }
+      // 校验期间也可能收到失效通知；实际转入重建后，失败必须沿原预算重试，不能沿用起点的健康判断。
+      requiresBridgeRebuild = true;
       await bootstrapPairedSession?.({
         preferredWorkspaceKey,
         preferredTaskId,
@@ -1775,6 +1795,7 @@ async function bootstrapExternalRelayWebRemoteControl(params: URLSearchParams): 
   const requestBootstrap = async (): Promise<WebRemoteControlWindowBootstrapResult> => {
     const requestId = createWebRemoteControlRequestId("bootstrap");
     const response = await requestAppPayload(
+      // JGAgent V1：bootstrap 请求不携带 terminalClientSessionId（V2 terminal 页面会话语义不适用）。
       { zcode_type: "bootstrap-request", requestId },
       (
         payload,

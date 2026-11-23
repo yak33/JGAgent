@@ -282,6 +282,63 @@ git apply --3way /tmp/v3.14.3.patch   # 用 872ad96 的 blob 做基准三方合�
 
 ---
 
+## 七·七、上游同步记录（v3.18.2，2026-11-22 完成）
+
+### 本次同步概况
+
+官方从 v3.16.2 更新到 **v3.18.2**（5 个提交：a60ba6a7=v3.17.1、a9fe401e=v3.17.2、b95ebaff=v3.18.0、c5904686=v3.18.1、fec97590=v3.18.2，2026-10-30 ~ 11-13）。总 diff **8599 文件**（2595 增 / 2181 删 / 3352 改 / 约 400 重命名，+66万/-66万行，大量 rename 说明目录级重构）。主题：terminal owner/bridge admission 重构、mcp 信任与目标绑定修复（mcpStore/桌面右键）、客户端场景（client-scenes）与项目导航、ja/ko/ru 三语言 locale、messageTelemetry 迁 shared/conversation-telemetry、zcode-site-plugin（官方 Sites 建站内置插件）、core-js polyfill（Chrome 109 兼容）、凭据存储损坏恢复页。
+
+### 冲突面与解法（71 文件 ~215 块 + 86 not-exist + 5 官方删除）
+
+沿用第七/七·六节原则（敏感区保我方、协议与 runtime 取官方、品牌文案保我方）。本次新增经验：
+
+1. **apply 前必剔除 not-exist 段**：官方改动命中我方已摘除文件 86 个（67 个商业化命中 + 19 个同类），连同 5 个 patch-does-not-apply 文件一起用 `:(exclude)` pathspec 剔除后再 apply，否则整体原子回滚（stderr 的 "Applied cleanly" 是过程日志，以 git status 为准）。
+2. **官方删除的 5 个文件**：read-session-context handler、OnboardingWelcomeView、noto-sans-sc LICENSE（官方弃用 noto 字体）跟随删除；manifestUpdateProvider.test 与 externalRelayFrameGapRecovery.test 保我方（前者是我方 v0.4.0 feed 修复的回归单测，后者是 V1 relay 测试的 Windows 环境 skip 版）。
+3. **两文件因"依赖生态全变"反转初决策**：SessionPane 初取我方版后因干净区生态（mcpUnavailableNotice 改名 InPartition、Composer 新 API 等）编译不了，改取官方版 + 商业化 stub（highspeed no-op 服务、recommendStartPlan 原样返回、quotaBanner 恒不可见、codingPlanUpgradeDialog as 断言恒 undefined）；feedback 域 6 文件（含官方删除的 feedbackLocalTicketStore）整体回 HEAD 自建版。
+4. **node.ts 20 块全手工拼装**：官方新功能（PluginUserOptionsReader、terminal+managed worktree 装配、appControlService、resolveDynamicWorkflowUserMode 读设置源、IClientScenesService）保留合入；账号/OAuth/offPeak/highspeed/marketing 装配维持摘除。**getPluginUserOptionsReader 被干净区引用必须保留**。
+
+### Web 远控 V1 链路（保 V1 决策续用）
+
+- 同步前实测旧 relay `wss://zcode.z.ai/ws` 仍存活（HTTP 101）——V1 直连链路继续可用。
+- webRemoteControlManager 13 块全保我方 V1 版；官方干净区带入的手机日志链（mobileLogSink/mobileLogPulls/findMobileLogPullTarget/pullMobileLogs）与 V1 runtime 兼容，已完整接线；「拉取手机日志」按钮移植进我方 V1 版 WebRemoteControlDialog（packages/ui/src/WebRemoteControlDialog.tsx，走 PullMobileLogs 桌面命令，与协议版本无关）。
+- V2 专属（MobilePushConnection 通知、JWT 注册、项目导航预热回调、bridge admission）不引入；manager 通知接口保留 no-op 占位。
+- web main.tsx 保我方 V1 全量版：bootstrapPairedSession 回 HEAD 版（官方草稿恢复/recovery target 依赖 V2 符号）；core-js polyfill（官方 Chrome 109 修复，通用）已补回头部。
+
+### 商业化新增清理
+
+- 删除官方新带入：WebRegionalLoginActions/webRegionalOAuth/web auth index（OAuth 登录按钮组件）、oauth-attribution/oauth-provisioning e2e 夹具与测试、wdio 的 offPeak Team mock 网关段、desktop 的 highspeed RPC 发布段与 remoteWorkspaceSessionServices 高峰/闲时字段。
+- **zcode-site-plugin 保留不激活**（官方 Sites 建站插件，MCP server auth=zcode_official JWT，我方无账号不可用；自包含目录+打包脚本引用，不注册即死配置）。
+- client-scenes 服务保留注册（官方场景下发，端点动态构造占位域不外发，调用失败 UI 容错）。
+- zcode-builtin.json：revision 取官方 44（>35 触发刷新）；官方 zai/zai-standard 模板不引入（我方 jgagent-gateway 首位沿用 v0.5.0 形态）；grok/新模型列表跟随官方。
+
+### 端点与品牌审计（同步后）
+
+- 官方域残留：源码区仅 coding-plan-api-key.ts 的 bigmodel.cn 管理页 URL（死配置惯例）；zcodeEndpoint 占位全 .invalid 未被冲掉。
+- `~/.zcode` 硬编码：memory-diagnostics 与 getAgentUserInstructionsFilePath 品牌化 `.jgagent`（与 pluginSync/skillSync 同源）；远程 server 侧 `.zcode` 路径跟随上次保留（zcode-server 语义）。
+- **ja/ko/ru locale 全量品牌化**（官方新三语言文件，各 141 处 ZCode→JGAgent）；en/zh 主 locale 官方新文案值行品牌化约 60 处（key 名不动）。
+- systemCredentialCipher 服务名品牌化 "JGAgent Credential Encryption"（官方新文件无历史包袱）；i18n 接口名 JGAgentCopy 恢复（官方 patch 还原了 ZCodeCopy）但函数名 getZCodeCopy 保留官方（API 标识符）。
+- CredentialStoreRecovery（凭据损坏恢复页，官方内联于 WelcomeScreen）提取为独立组件由 Root 挂载——对 API Key 用户同样生效，架构例外已登记。
+
+### ⚠️ Windows native runtime host（新环境前置）
+
+官方 v3.18 新增 **zcode-runtime-host.exe**（CMake/MSVC C++ 工程，prepare:windows-runtime-host）。本机无 VS 2022，该步骤失败（"could not find any instance of Visual Studio"）。**发版打包前需安装 VS 2022 Build Tools（含 C++ 桌面开发工作负载）**；TS 侧构建链已全部验证（见下）。
+
+### Windows 环境坑（本次新增）
+
+- **tar 跨盘符**：归档缓存（node_modules/.cache，D:）与 cwd（Temp，C:）跨盘时 GNU tar 把 "D:" 当远程主机。已在 scripts/prebuilt-binary-extract.mjs 修复（跨盘符时复制归档到 cwd 再按相对名引用）。
+- **typecheck ≠ 打得过包（再现）**：typecheck 0 错后打包链又暴露 3 处——i18n types.ts 官方还原 ZCodeCopy、auth-login 官方追加与我方版函数重复、getZCodeCopy 导出误品牌化。打包验证不可省。
+
+### 同步后验证（2026-11-22 实测）
+
+- ✅ `pnpm typecheck` exit 0（历经 101→60→33→13→2→0 共 6 轮修复）
+- ✅ `pnpm lint` 0 error（564 warnings 属官方测试基线，较 v0.5.0 的 168 增加来自官方新增测试文件）
+- ✅ `pnpm architecture:check -- --changed` violations 0（feedbackLogArchive 归属从 cli-memory-diagnostics 模块还回 feedback 模块；3 个例外补录）
+- ✅ agent bundle：`node scripts/build-desktop-agent-cli.mjs` exit 0（zcode.cjs 14.9MB staged）
+- ✅ 渲染层：`pnpm --filter @zcode/desktop build:no-runtime-assets` exit 0（23.5s）
+- ⛔ `prepare:windows-runtime-host`：环境缺 VS 2022 未验证（见上节）
+- ⬜ `pnpm dev:desktop` 冒烟 + 网络审计（待执行，历次同步均欠）
+- ⚠️ 单测适配债**三版叠加**：v3.15.1 约 548 例 + v3.16.2 约 470 文件 + 本次官方新增测试（86 个 not-exist 之外还有大量干净区新测试文件），须在 v0.6.0 发版前批量还
+
 ## 七·五、v0.4.0 自动更新失败事故（2026-10-15，已修复）
 
 **现象**：v0.3.3 客户端手动检查更新报 sha512 mismatch；不弹自动更新。

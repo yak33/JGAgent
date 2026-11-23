@@ -1,11 +1,23 @@
 import type { IServiceAccessor } from "@zcode/services";
 import type { RemoteTarget } from "@zcode/shared";
 
+// JGAgent 去官方化（阶段 3）：highspeed/offPeak 本地专属服务与远程 stub 随订阅域移除；
+// 官方对远程 workspace 服务路由的其余修复保留。
+function withLocalOnlyAccountServices(
+  baseServices: IServiceAccessor,
+  services: IServiceAccessor,
+): IServiceAccessor {
+  return {
+    ...services,
+    // JGAgent 去官方化（阶段 3）：highspeed/offPeak 服务字段随订阅域移除。
+  };
+}
+
 export function buildRemoteWorkspaceSessionServices(
   baseServices: IServiceAccessor,
   remoteServices: IServiceAccessor,
 ): IServiceAccessor {
-  return {
+  return withLocalOnlyAccountServices(baseServices, {
     ...baseServices,
     fileService: remoteServices.fileService,
     // 根因：遗漏此覆盖会用本机输出根目录校验远端 HTML，合法文件也被判越界。
@@ -43,6 +55,8 @@ export function buildRemoteWorkspaceSessionServices(
     // 远端 plugin 同步会写入 SSH 主机的 ~/.zcode/plugins 和 plugins.dirs；
     // 必须像 skill/MCP 一样走 remote service，不能沿用本机 base service。
     pluginSyncService: remoteServices.pluginSyncService,
+    // 子智能体 / 命令 / 钩子的同步写入远端用户目录，同样不能沿用本机 base service。
+    userConfigSyncService: remoteServices.userConfigSyncService,
     pluginsService: remoteServices.pluginsService,
     // 设置页插件管理与 pluginsService 同理，必须打到远端（插件目录在远端文件系统）。
     pluginManagementService: remoteServices.pluginManagementService,
@@ -52,16 +66,16 @@ export function buildRemoteWorkspaceSessionServices(
     // 无法读取远端待审 Hook。
     // hooks 读写（loadHooks/saveHooks）与 grantWorkspaceHookTrust 授权都必须打到远端 host。
     hooksService: remoteServices.hooksService,
-  };
+  });
 }
 
 export function buildServerRemoteWorkspaceSessionServices(
-  _baseServices: IServiceAccessor,
+  baseServices: IServiceAccessor,
   remoteServices: IServiceAccessor,
 ): IServiceAccessor {
   // Server remote 连接的是完整运行中的 ZCode server；workspace/runtime/model-provider
   // 等状态以 server 为准，本地 renderer 只保留窗口与 UI shell 状态。
-  return remoteServices;
+  return withLocalOnlyAccountServices(baseServices, remoteServices);
 }
 
 export function buildRemoteWorkspaceSessionServicesForRegistration(params: {

@@ -9,7 +9,7 @@ import {
   rmSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join, relative } from "node:path";
+import { basename, dirname, join, relative } from "node:path";
 import process from "node:process";
 import { runCommand } from "./spawn-command.mjs";
 
@@ -55,11 +55,16 @@ export function extractPrebuiltArchive({ archivePath, archiveExt, extractDir, cw
   }
 
   const tarCwd = cwd ?? process.cwd();
-  runCommand(
-    "tar",
-    ["-xzf", resolveTarArchiveArg(archivePath, tarCwd), "-C", toTarPosixPath(extractDir)],
-    { cwd: tarCwd },
-  );
+  let archiveArg = resolveTarArchiveArg(archivePath, tarCwd);
+  // JGAgent 修复（Windows 跨盘符）：归档在其它盘（如缓存在 D:、cwd 在 C: 的 Temp）时
+  // 上面会退回带盘符的绝对路径，GNU tar 会把 "D:" 解析成远程主机名导致解包失败；
+  // 复制归档到 cwd 下再按相对名引用即可避开（bsdtar / Linux 行为不变）。
+  if (process.platform === "win32" && /^[A-Za-z]:/u.test(archiveArg)) {
+    const localCopy = join(tarCwd, basename(archivePath));
+    copyFileSync(archivePath, localCopy);
+    archiveArg = basename(archivePath);
+  }
+  runCommand("tar", ["-xzf", archiveArg, "-C", toTarPosixPath(extractDir)], { cwd: tarCwd });
 }
 
 export function findPrebuiltBinary(rootDir, binaryName) {

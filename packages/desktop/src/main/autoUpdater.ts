@@ -10,6 +10,7 @@ const { autoUpdater } = pkg;
 import {
   DEFAULT_LOCALE,
   DEFAULT_ZCODE_ENDPOINT_ORIGIN,
+  TEST_ZCODE_ENDPOINT_ORIGIN,
   PlatformChannels,
   ZCODE_VERSION,
   desktopMenuMessageIds,
@@ -23,6 +24,7 @@ import {
   type UpdateStatePayload,
 } from "@zcode/shared";
 import { logger } from "./logger.js";
+import { verifyWindowsAuthenticodeSignature } from "../../scripts/powershell-command.mjs";
 import { ManifestUpdateProvider, getElectronReleasePlatform } from "./manifestUpdateProvider.js";
 
 export const CHECK_FOR_UPDATE_MENU_ID = "check-for-update";
@@ -121,6 +123,7 @@ interface InitAutoUpdaterOptions {
   updateFeedSource?: RuntimeUpdateFeedSource;
   deviceMid?: string;
   resolveEndpointOrigin?: () => string | Promise<string>;
+  resolveZcodeJwtToken?: () => Promise<string | null | undefined>;
 }
 
 let quitAndInstallState: "idle" | "preparing" | "installing" | "recovering" = "idle";
@@ -487,6 +490,22 @@ async function quitAndInstallUpdate(rejectUnavailable = false) {
   // 也不能让一次挂起的后台网络请求扣押用户已经选择的安装。
   quitAndInstallState = "preparing";
   logger.info("[auto-update] user requested quit and install");
+  if (process.platform === "win32" && app.isPackaged) {
+    try {
+      // 6.8.10 命中已下载缓存时跳过下载 hook；在退出服务前复查实际待安装文件。
+      // 读取既有 updater 的安装路径，避免另存一份路径导致 ready 与安装目标不同步。
+      const installerPath = (autoUpdater as unknown as { readonly installerPath: string | null })
+        .installerPath;
+      if (!installerPath) throw new Error("Windows update installer is missing");
+      const failure = await verifyWindowsAuthenticodeSignature(installerPath);
+      if (failure) throw new Error(failure);
+    } catch (error) {
+      quitAndInstallState = "idle";
+      handleAutoUpdateFailure(error, "Windows update signature verification failed");
+      if (rejectUnavailable) throw error;
+      return;
+    }
+  }
   // macOS 上 quitAndInstall() 在关窗前不会先走 app.before-quit。
   // 如果仍然只靠 before-quit 去放行窗口 close，现有的“红绿灯关闭=隐藏窗口”逻辑会把退出拦住，
   // 表现成点击更新后界面消失但进程没退、安装流程也不再继续。
@@ -532,7 +551,7 @@ async function quitAndInstallUpdate(rejectUnavailable = false) {
     // 这里恢复 electron-updater 原生安装入口，避免把“launcher 进程创建成功”误当成更新已接管。
     autoUpdater.quitAndInstall();
     // macOS 安装入口会先返回，原生 staging 完成后才异步触发 before-quit。
-    // 若在 finally 清标记，退出监听器会重新拦截并安装，形成无限重入；成功交接后保留到进程退出。
+    // 成功交接后保留 installing 到进程退出，阻止迟到的检查、下载结果和重复安装命令重新准入。
   } catch (error) {
     handleAutoUpdateFailure(error, "quit and install failed");
     if (rejectUnavailable) {
@@ -744,6 +763,8 @@ function readSwitchValue(argv: readonly string[], switchName: string): string | 
   const equalsPrefix = `${switchName}=`;
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
+    // 协议注册使用 -- 分隔外部 URL；其后的内容不能重新解释为应用开关。
+    if (arg === "--") break;
     if (!arg) {
       continue;
     }
@@ -828,7 +849,8 @@ async function syncAutoUpdateCheckChannelFromSettings(
 }
 
 function applyManifestUpdateProvider(options: InitAutoUpdaterOptions): void {
-  const manifestUrl = options.updateFeedSource?.url.trim();
+  // 在更新器装配边界再次约束，避免内部调用绕过启动配置解析。
+  const manifestUrl = app.isPackaged ? undefined : options.updateFeedSource?.url.trim();
   autoUpdater.setFeedURL({
     provider: "custom",
     updateProvider: ManifestUpdateProvider,
@@ -836,8 +858,21 @@ function applyManifestUpdateProvider(options: InitAutoUpdaterOptions): void {
     ...(manifestUrl ? { manifestUrl } : {}),
     releasePlatform: getElectronReleasePlatform(),
     deviceMid: options.deviceMid,
-    resolveEndpointOrigin:
-      options.resolveEndpointOrigin ?? (() => resolveRuntimeZCodeEndpointOrigin(process.env)),
+    resolveZcodeJwtToken: options.resolveZcodeJwtToken,
+    resolveEndpointOrigin: async () => {
+      const origin = await (
+        options.resolveEndpointOrigin ?? (() => resolveRuntimeZCodeEndpointOrigin(process.env))
+      )();
+      // 通用后端覆盖不是更新发布授权；正式包只允许既有官方 HTTPS 入口。
+      if (
+        app.isPackaged &&
+        origin !== DEFAULT_ZCODE_ENDPOINT_ORIGIN &&
+        origin !== TEST_ZCODE_ENDPOINT_ORIGIN
+      ) {
+        return DEFAULT_ZCODE_ENDPOINT_ORIGIN;
+      }
+      return origin;
+    },
     resolveReleaseChannel: async () => {
       const channel = await resolveUpdateReleaseChannel(options.settingService);
       if (!isUpdateTargetLocked()) availableUpdateChannel = channel;
@@ -1288,9 +1323,7 @@ function publishDownloadedUpdate(info: UpdateDownloadedInfoLike): void {
   readyUpdateReleaseNotes = toPostUpdateReleaseNotesPayload(info) ?? downloadingUpdateReleaseNotes;
   clearAvailableUpdateState();
   clearDownloadingUpdateState();
-  logger.info(
-    `[auto-update] downloaded: ${info.version}, ${process.platform === "win32" ? "waiting for explicit install" : "ready to install on quit or explicit install"}`,
-  );
+  logger.info(`[auto-update] downloaded: ${info.version}, waiting for explicit install`);
   setAutoUpdaterMenuState(buildUpdateDownloadedState(info.version));
   notifyForceAutoUpdate({ kind: "ready", version: info.version });
   if (!activeForceAutoUpdateListener) {
@@ -1661,11 +1694,16 @@ export async function initAutoUpdater(options: InitAutoUpdaterOptions = {}): Pro
   // 再决定是否下载。若继续让 electron-updater 自动下载，它只会按当前 app 版本判断，
   // 导致 `3.1.2` 已 ready `3.1.3` 时每次轮询都可能重复下载 `3.1.3`。
   autoUpdater.autoDownload = false;
-  // Bugfix: Windows/NSIS 在窗口关闭后会异步启动安装；如果用户紧接着关机，安装器可能被系统中断，
-  // 留下半更新状态并导致下次启动失败。macOS/Linux 也先关掉退出即装，只在 ready 包仍等于当前目标时
-  // 由 before-quit 主动安装，避免目标已经升高后退出装上旧包。
+  // 普通退出不代表用户确认安装。此前 macOS/Linux 在 before-quit 主动安装，
+  // 与失败后的 relaunch 组合后，会让有 pending 包的进程每次退出都重新安装、重启。
+  // 所有平台只允许显式安装入口接管，避免退出循环及关机期间的半更新。
   autoUpdater.autoInstallOnAppQuit = false;
   autoUpdater.logger = logger;
+  if (autoUpdater instanceof pkg.NsisUpdater) {
+    // 保留包内 publisherName 来激活 NSIS hook，但不把旧 DN 当作未来换证的准入条件。
+    autoUpdater.verifyUpdateCodeSignature = (_publisherNames, filePath) =>
+      verifyWindowsAuthenticodeSignature(filePath);
+  }
   applyManifestUpdateProvider(options);
 
   const triggerCheckForUpdates = (reason: string) => {
@@ -1924,17 +1962,6 @@ export async function initAutoUpdater(options: InitAutoUpdaterOptions = {}): Pro
 
   triggerCheckForUpdates("startup");
   ensureAutoUpdatePollInterval();
-  app.on("before-quit", (event) => {
-    if (
-      process.platform === "win32" ||
-      quitAndInstallState !== "idle" ||
-      !isReadyUpdateCurrentTarget()
-    ) {
-      return;
-    }
-    event.preventDefault();
-    void quitAndInstallUpdate();
-  });
 }
 
 function ensureAutoUpdatePollInterval() {

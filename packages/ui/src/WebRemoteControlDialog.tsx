@@ -6,10 +6,11 @@ import type {
   WebRemoteControlFailure,
   WebRemoteControlStatus,
 } from "@zcode/shared";
-import { resolveWebRemoteControlWorkspaceKey } from "@zcode/shared";
+import { DesktopCommandIds, resolveWebRemoteControlWorkspaceKey } from "@zcode/shared";
 import {
   Bot as BotIcon,
   CopyIcon,
+  FileDown,
   LoaderCircle,
   MonitorSmartphone,
   RefreshCw,
@@ -584,6 +585,15 @@ export const WebRemoteControlDialog = memo(function WebRemoteControlDialogCompon
     }
   };
 
+  // 远控诊断：面板「拉取手机日志」是唯一用户入口（上游官方帮助菜单项已于 2026-10-28 移除），
+  // 结果由主进程弹框告知；与 V1/V2 协议无关，走 relay 消息面的独立链路。
+  const handlePullMobileLogs = () => {
+    logger.info("[WebRemoteControlDialog] 拉取手机日志", {
+      sessionId: status.sessionId ?? "none",
+    });
+    void platform.executeDesktopCommand(DesktopCommandIds.PullMobileLogs);
+  };
+
   const handleDialogOpenChange = (nextOpen: boolean) => {
     logger.info("[WebRemoteControlDialog] 弹层开关状态变化", {
       workspacePath,
@@ -710,6 +720,19 @@ export const WebRemoteControlDialog = memo(function WebRemoteControlDialogCompon
                         {statusDetail}
                       </div>
                     </div>
+                    {status.mobileConnected ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="default"
+                        data-testid="web-remote-control-pull-mobile-logs"
+                        className="shrink-0 gap-2 enabled:cursor-pointer"
+                        onClick={handlePullMobileLogs}
+                      >
+                        <FileDown className="size-3.5" />
+                        {intl.formatMessage({ id: "webRemoteControl.pullMobileLogs" })}
+                      </Button>
+                    ) : null}
                     {loading ? (
                       <LoaderCircle className="size-4 animate-spin text-foreground-subtle" />
                     ) : (

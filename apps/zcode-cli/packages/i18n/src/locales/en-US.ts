@@ -1,6 +1,6 @@
-import type { ZCodeCopy } from "../types.js";
+import type { JGAgentCopy } from "../types.js";
 
-export const enUS: ZCodeCopy = {
+export const enUS: JGAgentCopy = {
   locale: "en-US",
   cli: {
     errors: {
@@ -72,6 +72,9 @@ Slash Commands:
 `,
   },
   tui: {
+    approval: {
+      fromSession: (sessionId) => `From background session ${sessionId}`,
+    },
     copy: {
       copied: "Copied selected text to clipboard.",
       failed: "Could not copy selected text.",

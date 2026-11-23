@@ -15,6 +15,7 @@ import {
   PlatformChannels,
   remoteTargetSchema,
   rendererTelemetryEventPayloadSchema,
+  telemetryRendererContextSchema,
   type ArmsRumEnv,
   type BindRemoteWorkspaceSessionContextIpcResult,
   type RemoteTarget,
@@ -22,7 +23,7 @@ import {
   type BindRemoteWorkspaceSessionContextResult,
   type TelemetryEventPayload,
 } from "@zcode/shared";
-import { dispatchTaskNotification } from "./desktopNotifications.js";
+import { dispatchExtensionNotification, dispatchTaskNotification } from "./desktopNotifications.js";
 import {
   clearOAuthRoutesForWindow,
   deliverPendingDeepLink,
@@ -63,6 +64,23 @@ function toBindIpcFailure(error: unknown): BindRemoteWorkspaceSessionContextIpcR
     error: normalized.message,
     ...(reasonCode ? { reasonCode } : {}),
     ...(retryable !== undefined ? { retryable } : {}),
+  };
+}
+
+/**
+ * Bug 原因：Error 的 message/stack 不可枚举，直接交给 logger 会序列化成 `{}`，现场日志只剩
+ * "detect failed: {}"，看不到 wsl.exe / docker 的退出码与输出。展开成普通对象再记录。
+ */
+function describeDiscoveryError(error: unknown): Record<string, unknown> {
+  const normalized = normalizeUnknownError(error);
+  const exitCode =
+    error && typeof error === "object" && "exitCode" in error ? error.exitCode : undefined;
+  return {
+    name: error instanceof Error ? error.name : undefined,
+    message: normalized.message,
+    code: normalized.code,
+    exitCode,
+    stack: error instanceof Error ? error.stack : undefined,
   };
 }
 
@@ -372,10 +390,12 @@ export function registerRemoteIpcHandlers(options: {
     });
   });
 
-  ipcMain.on(PlatformChannels.SyncTelemetryContext, (event, context) => {
+  ipcMain.on(PlatformChannels.SyncTelemetryContext, (event, context: unknown) => {
+    const result = telemetryRendererContextSchema.safeParse(context);
+    if (!result.success) return;
     options.appTelemetryRuntime.syncRendererContext({
       rendererId: event.sender.id,
-      context,
+      context: result.data,
     });
   });
 
@@ -435,6 +455,9 @@ export function registerRemoteIpcHandlers(options: {
   });
   ipcMain.handle(PlatformChannels.ShowTaskNotification, (event, payload: unknown) =>
     dispatchTaskNotification({ event, payload, logger: options.logger }),
+  );
+  ipcMain.handle(PlatformChannels.ShowExtensionNotification, (event, payload: unknown) =>
+    dispatchExtensionNotification({ event, payload, logger: options.logger }),
   );
 
   app.on("browser-window-created", (_, win) => {
@@ -686,7 +709,7 @@ export function registerRemoteIpcHandlers(options: {
     try {
       return await options.isDockerDaemonAvailable();
     } catch (error) {
-      options.logger.warn("[is-docker-available] detect failed:", error);
+      options.logger.warn("[is-docker-available] detect failed:", describeDiscoveryError(error));
       return false;
     }
   });
@@ -695,7 +718,7 @@ export function registerRemoteIpcHandlers(options: {
     try {
       return await options.listAvailableWSLDistros();
     } catch (error) {
-      options.logger.warn("[list-wsl-distros] detect failed:", error);
+      options.logger.warn("[list-wsl-distros] detect failed:", describeDiscoveryError(error));
       return [];
     }
   });
@@ -704,7 +727,7 @@ export function registerRemoteIpcHandlers(options: {
     try {
       return await options.listAvailableDockerContainers();
     } catch (error) {
-      options.logger.warn("[list-docker-containers] detect failed:", error);
+      options.logger.warn("[list-docker-containers] detect failed:", describeDiscoveryError(error));
       return [];
     }
   });

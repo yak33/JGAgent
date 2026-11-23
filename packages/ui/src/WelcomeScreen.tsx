@@ -6,13 +6,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { DesktopOverlayWindowControls } from "@/DesktopOverlayWindowControls.js";
 import { Loader2Icon, LoaderIcon, TriangleAlertIcon } from "lucide-react";
-import { type OAuthProviderMeta, BIGMODEL_PROVIDER_ID, ZAI_PROVIDER_ID } from "@zcode/shared";
 import {
+  type OAuthProviderMeta,
+  BIGMODEL_PROVIDER_ID,
+  ZAI_PROVIDER_ID,
+  ZAI_CN_PROVIDER_ID,
+} from "@zcode/shared";
+import {
+  TID_LOGIN_REGION_SWITCH,
   TID_LOGIN_USE_API_KEY_BUTTON,
   TID_OAUTH_CANCEL,
+  TID_OAUTH_COPY_LOGIN_LINK,
   TID_OAUTH_ERROR,
   TID_OAUTH_LOGIN_BUTTON,
-  testId,
 } from "@zcode/shared/test-ids";
 import { Alert, AlertDescription } from "./components/ui/alert.js";
 import { Button } from "./components/ui/button.js";
@@ -28,10 +34,18 @@ interface WelcomeScreenProps {
 // JGAgent 去官方化（阶段 3）：登录完成原因收窄为 apiKey / skip，OAuth 渠道已摘除。
 export type LoginCompleteReason = "apiKey" | "skip";
 
+/** 登录页区域展示态；真实区域路由等 Z.ai 国内一方登录 provider 就绪后再接入。 */
+type SingleLoginRegion = "domestic" | "global";
+
+/** 区域展示态跟随界面语言：英文默认海外，中文默认国内。 */
+export function resolveLoginRegionForLocale(locale: string): SingleLoginRegion {
+  return locale === "en-US" ? "global" : "domestic";
+}
+
 export function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   const { intl } = useZCodeIntl();
   return (
-    <main className="relative flex h-full min-h-dvh items-center justify-center overflow-hidden bg-background px-4 py-6 text-foreground sm:px-6">
+    <main className="relative h-full min-h-dvh overflow-hidden bg-background text-foreground">
       <ThemeHeroVisual className="absolute inset-0" />
       {/* 原生拖拽命中不受 pointer-events/z-index 约束；拖拽层必须避开窗控，且先于 no-drag 区声明。 */}
       <div className="pointer-events-none absolute left-0 top-0 right-0 z-10 flex h-12 items-center [app-region:drag] platform-windows-desktop:right-[134px] platform-linux-desktop:right-[134px]" />
@@ -64,10 +78,10 @@ function LoginPanelHeader({
   children: ReactNode;
 }) {
   return (
-    <header className="flex flex-col items-center gap-3 text-center">
+    <header className="flex flex-col items-center gap-4 text-center">
       <LoginPanelLogo />
       <div className="flex flex-col items-center gap-1 text-center">
-        <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
+        <h1 className="text-ui-xl font-semibold tracking-tight">{title}</h1>
         <p className="text-ui-base/relaxed text-foreground-subtle">{description}</p>
       </div>
       {children}

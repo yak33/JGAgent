@@ -18,7 +18,8 @@ interface FeedbackLogSource {
   /** 上游语义：默认仅归档当天文件；false 时放宽 mtime 限制（cli-config 等长期有效的文件）。 */
   onlyCurrentDay?: boolean;
   /** 上游内容策略标记；JGAgent 归档全程经 redactFeedbackText 脱敏，无需分支处理。 */
-  contentPolicy?: "cli-config";
+  // 官方 v3.18 新增 diagnostic/cli-memory 值；JGAgent 归档仍统一走 redactFeedbackText 脱敏兜底。
+  contentPolicy?: "diagnostic" | "cli-config" | "cli-memory";
 }
 
 function decodeDiagnosticLog(buffer: Buffer): string | null {

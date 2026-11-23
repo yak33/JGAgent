@@ -4,7 +4,7 @@ import type { WebRemoteControlRelayV2Device } from "@zcode/shared/web-remote-rel
 // JGAgent 去官方化（阶段 3）：OAuth 登录域（#src/auth/*）已摘除。
 // 这里内联官方 auth 类型的最小形状（provider id 与登录门禁四方法签名），
 // 保证远控 Entry 契约可编译；JGAgent 自建链路不实例化依赖这些方法的装配。
-export type WebOAuthProviderId = "zai" | "bigmodel";
+export type WebOAuthProviderId = "zai" | "bigmodel" | "zai_cn";
 
 export interface WebRemoteControlLoginOptions {
   devReturnTo?: string;
@@ -12,14 +12,19 @@ export interface WebRemoteControlLoginOptions {
   redirectUri?: string;
   /** 缺省 zai，保持 /remote 等既有入口行为不变。 */
   provider?: WebOAuthProviderId;
+  /** 上游 v3.18 新增：登录中断信号；JGAgent 自建链路不实例化调用方，类型面保留。 */
+  signal?: AbortSignal;
 }
 
 export interface WebRemoteControlAuthPort {
   getZCodeJwtToken: () => string | null;
   getActiveAccount: () =>
     { displayName: string; avatarUrl?: string; provider: WebOAuthProviderId } | null;
-  startLogin: (options?: WebRemoteControlLoginOptions) => void;
+  startLogin: (options?: WebRemoteControlLoginOptions) => void | Promise<void>;
   logout: () => Promise<void>;
+  /** 上游 v3.18 新增：会话修订号与变更订阅（V2 token 失效重连用）；JGAgent 链路返回占位实现。 */
+  getSessionRevision: () => string | null;
+  subscribeSessionChange: (listener: () => void) => () => void;
 }
 
 export interface WebRemoteControlDeviceGroup {
