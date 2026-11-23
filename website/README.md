@@ -1,9 +1,9 @@
 # JGAgent 官网（VitePress）
 
-现代简约官网 + 更新日志，部署到 `82.157.149.224`，同时承载安装包下载。
+现代简约官网 + 更新日志，部署在 **Vercel**（https://jg-agent.vercel.app/ ，连 GitHub main 自动部署）；安装包下载经 `vercel.json` rewrite 指向公开仓 [yak33/JGAgent-downloads](https://github.com/yak33/JGAgent-downloads) 的 Release 资产。
 
-> 发版全流程、服务器运维与踩坑记录以 [docs/release/README.md](../docs/release/README.md) 为准，本文只讲官网子项目本身。
-> 注意 `106.15.120.94` 是模型网关服务器，与官网无关，勿混。
+> 发版全流程（Vercel 版见一·A 节）、下载通道与踩坑记录以 [docs/release/README.md](../docs/release/README.md) 为准，本文只讲官网子项目本身。
+> 旧腾讯云服务器 82.157.149.224 已回收（2026-11-23），其部署/下载/反馈服务流程仅存于 release README 的历史记录节。
 
 ## 结构
 
