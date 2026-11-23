@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/downloads/latest.yml",
+      "destination": "https://github.com/yak33/JGAgent-downloads/releases/latest/download/latest.yml"
+    },
+    {
+      "source": "/downloads/JGAgent-latest-:rest",
+      "destination": "https://github.com/yak33/JGAgent-downloads/releases/latest/download/JGAgent-latest-:rest"
+    },
+    {
+      "source": "/downloads/JGAgent-:ver-win-x64:ext",
+      "destination": "https://github.com/yak33/JGAgent-downloads/releases/download/v:ver/JGAgent-:ver-win-x64:ext"
+    }
+  ]
+}
