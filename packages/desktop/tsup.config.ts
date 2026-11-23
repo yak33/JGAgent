@@ -43,6 +43,12 @@ function loadEnvFiles(): Record<string, string> {
     }
   }
   // 真实环境变量优先级最高
+  // JGHarness 修复（2026-11-24）：ZCODE_UPDATE_FEED_URL 此前只在 .env 文件生效，
+  // shell/CI 注入被静默忽略——v0.5.0 起 .env 缺失导致 feed 空串烧入（自动更新
+  // 回退 endpoint manifest 并静默失败）。加入白名单让打包命令行注入恢复生效。
+  if (process.env.ZCODE_UPDATE_FEED_URL) {
+    vars.ZCODE_UPDATE_FEED_URL = process.env.ZCODE_UPDATE_FEED_URL;
+  }
   if (process.env.ZCODE_ENV) vars.ZCODE_ENV = process.env.ZCODE_ENV;
   if (process.env.ZCODE_BASE_URL) vars.ZCODE_BASE_URL = process.env.ZCODE_BASE_URL;
   if (process.env.VITE_ZCODE_BASE_URL) vars.VITE_ZCODE_BASE_URL = process.env.VITE_ZCODE_BASE_URL;
