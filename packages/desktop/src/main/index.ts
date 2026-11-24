@@ -1,3 +1,8 @@
+// 存储根迁移必须最先执行：任何会创建 ~/.jgharness 的模块（preinstalled-tools、early
+// data dir、crash 采集等）一旦先于它加载，空壳新根就会令整体迁移退化为合并甚至静默
+// 跳过——v1.0.0 旧数据未迁移问题的根因（详见该模块头部注释）。因此本 import 置于
+// 文件第一行，先于其余一切 import。
+import "./migrateLegacyJGAgentDataRoot.js";
 import { resolvePreinstalledToolsRelease } from "@zcode/shared/preinstalled-tools";
 import {
   spawnPreinstalledToolsProcess,
@@ -12,9 +17,6 @@ import { createRemoteConversationTelemetryDispatcher } from "@zcode/shared/conve
 import { installRequestSecurityDiagnostics } from "./request-security-edition/index.js";
 import { createLocalTtftExporter } from "./localTtftExporter.js";
 /* eslint-disable max-lines */
-// 存储根迁移必须先于一切会创建 ~/.jgharness 的模块（early data dir / crash 采集）加载，
-// 否则空壳新根会令迁移静默跳过——v1.0.0 旧数据未迁移问题的根因（详见该模块头部注释）。
-import "./migrateLegacyJGAgentDataRoot.js";
 import "./desktopEarlyDataBaseDirBootstrap.js";
 import "./desktopEarlyChromiumHardwareAccelerationBootstrap.js";
 import { powerMonitor, powerSaveBlocker } from "electron";
