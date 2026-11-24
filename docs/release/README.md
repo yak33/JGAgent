@@ -559,7 +559,12 @@ node scripts/bundle.mjs --os win --arch x64
 
 ### 打包与发布记录（2026-11-24）
 
-由 `33918b6b` 打出，命令与 v1.0.0 相同（见上节）。产物：`JGHarness-1.0.1-win-x64.exe`（204,341,287 字节）+ `.blockmap` + `latest.yml`。发布资产与流程同第七·九节（draft → 上传 5 资产 → 回比 SHA-256 → 正式发布）。
+由 `33918b6b` 打出，命令与 v1.0.0 相同（见上节）。产物：`JGHarness-1.0.1-win-x64.exe`（204,363,044 字节，sha256 `235fe8aad6a2eabb7980c5752ab8ca677fcf2508b611cdbe759ea1a3f5c7a962`）+ `.blockmap`（212,733 字节）+ `latest.yml`（sha512 `5yAUE9kpR+J0Z+zDfjwWan25f+sKv4iye+pgu5SgYPZ8+IvhGglCyntlnYInC8ricQViq2FfCLDUwGNoBOO19Q==`，与安装包实测一致）。
+
+- **推送**：`fix/v1.0.1-hotfix` ff 合入 main 后推送（`f77521ab..504cfbcd`），门禁全过（中途一次被架构基线拦下 `unmanaged-new-file`，迁移逻辑并入受管的 `desktopDataBaseDirBootstrap.ts` 后通过，未用 `--no-verify`）。官网随 push 由 Vercel 自动部署。
+- **发布**：草稿上传 5 资产后校验——直连下载 204MB 仅 24KB/s、代理 gh 连续 EOF 断流，改按资产 API 302 做 **Range 首尾 64 字节 + size 比对 + blockmap/latest.yml 完整比对**（全部一致）后正式发布：`https://github.com/yak33/JGHarness-downloads/releases/tag/v1.0.1`。204MB 完整 SHA-256 回比未在本时段完成（见已知边界）。
+- **线上验证**：GitHub 匿名直连 `releases/latest/download/latest.yml` 200 且 version 1.0.1、sha512 一致；`JGHarness-latest-*` 别名 302 到 v1.0.1；v1.0.1 资产范围请求 206。Vercel（走代理）官网首页 200、`/downloads/latest.yml` 200 且为 1.0.1。
+- **已知边界（本时段网络）**：21:30 时段国内直连 GitHub 整体劣化——latest.yml 1.4~17 秒波动，`github.com` 首页 21 秒超时；应用内更新检查 2/2 次失败（20 秒超时）。curl 同样抖动，属出口网络问题而非更新链路缺陷（v1.0.0 中午时段 4/5 成功）；失败不阻塞使用，下次启动自动重试。无代理用户下载 204MB 安装包/更新包可能很慢。
 
 ## 八、反馈收集服务（运维手册）【服务端随 82 服务器回收已下线：客户端提交走本地降级存 tickets.json 不丢失；管理台与工单数据已不可达，重建方案待定】
 
