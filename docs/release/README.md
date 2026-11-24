@@ -1,8 +1,8 @@
 # JGAgent 发布与官网部署（交接文档）
 
 > 用途：后续 AI 会话或新同事接手发版 / 官网 / 服务器运维时的唯一入口。
-> 线上最新：**v0.7.0**（2026-11-24，捷关Harness 更名版，上游 v3.18.2）。**v1.0.0 首个正式版（上游 v4.0.0）正在发布**，过程与结果见第七·九节；它修复了 v0.5.0 ~ v0.7.0 一直未生效的自动更新。
-> ⚠️ 架构变更（2026-11-23 起）：官网/下载走 **Vercel + 公开下载仓**（见第 一·A 节）。原腾讯云服务器 82.157.149.224 **未续费已被回收**（用户 2026-11-23 确认），第一、四、八节的服务器流程整体作废、仅作历史记录；存量 v0.5.0 及更早客户端的自动更新 feed 烧在该服务器，**永久断供**，只能手动到官网下载新版。
+> 线上最新：**v1.0.0**（2026-11-24，首个正式版，上游 v4.0.0），下载仓 `yak33/JGHarness-downloads` 的 Latest，官网已同步。它修复了 v0.5.0 ~ v0.7.0 一直未生效的自动更新（见第七·九节）。
+> ⚠️ 架构变更（2026-11-23 起）：官网/下载走 **Vercel + 公开下载仓**（见第 一·A 节）。原腾讯云服务器 82.157.149.224 **未续费已被回收**（用户 2026-11-23 确认），第一、四、八节的服务器流程整体作废、仅作历史记录。**存量 v0.7.0 及更早的客户端都收不到自动更新**，需要手动安装一次 1.0.0。
 > 官网目录细节见 [website/README.md](../../website/README.md)，本文只讲流程与坑。
 
 ---
@@ -48,7 +48,7 @@
 - `website/vercel.json` 把 `/downloads/*` rewrite 到 `github.com/yak33/JGHarness-downloads` 的 Release 资产（latest.yml 与 JGHarness-latest-* 走 `releases/latest/download/`，版本化路径走 `releases/download/v<ver>/`；另保留 JGAgent-<ver>-* 兼容规则让 v0.6.0 前的 changelog 旧链接继续有效）。
 - 主仓保持私有；安装包只进公开下载仓（主仓单文件 100MB 硬限装不下 exe）。
 - ⚠️ 下载仓的两个坑（v0.6.0 实测）：① 空仓库 `gh release create` 报 HTTP 422 "Repository is empty"，先推一个初始提交；② 中途被杀的 create 进程会留下 **draft release**（draft 资产匿名下载 404），补传后须 `gh release edit v<ver> --draft=false`；draft 期间的 404 会被 CDN/代理负缓存几分钟，验证加 `-H "Cache-Control: no-cache"`。
-- ⚠️ exe 上传极慢（本机上行 ~100KB/s，204MB×2 约 1 小时）：直连与 VPN 代理速度相近，属本机出口带宽瓶颈；gh 进程 CPU 缓慢增长即健康，勿误判卡死。
+- ⚠️ exe 上传速度不稳定：v0.6.0 时本机上行 ~100KB/s（204MB×2 约 1 小时），v1.0.0 时 5 个资产共约 409MB 只用了 73 秒。直连与 VPN 代理速度都可能遇到，属本机出口瓶颈，以当时为准；gh 进程 CPU 缓慢增长即健康，勿误判卡死。
 - **自动更新 feed（v1.0.0 起）**：打包必须烧 `https://github.com/yak33/JGHarness-downloads/releases/latest/download/latest.yml`（下载仓的 GitHub Releases 地址，国内直连可达）。**不要再用 `jg-agent.vercel.app`**：2026-11-24 实测该域名在国内直连网络下被 DNS 污染，客户端解析不到。更新器按 feed 所在目录解析文件地址，所以每个 Release 都要带 `JGHarness-<ver>-win-x64.exe`、同名 `.blockmap`、`latest.yml` 与 `JGHarness-latest-*` 别名副本。**v0.5.0 ~ v0.7.0 的自动更新实际从未生效**（两层原因见第七·九节），存量用户全部需要手动安装一次 1.0.0。`website/vercel.json` 的 `/downloads/latest.yml` rewrite 保留不删。
 
 ## 二、打包：命令与陷阱
@@ -483,24 +483,30 @@ git apply --3way /tmp/v3.14.3.patch   # 用 872ad96 的 blob 做基准三方合�
   - `bundleMirrorFallback.test.ts` 在宿主终端里被 `bundle.mjs` 的防污染守卫拦下（环境里有官方端点变量），清空环境后重跑通过。
   - v4.0.0 新增的 4 个文件：`preinstalledEntryShim.test.ts`（本机无 VS 2022，带 `ZCODE_WINDOWS_CMAKE_GENERATOR` 重跑 16/16 通过）、`e2eSharedStageCache.test.ts`（Windows 创建符号链接 EPERM）、`liveBigmodelProfileFixture.test.ts`（夹具写死 `.zcode` 数据目录，本仓是 `.jgharness`）、`audit-conversation-session-json-out.test.mjs`（用例审计报 highspeed 夹具缺失，该域早已摘除）。
 
-### v1.0.0 打包记录（2026-11-24，安装包已就绪、尚未发布）
+### v1.0.0 打包与发布记录（2026-11-24，已上线）
 
-分支 `sync/upstream-v4.0.0`，打包时 HEAD = `992fb0f2`（安装包内 `build-meta.json` 的 `buildCommitId` 与之一致）。命令：
+由 `c82da172` 打出（安装包内 `build-meta.json` 的 `buildCommitId` 与之一致；发布之后 main 上只多文档提交）。命令：
 
 ```bash
 # 在 packages/desktop/ 下；先清空宿主注入的 ZCODE_* / BIGMODEL_*，只放回下面四个变量
 ZCODE_ENV=production \
-ZCODE_UPDATE_FEED_URL="https://jg-agent.vercel.app/downloads/latest.yml" \
+ZCODE_UPDATE_FEED_URL="https://github.com/yak33/JGHarness-downloads/releases/latest/download/latest.yml" \
 ZCODE_WINDOWS_CMAKE_GENERATOR="Visual Studio 18 2026" \
 JGAGENT_SANITIZE_BUILD_ENV=1 \
 node scripts/bundle.mjs --os win --arch x64
 ```
 
-- **耗时 26 分钟**（上一版 3 小时以上）：Agent 包 4.5 分钟、运行时宿主 22 秒、预装 shim 18 秒、asar 解包清理 4.5 分钟、asar 重包 1.7 分钟、NSIS 其余。
-- 产物 `packages/desktop/dist/`：`JGHarness-1.0.0-win-x64.exe`（204,371,777 字节，sha256 `95a3e9f7dbff91634d9f79ffc76772d679dd2c18b9ca29b7615589e735b41df8`）、同名 `.blockmap`（212,524 字节）、`latest.yml`（version 1.0.0，sha512 `5Bvok1o8Ioj/MeF/V+BaGr755ZKtANHFRcsBO43+UnH8NKDdOqz9mx6eskGJzFM1in9UZqW3S3AqKyYv6ualcA==`，与安装包实测一致）。exe 版本信息：ProductVersion / FileVersion 1.0.0，CompanyName JieGuan。
-- **asar 验收**：包内 `package.json` 为 jgharness 1.0.0；feed URL 1 处；带 http(s) 值的 `ZCODE_BASE_URL` / `ZCODE_ENDPOINT_ORIGIN` / `ZCODE_BUILTIN_PROVIDER_CONFIG_FILE` 烧入均为 0。残留的官方域名字面量均为存量且不可达：`api.z.ai` 6 处（Provider 目录静态条目、外链放行白名单）、`zcode.z.ai` 16 处（`rewardsEmbedded` 白名单、Gen UI 资源域白名单、预装工具 CDN 常量、5 种语言各 2 条已摘除的「高速卡 / 奖励分享」文案）、`bigmodel.cn` 14 处（Provider 目录与 OAuth 死常量）。旧名只剩迁移函数名 `migrateLegacyJGAgentDataRoot`。
-- **启动冒烟（隔离数据目录，不碰本机真实数据）**：用 `USERPROFILE` / `APPDATA` / `--user-data-dir` 指向临时目录启动 `dist/win-unpacked/JGHarness.exe`，清空宿主环境变量。三次运行（首轮包、带网络日志、最终包）均 5 秒内出现主窗口、8 个进程稳定、无崩溃重启，欢迎页渲染正常（中文界面、JG 标识、默认选中「捷关模型网关」），结束后进程清零，`~/.jgharness` 未在真实主目录产生。日志里的 warn 均为预期降级（官方端点 `.invalid` 不可达、CUA 组件未随开源版提供）。
-- **网络审计（Chromium net-log）**：启动后的对外请求只有 `https://jgharness.invalid/api/v1/client/configs`、`…/api/v1/releases/electron/manifest`（占位域，直接失败）与 `https://redirector.gvt1.com/edgedl/chrome/dict/en-us-10-1.bdic`（Chromium 内置拼写检查下载英文词典，Electron 默认行为，本机解析到 `114.250.x.x`）。日志中官方域名命中 0。
+- **耗时约 26 分钟**（上一版 3 小时以上）：Agent 包 4.5 分钟、运行时宿主 22 秒、预装 shim 18 秒、asar 解包清理 4.5 分钟、asar 重包 1.7 分钟、NSIS 其余。
+- 产物 `packages/desktop/dist/`：`JGHarness-1.0.0-win-x64.exe`（204,369,211 字节，sha256 `343ff8f3b66f1d115faa11cd72c28a8d70ed34f47f81888f389d5bc79ef60ff8`）、同名 `.blockmap`（212,314 字节）、`latest.yml`（version 1.0.0，sha512 `PPDdV8u72qqe+IIY8OzhSdRkSVgH6BUrmW9iuxAGBwpd6yrLGRb0zBH9c8jb8NEVONC6INgntKjIEN1nW9Cwrw==`，与安装包实测一致）。exe 版本信息：ProductVersion / FileVersion 1.0.0，CompanyName JieGuan。
+- **asar 验收**：包内 `package.json` 为 jgharness 1.0.0；GitHub feed 1 处、Vercel feed 0 处；带 http(s) 值的 `ZCODE_BASE_URL` / `ZCODE_ENDPOINT_ORIGIN` / `ZCODE_BUILTIN_PROVIDER_CONFIG_FILE` 烧入均为 0；渲染层 `VITE_ZCODE_BASE_URL` 不是官方域名。残留的官方域名字面量均为存量且不可达：`api.z.ai` 6 处（Provider 目录静态条目、外链放行白名单）、`zcode.z.ai` 16 处（`rewardsEmbedded` 白名单、Gen UI 资源域白名单、预装工具 CDN 常量、5 种语言各 2 条已摘除的「高速卡 / 奖励分享」文案）、`bigmodel.cn` 14 处（Provider 目录与 OAuth 死常量）。旧名只剩迁移函数名 `migrateLegacyJGAgentDataRoot`。
+- **启动冒烟（隔离数据目录，不碰本机真实数据）**：用 `USERPROFILE` / `APPDATA` / `--user-data-dir` 指向临时目录启动 `dist/win-unpacked/JGHarness.exe`，清空宿主环境变量。多轮运行均 5 秒内出现主窗口、进程稳定、无崩溃重启，欢迎页渲染正常（中文界面、JG 标识、默认选中「捷关模型网关」），结束后进程清零，`~/.jgharness` 未在真实主目录产生。日志里的 warn 均为预期降级（官方端点 `.invalid` 不可达、CUA 组件未随开源版提供）；偶见一条上游的启动期 IPC 注册竞态 `Unknown channel: voice-input`，无害。
+- **网络审计（Chromium net-log）**：启动后的对外请求只有 `https://jgharness.invalid/api/v1/client/configs`（占位域，直接失败）、GitHub 上的更新清单，以及 `https://redirector.gvt1.com/edgedl/chrome/dict/en-us-10-1.bdic`（Chromium 内置拼写检查下载英文词典，Electron 默认行为，本机解析到 `114.250.x.x`）。日志中官方域名命中 0。
+- **自动更新检查（发布包，隔离启动，直连）**：Release 上线前 3 次、上线后 1 次均成功（`[auto-update] already up to date`，远端版本分别是 0.7.0 与 1.0.0）；另有 1 次在请求发出 20 秒后被重置（`net::ERR_CONNECTION_RESET`，连接与 TLS 握手正常），属国内直连 GitHub 的偶发抖动。更新器使用被强制为直连的独立会话（`desktopNetworkPolicy.ts`，除非用户在设置里填了代理），不跟随系统代理。
+- **发布（2026-11-24 12:32 ~ 12:49）**：`git merge --ff-only` 把 `sync/upstream-v4.0.0` 合到 main 后推送（`5e06f46c..c82da172`），**推送前校验链完整通过，没有用 `--no-verify`**。官网由 Vercel 自动部署（首页、更新日志、文档页核对通过）。下载仓先建草稿上传 5 个资产（73 秒），把资产下载回来与本地逐个比对 SHA-256（5/5 一致）后正式发布：`https://github.com/yak33/JGHarness-downloads/releases/tag/v1.0.0`。
+- **线上验证**：
+  - GitHub（匿名直连，更新器走的路径）：`releases/latest/download/latest.yml` 返回 version 1.0.0 且 sha512 与安装包一致；blockmap 200 且 SHA-256 与本地一致；安装包 HEAD 200（Content-Length 204369211），范围请求 206；`JGHarness-latest-*` 别名 200；v0.7.0 / v0.6.0 历史链接 200。从该地址完整下载安装包，SHA-256 与 SHA-512 均与本地及清单一致。
+  - Vercel（走本机代理）：`/downloads/latest.yml` 为 1.0.0；`/downloads/JGHarness-latest-win-x64.exe` 302 到 v1.0.0 资产，最终 200 且大小一致；历史链接有效。
+- **已知边界**：国内直连 GitHub 的下载速度波动很大——同一时段探测时约 1.6MB/s，十几分钟后的完整下载只有约 35KB/s（最终经代理续传完成）。更新检查只取几百字节的清单，受影响小；真要下载 204MB 的更新包时，无代理用户可能很慢，差分更新能缓解但不能消除。更新包的实际下载与安装要等下一个版本发布后才会第一次真实触发。
 
 ### ⚠️ 自动更新：v0.5.0 ~ v0.7.0 实际从未生效（本次修复）
 
