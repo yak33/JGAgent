@@ -57,6 +57,7 @@ import type {
   CommandAck,
   CommandEnvelope,
   CommandType,
+  ConversationRow,
   ConversationSnapshot,
   ConversationRowTarget,
   SessionErrorInfo,
@@ -492,6 +493,12 @@ const EMPTY_SUBAGENT_PROJECTION: NonNullable<ConversationSnapshot["subagents"]> 
   running: [],
   endedTotal: 0,
 };
+
+// 空时间线 rows 必须用同一引用：草稿态没有 timelineSnapshot 时若每次渲染都写 `?? []`，
+// 时间线的 renderUnits 备注会因 rows 身份变化而逐次失效，底部锚定布局副作用随之高频执行
+//（scrollToBottom + 合成 scroll），曾导致空草稿主界面渲染进程主线程被占满直至卡死
+//（v1.0.0 界面无响应问题的放大器，2026/11/24 修复）。
+const EMPTY_TIMELINE_ROWS: readonly ConversationRow[] = [];
 
 const MAX_CONVERSATION_FILE_CHANGES_CACHE_ENTRIES = 20;
 
@@ -6790,7 +6797,7 @@ export function SessionPane({
                     scrollToBottomActionRef={timelineScrollToBottomRef}
                     scrollToQueryActionRef={timelineScrollToQueryRef}
                     selectionPanelLayoutContainerRef={conversationLayoutContainerRef}
-                    rows={timelineRows?.window ?? []}
+                    rows={timelineRows?.window ?? EMPTY_TIMELINE_ROWS}
                     pendingGuides={timelineSnapshot ? pendingGuideProjection?.pendingGuides : []}
                     apiRetry={timelineSnapshot?.control.apiRetry ?? null}
                     totalCount={timelineRows?.totalCount ?? 0}
