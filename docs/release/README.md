@@ -391,6 +391,85 @@ git apply --3way /tmp/v3.14.3.patch   # 用 872ad96 的 blob 做基准三方合�
 - 打包产物：`JGHarness-0.7.0-win-x64.exe`（204MB，feed 烧入验证 `jg-agent.vercel.app/downloads/latest.yml` 存在于 asar）；Release v0.7.0 五资产已发布；官网（Vercel）标题/版本/changelog 全量更新为 JGHarness。
 - 线上验证（走 VPN 代理）：latest.yml（version 0.7.0、sha512 一致）、`/downloads/JGHarness-latest-win-x64.exe`（200、字节数一致）、`/downloads/JGAgent-0.6.0-win-x64.exe` 历史兼容链 200。
 - 旧品牌残留甄别：asar 内 `migrateLegacyJGAgentDataRoot`（迁移函数名，故意保留）与 82 反馈域 fallback 两处（服务已下线走本地降级，待反馈服务重建时一并换址）。
+## 七·九、上游同步记录（v4.0.0，2026-11-24 完成，作为 v1.0.0 正式版）
+
+### 本次同步概况
+
+官方从 v3.18.2 更新到 **v4.0.0**（单提交 `a4b44451`，2026-11-23）。总 diff **2209 文件**（+149,753 / −24,801；新增 689、修改 1404、重命名 101、删除 14），规模约为 v3.18.2 那次的四分之一。主题：预装文档工具（Python / qpdf / Pandoc / Poppler / LibreOffice，按需从官方 CDN 下载）与文档插件统一入口、MCP 动态目录与异步连接、Skill 实时目录、Agent 回复语言、子 Agent 默认后台运行、主窗口导航边界、桌面崩溃重启、会话活动退出确认、凭据存储全平台兜底、插件商店启停层修复。
+
+### 预分析与结果校验（新经验，下次照做）
+
+1. **apply 前先算清冲突面**：用 `git ls-tree -r` 取「旧基线 / 新上游 / HEAD」三份 blob 表，把官方改动的每个路径分类——我方未改、双方改过（再用 `git merge-file -p` 试算出冲突块数）、我方已摘除、官方删除我方改过、重命名异常。本次预测 24 个冲突文件 39 块 + 14 个 not-exist，与实际 apply 结果**完全一致**，不必再靠"先跑一遍收集错误面"。
+2. **apply 后做全量结果校验**：我方未改的 1263 个文件与上游新 blob 逐字节一致；自动合并的 103 个与独立试算一致；出现差异的只应是之后手工修改过的文件。
+3. ⚠️ **`git apply --3way` 在 Windows 上会把应保持 LF 的文件写成 CRLF**：本次 72 个 `*.mjs` / `*.sh` / `*.baseline.sql`（含 `schema.baseline.sql` 和会打进 Agent 包的插件脚本）工作区变成 CRLF。仓库内容无误（`git add` 时归一化），但工作区的 CRLF 会让 `db:schema:check` 误报、`.sh` 在 Git Bash 下无法执行。**apply 后用 `git ls-files --eol` 找出 `w/crlf` 且属性为 `eol=lf` 的文件转回 LF**。
+4. apply 的 stderr 里有 789 条 `Falling back to direct application...`，是该环境下的噪音，以上一条的结果校验为准。
+
+### 冲突面与解法（24 文件 39 块 + 14 not-exist）
+
+沿用第七节原则（敏感区保我方、协议与 runtime 取官方、品牌文案保我方）。本次：
+
+1. **14 个 not-exist** 全属已摘除域（CLI OAuth 客户端、订阅 provider、oauthService、useOAuth、useRootOAuthEffects、ConversationQuotaBanner、Web auth ×5）与官方反馈文档 ×2，补丁段剔除。
+2. **整体保我方**：品牌四件套；`auth-login`、`zcodeAgentService`（账号鉴权应答）、`ChatErrorBanner`（升级按钮）、`ProviderTemplatePicker`（捷关分组）、`dynamicWorkflowAvailabilityStore`、`wdio.conf.ts` 的订阅/闲时 mock 段、`SessionPane` 配额横幅。`Root.tsx` 与 `useRootWorkspaceActions.ts` 官方本次只改了「登出后重启阻断态」（OAuth 专属），直接回 HEAD。
+3. **取官方 + 品牌回填**：`create-app.ts`（浏览器 broker 改为 MCP 配置源的回调式创建）、`zcode-protocol-entrypoint.ts`（关闭时强制关掉 MCP/skill 配置源）、`systemCredentialCipher.ts`（凭据文件状态拆到 `credentialFileState.ts`，keyring 服务名保 `JGHarness Credential Encryption`）。
+4. **手工拼装**：`autoUpdater.ts`（保我方构建期 feed 声明，合入官方 `execFile` / `dialog` 导入）、`desktopHostProcess.ts`（`replyLanguage` 字段）、`host/index.ts`（保留官方为预装工具加的 `getZCodeDataRootDir` 导入，OffPeak 错误类型不引入）、`SettingsPage.tsx` 与 `settingsNavigation.ts`（合入 MCP 独立分区的工作区意图，usageTab 不恢复）、`WorkspaceHelpMenuButton.tsx`（官方整体重排后重新隐藏社群入口）、`architecture-policy.yaml`（官方新例外与我方例外取并集）。
+5. **干净区带入的商业化引用**（不在冲突块里，typecheck 才暴露）：`PluginStorePage.tsx` 新增「按登录区域过滤商店条目」，依赖 `useOAuth` 与 store 的 `oauthSuccessSeq`——连同 `pluginStoreListing.ts` 里的 `resolvePluginLoginRegion` / `isPluginVisibleForLoginRegion` 一并摘除，本仓全部条目照常展示。同文件里官方的通用修复（市场卡片启停改读写 User 层，修「关闭插件后新对话又被开启」）保留。
+
+### Web 远控 V1 链路（保 V1 决策续用）
+
+- 同步前实测旧 relay `wss://zcode.z.ai/ws` 仍存活（HTTP 101，直连与代理都通）。
+- `web/src/main.tsx` 只合入 `clientConfigService.getSnapshot` 的两个新字段（`uiPluginRecommendations`、`draftModelMigration`），V1 全链不动。
+
+### ⚠️ 预装文档工具：默认关闭（本次唯一产品决策点，最终去向待用户确认）
+
+上游 v4.0.0 的新功能：App 启动后在后台从 `https://cdn-zcode.z.ai/zcode/preinstalled-tools` 下载 Python / qpdf / Pandoc / Poppler / LibreOffice 到数据目录，注入 Agent PATH，供文档插件使用。
+
+- **问题**：资源包只托管在官方 CDN，无法用 `.invalid` 占位——占位后五张卡片全部显示「无法连接下载服务器」，文档任务还会因为注入了 `ZCODE_PREINSTALLED_TOOLS_AVAILABLE=1` 而停下来，让用户去「帮助 → 预装工具」查看。
+- **当前处理（与「官方端点一律不依赖」的既定政策一致）**：总开关 `JGHARNESS_PREINSTALLED_TOOLS_ENABLED = false`（`packages/shared/src/zcodeEndpoint.ts`）。关闭时不启动预装进程（也就不自动下载）、不向 Agent 注入入口目录与环境变量、帮助菜单不显示「预装工具」。文档插件按上游规则回退：先用这台电脑上已有的程序，都没有时按 `setup.md` 安装——即 v0.7.0 的行为。
+- **三个接线点**：`desktop/src/main/index.ts`（启动预装进程）、`desktop/src/host/index.ts`（`preinstalledToolsBinDir` 注入）、`ui/src/WorkspaceHelpMenuButton.tsx`（菜单项与对话框）。
+- **三种去向（需用户决策）**：① 维持关闭；② 把开关置 `true`，直接用官方 CDN——一行改动、立即生效，代价是重新依赖官方基础设施；③ 把资源包镜像到公司 CDN，再置 `true` 并替换 `desktop/src/preinstalled-tools/catalog.ts` 的下载基址。Windows x64 五个归档合计约 703MB（LibreOffice 一个就占 529MB），解压后约 2.07GB；上游要求资源进入正式 catalog 前完成法务确认，GPL 组件需随包提供源码压缩包。
+- 构建链不受开关影响：安装包仍会构建并携带 Windows 入口 shim（`prepare:preinstalled-entry-shim`；官方 `afterPack` 发现 shim 缺失会直接让打包失败）。
+
+### 反馈归档取官方安全加固版（纠正 v0.6.0 / v0.7.0 的回退）
+
+`packages/services/src/feedback/feedbackLogArchive.ts` 是「帮助 → 导出日志」与反馈附件**共用**的脱敏边界，不属于反馈业务流。v0.6.0 / v0.7.0 同步时按「反馈域整体回 HEAD」把它一并回退了，因此丢掉了上游的 `cli-config` 结构化投影——`exportLogs.ts` 传入的 `config.json` 来源只做了通用正则脱敏，插件 options、MCP 服务定义等自定义字段会原样进入导出包。本次改取官方 v4.0.0 全量：
+
+- 品牌化两处与日志格式相关的字面量：崩溃证据投影的正则改为匹配本仓的日志行 `JGHarness agent process exited unexpectedly`；`about.txt` 标题 `JGHarness diagnostic logs`。
+- feedback 模块因此新增对 `@zcode/shared/agent-crash-diagnostic` 的依赖，`architecture-policy.yaml` 补 `requires`。
+- 行为变化：导出包与反馈附件里的 `config.json` 变为「非敏感字段投影」而不是「全量 + 正则脱敏」；每个日志来源有独立的读取预算；超长日志保留完整的尾部记录。
+
+### 凭据存储行为变化（上游通用改动，随本次发布生效）
+
+`enablePrivateFileKeyFallback` 由「仅 Linux」改为「Desktop Main 全平台开启」（`desktop/src/main/index.ts`）：
+
+- 系统凭据库不可用（Windows 凭据管理器写满等）时，**尚未绑定来源**的凭据目录改用同目录私有文件密钥，日志记 `[credential] 系统凭据库不可用，已改用私有文件密钥`。
+- **已绑定系统凭据库**且密钥确定取不到时，后台备份并清空凭据库、解除绑定，用户重新填写 API Key 即可；界面不提示，只记日志（`[credential] 凭据密钥不可用，已备份并重置凭据存储`）。密钥能正常取到的用户不受影响。
+- 独立 CLI 与 Server 不开启。排查用户"API Key 丢失"时先查这几条日志。
+
+### 端点与品牌审计（同步后）
+
+- 官方域：生产源码新增 0 处有效端点。`cdn-zcode.z.ai` 只存在于预装工具的 `catalog.ts` 常量与文档（功能关闭后不可达）；其余命中都在 E2E 夹具与文档。
+- 品牌回填约 45 处：崩溃重启对话框（5 种语言）、更新授权提示、MCP 需授权/已禁用文案、权限拒绝文案、打开可执行文件的确认对话框标题、UI locale 新条目、macOS 隔离属性里的代理名等。刻意保留：LibreOffice 宏模块名 `ZCode.xba` / `Standard.ZCode.RecalculateAndSave`、字体族名 `ZCode Han JP/SC`、引用设计文档小节标题的注释（「ZCode 当前实现」）。上游设计文档与插件技能文档沿用惯例不改名。
+- 用户级数据路径 `.zcode` → `.jgharness` 共 8 处：CLI 浏览器登录态默认路径（`~/.jgharness/cli/browser-state.json`，含帮助文案与 2 个测试断言）、Source Server 与同机 Desktop 共用的凭据文件（`<dataBaseDir>/.jgharness/v2/credentials.json`，与 server 根目录 `.jgharness/server` 对齐）、诊断冒烟脚本的归档前缀。项目级 `.zcode/` 目录语义照旧保留。
+- `zcodeEndpoint.ts`、`env.ts`（遥测关闭）、`paths.ts`（`.jgharness`）、网关路由表、`tsup.config.ts` 的 feed 白名单、`electron-builder.config.js` 的 `.invalid` 主页与 `jgharness-updater` 缓存目录均未被冲掉。
+- 新增商业化源码文件 0 个（名字命中的 24 个全是 E2E 夹具与文档）。
+
+### 构建链变化
+
+- **Windows 入口 shim**（`packages/desktop/native/windows-preinstalled-entry-shim`，CMake + MSVC）：`prepare:runtime-assets` 末尾新增 `prepare:preinstalled-entry-shim`。构建脚本把生成器写死为 VS 2022，已复用 `ZCODE_WINDOWS_CMAKE_GENERATOR` 覆盖开关（与运行时宿主共用同一个变量）。
+- **打包环境**：官方 v4.0.0 宿主向子进程注入的 `ZCODE_*` 变量比以前多（IPC 管道名、指向官方安装目录的 CUA recipe 等）。本次打包先清空全部 `ZCODE_*` / `BIGMODEL_*`，再只放回 `ZCODE_ENV=production`、`ZCODE_UPDATE_FEED_URL`、`ZCODE_WINDOWS_CMAKE_GENERATOR`、`JGAGENT_SANITIZE_BUILD_ENV=1`，不依赖 `bundle.mjs` 的守卫名单。
+- **版本戳**：`build-metadata.mjs` 用 `git rev-parse --short=8 HEAD` 取 commit——**先提交同步再打包**，否则安装包里记的是上一个提交。
+- 根 `lint` 新增两个文档插件门禁（`check-document-libreoffice.mjs`、`check-document-python.mjs`）。
+
+### 同步后验证（2026-11-24 实测）
+
+- ✅ `pnpm typecheck` exit 0（三轮：第一轮是解冲突留下的多余大括号，第二轮是插件商店的登录区域逻辑，第三轮 0 错误）
+- ✅ `pnpm lint` 0 error（558 warnings，较 v0.7.0 的 564 少 6：清掉上次同步遗留的 4 个未使用声明，官方修了 2 个）；按 [React Hooks 检查](../testing/react-hooks-lint.md) 做专项扫描，406 → 404，人工改过的 React 组件诊断无变化
+- ✅ `pnpm architecture:check --changed` violations 0（补 1 条模块依赖）
+- ✅ Windows 入口 shim：VS 18 2026 构建通过（官方脚本写死 VS 2022，靠覆盖开关）
+- ✅ 构建链分段验证（清空宿主环境变量后执行）：`prepare:windows-runtime-host`（22 秒）、`prepare:agent-bundle`（4.5 分钟）、`build:no-runtime-assets`（主进程 / Host / preload 的 tsup 构建 + 渲染层 Vite 8323 模块，约 1 分钟）
+- ✅ 主进程产物端点抽查：`zcode.z.ai` 共 3 处——2 处是存量死文件 `shared/src/rewardsEmbedded.ts` 的信任白名单（奖励内嵌页，v0.7.0 同样存在且不可达），1 处是预装工具的 CDN 常量（功能关闭后不可达）；feed URL 烧入 1 处
+- 上游新增的 790 个文件中 778 个与上游逐字节一致，其余 12 个均为有意修改（品牌、路径、shim 构建开关）
+
 ## 八、反馈收集服务（运维手册）【服务端随 82 服务器回收已下线：客户端提交走本地降级存 tickets.json 不丢失；管理台与工单数据已不可达，重建方案待定】
 
 > 2026-09-27 上线。承接客户端「问题上报 / 给产品提需求」，工单集中存官网服务器，

@@ -1,8 +1,22 @@
 # JGHarness 工作交接文档
 
 > **用途**：跨设备 / 跨会话交接。新 AI 会话从这份文档开始即可接手全部上下文，不需要重看历史对话。
-> **最后更新**：2026-09-26（v0.2.0 preview 上线后）
+> **最后更新**：2026-11-24（v1.0.0 同步上游 v4.0.0）；正文第 1～9 节仍停留在 2026-09-26（v0.2.0），**与下方「现状」冲突时以下方为准**。
 > **配套文档**：[README.md](README.md)（去官方化改造清单，含全部技术细节与进度状态）；发版 / 官网 / 服务器运维见 **[docs/release/README.md](../release/README.md)** ——本文讲"为什么和接下来做什么"，清单讲"具体改哪里"。
+
+## 0. 现状（2026-11-24）
+
+正文写作之后发生的变化，细节都在 [docs/release/README.md](../release/README.md)：
+
+- **项目已更名**：捷关Agent → **捷关Harness**，JGAgent = JGHarness（v0.7.0，2026-11-24）。存储根 `~/.jgharness`，安装包 `JGHarness-*.exe`，npm 包名 `jgharness`，内置网关模板 id `jgharness-gateway`。正文里的 JGAgent / `~/.jgagent` 均为旧名。
+- **版本线**：v0.3.0（上游 3.14.3）→ v0.4.0（3.15.1）→ v0.5.0（3.16.2）→ v0.6.0（3.18.2）→ v0.7.0（更名）→ **v1.0.0 首个正式版（4.0.0）**。
+- **官网与下载**：已迁 Vercel（`https://jg-agent.vercel.app/`，连 GitHub main 自动部署），安装包放公开下载仓 `yak33/JGHarness-downloads` 的 Release。原 82.157.149.224 服务器已回收，正文里的服务器流程全部作废；反馈服务端随之下线，客户端提交走本地降级。
+- **自动更新**：v0.7.0 起安装包烧入静态 feed，发版即向全体用户推送。v0.6.0 及更早的客户端收不到，需手动升级。
+- **上游同步方式不变**（快照导入、`git apply --3way`），但流程已细化：先预分析冲突面、apply 后做结果校验、并把被写成 CRLF 的 LF 脚本转回来，见 release README 七·九。
+- **Web 远控保 V1 直连链路**：官方 V2 依赖官方账号体系。前提是旧 relay `wss://zcode.z.ai/ws` 存活，每次同步前先实测；停掉之日需自建 relay。
+- **预装文档工具（上游 v4.0.0）默认关闭**：资源包只在官方 CDN，总开关 `JGHARNESS_PREINSTALLED_TOOLS_ENABLED`，去向待用户决策。
+- **既定决策**（正文未记录）：反馈功能保持自建、不跟官方；账号与商业化域维持摘除；官方端点一律 `.invalid` 占位，勿"修复"。
+- **打包前置**：本机是 VS 18 BuildTools，打包必须带 `ZCODE_WINDOWS_CMAKE_GENERATOR="Visual Studio 18 2026"`；发版必须 grep asar 验证 feed 真实烧入。
 
 ---
 

@@ -25,6 +25,12 @@ export const TEST_ZAI_BUSINESS_BASE_URL = "https://zai-business-test.invalid";
 export const TEST_ZAI_OAUTH_CLIENT_ID = "jgharness-oauth-test-placeholder";
 /** Web 远控 V4 协议的最低 app 版本（上游语义：低于此版本走 legacy 远控链路）。 */
 export const WEB_REMOTE_CONTROL_V4_MIN_APP_VERSION = "3.4.0";
+// 预装文档工具（Python / qpdf / Pandoc / Poppler / LibreOffice，上游 v4.0.0 新增）的资源包只托管在
+// 官方 CDN（cdn-zcode.z.ai，见 desktop 的 preinstalled-tools/catalog.ts），下载需要真实可用的地址，
+// 无法用 .invalid 占位。公司自有 CDN 就绪前保持 false：不启动预装进程、不向 Agent 注入入口目录与
+// ZCODE_PREINSTALLED_TOOLS_AVAILABLE、帮助菜单不显示「预装工具」；文档插件回退到按 setup.md 安装的原有引导。
+// 启用：置 true；改用公司 CDN 时同时替换 catalog.ts 的下载基址（目录结构与官方一致）。
+export const JGHARNESS_PREINSTALLED_TOOLS_ENABLED: boolean = false;
 
 export interface BuildZCodeEndpointUrlsOptions {
   appVersion?: string;

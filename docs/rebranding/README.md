@@ -10,6 +10,8 @@
 
 ## 当前进度（2026-09-26）
 
+> 2026-11-24 更新：项目已更名为 **JGHarness（捷关Harness）**，当前版本 **v1.0.0**（同步上游 ZCode v4.0.0）。下表是阶段 0~4 的历史进度，之后的版本记录、同步流程与全部踩坑见 [docs/release/README.md](../release/README.md)（同步记录在第七节系列，最新一节是七·九）。
+
 | 阶段 | 状态 | Commit | 说明 |
 | --- | --- | --- | --- |
 | 阶段 0 环境跑通与仓库落位 | ✅ 完成 | `c959f68` | 基线导入，origin=yak33/JGAgent（私有），upstream=zai-org/ZCode |
@@ -36,6 +38,7 @@
 | 会话分享落地页 | `packages/services/src/conversation-share/conversationShareService.ts` | ✅ 随 endpoint 常量自动占位 |
 | 反馈/社群入口 | `config/default.json` | ✅ 已置空，待公司内部地址 |
 | 内置 Provider 目录 | `config/provider/zcode-builtin.json` | ✅ 新增捷关模型网关模板（已接通）；智谱 4 个 API 模板于 `fec0cfa` 恢复（指向公网 API、用户自带 key，与官方网关无关） |
+| 预装文档工具下载（上游 v4.0.0） | `packages/shared/src/zcodeEndpoint.ts` 的 `JGHARNESS_PREINSTALLED_TOOLS_ENABLED` | ✅ 默认关闭。资源包只托管在官方 CDN，无法 `.invalid` 占位；公司 CDN 就绪后置 `true` 并替换下载基址，见 [release README 七·九](../release/README.md) |
 
 ---
 
