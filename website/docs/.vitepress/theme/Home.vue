@@ -4,18 +4,18 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 // 版本与下载地址单点维护：发版时改 VERSION、RELEASE_DATE、latest 三处（需与 changelog.md 最新一节一致）。
 // ⚠️ v0.4.0/v0.5.0 连续两版只改了 VERSION，漏了 RELEASE_DATE 与 latest——首页页脚会停在旧日期。
 const DOWNLOAD_URL = "/downloads/JGHarness-latest-win-x64.exe";
-const VERSION = "0.7.0";
+const VERSION = "1.0.0";
 const RELEASE_DATE = "2026-11-24";
 
 const latest = [
-  "同步上游 v3.18.2：终端会话与工作区桥接重构，断线恢复更稳定",
-  "MCP 安全增强与多语言界面；手机远控面板支持一键拉取手机日志",
-  "凭据存储损坏恢复：凭据文件损坏时可从备份恢复，无需重装",
+  "首个正式版：同步上游 ZCode v4.0.0，安全加固与稳定性更新",
+  "窗口崩溃可一键重启；Agent 回复语言可设置；Skill 实时生效",
+  "凭据存储自动降级与恢复；诊断日志导出的隐私保护加固",
 ];
 
 // Hero 规格表：macOS / Linux 与 Windows 并列，仅以"稍后即来"弱化展示。
 const specRows = [
-  { k: "版本", v: `v${VERSION} Preview`, faint: false },
+  { k: "版本", v: `v${VERSION} 正式版`, faint: false },
   { k: "Windows", v: "10 · 11 x64", faint: false },
   { k: "macOS", v: "稍后即来", faint: true },
   { k: "Linux", v: "稍后即来", faint: true },
@@ -341,7 +341,7 @@ onBeforeUnmount(() => {
       <article class="release reveal">
         <div class="release-info">
           <p class="kicker">最新版本 · {{ RELEASE_DATE }}</p>
-          <h2 class="release-version">v{{ VERSION }} <span class="tag">Preview</span></h2>
+          <h2 class="release-version">v{{ VERSION }} <span class="tag">正式版</span></h2>
           <ul class="release-notes">
             <li v-for="item in latest" :key="item">{{ item }}</li>
           </ul>

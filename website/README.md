@@ -50,13 +50,13 @@ npm run preview    # 本地伺服构建产物（http://localhost:4173），验�
 
 ## 发新版本
 
-按 release 文档第一节执行。要点：
+流程以仓库 `docs/release/README.md` 的「一·A、Vercel 发版流程」为准。要点：
 
-1. 打包必须带 `ZCODE_ENV=production`（在 `packages/desktop/` 下执行 `ZCODE_ENV=production node scripts/bundle.mjs --os win --arch x64`），否则打出的是 Preview 测试包
-2. 改 `docs/index.md`（下载链接、版本行）与 `docs/changelog.md` → `npm run build`
-3. 上传 dist 内容到 `html/`、新 exe 到 `downloads/`，用 sha512 与本地 `latest.yml` 核对
+1. 打包必须带 `ZCODE_ENV=production`，否则打出的是 Preview 测试包
+2. 改 `docs/.vitepress/theme/Home.vue` 三处常量（VERSION、RELEASE_DATE、latest）与 `docs/changelog.md`，推 main 后 Vercel 自动部署
+3. 安装包发布到公开下载仓的 Release，`vercel.json` 把 `/downloads/*` rewrite 过去
 
-## 自动更新（v2 计划，本期未启用）
+## 自动更新
 
-客户端更新链路是"服务端 manifest provider"（阶段 2 已占位化为 `.invalid`），需要单独把
-manifest 端点指到本服务器后才能启用；当前 preview 版请同事手动回官网下载新版本。
+v0.7.0 起安装包烧入静态 feed（`/downloads/latest.yml`），新版本发布后在应用内提示更新；
+v0.6.0 及更早的客户端收不到自动更新，需要手动到官网下载。
