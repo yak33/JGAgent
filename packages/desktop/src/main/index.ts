@@ -12,6 +12,9 @@ import { createRemoteConversationTelemetryDispatcher } from "@zcode/shared/conve
 import { installRequestSecurityDiagnostics } from "./request-security-edition/index.js";
 import { createLocalTtftExporter } from "./localTtftExporter.js";
 /* eslint-disable max-lines */
+// 存储根迁移必须先于一切会创建 ~/.jgharness 的模块（early data dir / crash 采集）加载，
+// 否则空壳新根会令迁移静默跳过——v1.0.0 旧数据未迁移问题的根因（详见该模块头部注释）。
+import "./migrateLegacyJGAgentDataRoot.js";
 import "./desktopEarlyDataBaseDirBootstrap.js";
 import "./desktopEarlyChromiumHardwareAccelerationBootstrap.js";
 import { powerMonitor, powerSaveBlocker } from "electron";
@@ -61,7 +64,6 @@ import { randomUUID } from "node:crypto";
 import type { UtilityProcess as ElectronUtilityProcess } from "electron";
 import { spawn } from "node:child_process";
 import { join, resolve } from "node:path";
-import { existsSync, renameSync } from "node:fs";
 import { homedir, hostname } from "node:os";
 import {
   createCredentialService,
@@ -2313,23 +2315,7 @@ app.on("second-instance", (_event, argv, _workingDirectory, additionalData) => {
   }
 });
 
-// JGHarness v0.7.0 改名迁移：存储根由 ~/.jgagent 改为 ~/.jgharness。首启检测旧根存在且
-// 新根不存在时整体重命名（配置/会话/凭据/插件全部保留）；新根已存在则不动旧目录，避免
-// 覆盖新数据；迁移失败不阻断启动（按全新目录继续，旧数据留在原处可手动找回）。
-function migrateLegacyJGAgentDataRoot(): void {
-  const legacyRoot = join(homedir(), ".jgagent");
-  const nextRoot = join(homedir(), ".jgharness");
-  try {
-    if (!existsSync(legacyRoot) || existsSync(nextRoot)) return;
-    renameSync(legacyRoot, nextRoot);
-    logger.info(`[migrate] 存储根已迁移: ${legacyRoot} -> ${nextRoot}`);
-  } catch (error) {
-    logger.warn("[migrate] ~/.jgagent -> ~/.jgharness 迁移失败（按新目录继续）", error);
-  }
-}
-
 app.whenReady().then(async () => {
-  migrateLegacyJGAgentDataRoot();
   markMainLaunchAppReady();
   installRequestSecurityDiagnostics(session.defaultSession.webRequest, logger);
   installLocalMediaPreviewProtocol(session.defaultSession.protocol, {
