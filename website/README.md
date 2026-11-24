@@ -58,5 +58,7 @@ npm run preview    # 本地伺服构建产物（http://localhost:4173），验�
 
 ## 自动更新
 
-v0.7.0 起安装包烧入静态 feed（`/downloads/latest.yml`），新版本发布后在应用内提示更新；
-v0.6.0 及更早的客户端收不到自动更新，需要手动到官网下载。
+v1.0.0 起安装包烧入的更新源是下载仓的 GitHub Releases 地址
+（`https://github.com/yak33/JGHarness-downloads/releases/latest/download/latest.yml`），新版本发布后在应用内提示更新。
+v0.5.0 ~ v0.7.0 的自动更新实际从未生效，这些用户需要手动安装 1.0.0 一次。
+不要把更新源改回 `jg-agent.vercel.app`：该域名在国内直连网络下被 DNS 污染，客户端解析不到。

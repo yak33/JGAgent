@@ -866,6 +866,16 @@ function readSwitchValue(argv: readonly string[], switchName: string): string | 
   return undefined;
 }
 
+/**
+ * 构建期注入的静态更新 feed（tsup 的 `__ZCODE_UPDATE_FEED_URL__`）；未注入或为空时返回 undefined。
+ * 打包版的更新来源只认这一个常量。
+ */
+function readBakedUpdateFeedUrl(): string | undefined {
+  const bakedFeedUrl =
+    typeof __ZCODE_UPDATE_FEED_URL__ === "undefined" ? "" : __ZCODE_UPDATE_FEED_URL__.trim();
+  return bakedFeedUrl || undefined;
+}
+
 export function resolveUpdateFeedSourceFromStartupConfig(
   options: {
     argv?: readonly string[];
@@ -875,8 +885,7 @@ export function resolveUpdateFeedSourceFromStartupConfig(
   // 打包版：只认构建期烧入的 feed（tsup 注入 ZCODE_UPDATE_FEED_URL），生产自动更新通道。
   // 启动参数/环境变量在打包版一律忽略——防止更新请求被外部环境改道（同密封化约束）。
   if (app.isPackaged) {
-    const bakedFeedUrl =
-      typeof __ZCODE_UPDATE_FEED_URL__ === "undefined" ? "" : __ZCODE_UPDATE_FEED_URL__.trim();
+    const bakedFeedUrl = readBakedUpdateFeedUrl();
     if (!bakedFeedUrl) {
       return undefined;
     }
@@ -933,15 +942,23 @@ async function syncAutoUpdateCheckChannelFromSettings(
 }
 
 function applyManifestUpdateProvider(options: InitAutoUpdaterOptions): void {
-  // 在更新器装配边界再次约束，避免内部调用绕过启动配置解析。
-  const manifestUrl = app.isPackaged ? undefined : options.updateFeedSource?.url.trim();
+  // 在更新器装配边界再次约束：打包版不接受调用方传入的更新源（启动参数、环境变量、内部直传），
+  // 只认构建期常量；未注入时才走清单接口。
+  // JGHarness：上游打包版一律走官方清单接口（`app.isPackaged ? undefined : …`）。本仓没有官方更新
+  // 服务（endpoint 为 .invalid 占位），打包版必须使用构建期烧入的静态 feed。
+  // Bug 根因：v3.18.2 同步（v0.6.0）合入上游的那行限制后，打包版只把 feed 写进日志，实际一直在请求
+  // .invalid 上的官方接口并静默失败，自动更新从未生效（v0.6.0、v0.7.0）。
+  const manifestUrl = app.isPackaged
+    ? readBakedUpdateFeedUrl()
+    : options.updateFeedSource?.url.trim();
   autoUpdater.setFeedURL({
     provider: "custom",
     updateProvider: ManifestUpdateProvider,
     endpointOrigin: DEFAULT_ZCODE_ENDPOINT_ORIGIN,
     ...(manifestUrl ? { manifestUrl } : {}),
     releasePlatform: getElectronReleasePlatform(),
-    deviceMid: options.deviceMid,
+    // 静态 feed 是普通文件下载，用不到设备标识；不把它带进下载服务的访问日志。
+    ...(manifestUrl ? {} : { deviceMid: options.deviceMid }),
     resolveZcodeJwtToken: options.resolveZcodeJwtToken,
     resolveEndpointOrigin: async () => {
       const origin = await (

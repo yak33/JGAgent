@@ -1,7 +1,7 @@
 # JGAgent 发布与官网部署（交接文档）
 
 > 用途：后续 AI 会话或新同事接手发版 / 官网 / 服务器运维时的唯一入口。
-> 线上最新：**v0.7.0**（2026-11-24，捷关Harness 更名版，上游 v3.18.2）。**v1.0.0 首个正式版（上游 v4.0.0）安装包已打好、尚未发布**——分支 `sync/upstream-v4.0.0` 未合并未推送，发布前需先定自动更新源的去向，见第七·九节。
+> 线上最新：**v0.7.0**（2026-11-24，捷关Harness 更名版，上游 v3.18.2）。**v1.0.0 首个正式版（上游 v4.0.0）正在发布**，过程与结果见第七·九节；它修复了 v0.5.0 ~ v0.7.0 一直未生效的自动更新。
 > ⚠️ 架构变更（2026-11-23 起）：官网/下载走 **Vercel + 公开下载仓**（见第 一·A 节）。原腾讯云服务器 82.157.149.224 **未续费已被回收**（用户 2026-11-23 确认），第一、四、八节的服务器流程整体作废、仅作历史记录；存量 v0.5.0 及更早客户端的自动更新 feed 烧在该服务器，**永久断供**，只能手动到官网下载新版。
 > 官网目录细节见 [website/README.md](../../website/README.md)，本文只讲流程与坑。
 
@@ -49,7 +49,7 @@
 - 主仓保持私有；安装包只进公开下载仓（主仓单文件 100MB 硬限装不下 exe）。
 - ⚠️ 下载仓的两个坑（v0.6.0 实测）：① 空仓库 `gh release create` 报 HTTP 422 "Repository is empty"，先推一个初始提交；② 中途被杀的 create 进程会留下 **draft release**（draft 资产匿名下载 404），补传后须 `gh release edit v<ver> --draft=false`；draft 期间的 404 会被 CDN/代理负缓存几分钟，验证加 `-H "Cache-Control: no-cache"`。
 - ⚠️ exe 上传极慢（本机上行 ~100KB/s，204MB×2 约 1 小时）：直连与 VPN 代理速度相近，属本机出口带宽瓶颈；gh 进程 CPU 缓慢增长即健康，勿误判卡死。
-- **自动更新 feed 语义**：v0.6.0 安装包烧入的 feed 仍是 `http://82.157.149.224/downloads/latest.yml`（打包时服务器已被回收无法预知新址）——v0.6.0 自身也收不到后续自动更新，属已知断代。**v0.7.0 起打包必须烧 `https://jg-agent.vercel.app/downloads/latest.yml`**（Vercel 域名国内直连性需观察，必要时套自定义域——**2026-11-24 实测本机直连不可达，被 DNS 污染，见第七·九节「自动更新源」**）。存量 ≤v0.6.0 客户端的自动更新永久断供（82 已回收，无补救通道），只能手动下载。
+- **自动更新 feed（v1.0.0 起）**：打包必须烧 `https://github.com/yak33/JGHarness-downloads/releases/latest/download/latest.yml`（下载仓的 GitHub Releases 地址，国内直连可达）。**不要再用 `jg-agent.vercel.app`**：2026-11-24 实测该域名在国内直连网络下被 DNS 污染，客户端解析不到。更新器按 feed 所在目录解析文件地址，所以每个 Release 都要带 `JGHarness-<ver>-win-x64.exe`、同名 `.blockmap`、`latest.yml` 与 `JGHarness-latest-*` 别名副本。**v0.5.0 ~ v0.7.0 的自动更新实际从未生效**（两层原因见第七·九节），存量用户全部需要手动安装一次 1.0.0。`website/vercel.json` 的 `/downloads/latest.yml` rewrite 保留不删。
 
 ## 二、打包：命令与陷阱
 
@@ -59,7 +59,7 @@
 # 打包前先清空宿主 ZCode 桌面版注入的 ZCODE_* / BIGMODEL_*，再只放回下面四个变量（见第七·九节「构建链变化」）
 ZCODE_ENV=production \
 JGAGENT_SANITIZE_BUILD_ENV=1 \
-ZCODE_UPDATE_FEED_URL="https://jg-agent.vercel.app/downloads/latest.yml" \
+ZCODE_UPDATE_FEED_URL="https://github.com/yak33/JGHarness-downloads/releases/latest/download/latest.yml" \
 ZCODE_WINDOWS_CMAKE_GENERATOR="Visual Studio 18 2026" \
 node scripts/bundle.mjs --os win --arch x64
 ```
@@ -148,7 +148,7 @@ node scripts/bundle.mjs --os win --arch x64
 
 | 项 | 状态 |
 | --- | --- |
-| 自动更新 | ✅ v0.3.2 起启用：feed 指向官网静态 latest.yml（HTTP 明文，HTTPS 待公司域名）；差分下载已生效。channel 灰度（stable/preview）仍走上游 manifest API，待自建后端再启用 |
+| 自动更新 | **v1.0.0 起恢复**：feed 为下载仓的 GitHub Releases 地址（HTTPS，国内直连可达）。v0.5.0 ~ v0.7.0 实际未生效（见第七·九节）。channel 灰度（stable/preview）仍走上游 manifest API，本仓无后端，恒为 stable |
 | macOS / Linux 包 | 官网已留"稍后即来"位；mac 包必须在 mac 机器上打 |
 | 签名 | 安装包未签名，首启 SmartScreen 拦截，官网三步指引已写"仍要运行" |
 | 旧服务器 106.15.120.94 | 只跑捷关模型网关（:9527），模板 baseUrl 打包指向它，与官网服务器无关，勿混 |
@@ -160,6 +160,8 @@ node scripts/bundle.mjs --os win --arch x64
 
 - [ ] `ZCODE_ENV=production` 打包 exit 0，产物名无 `_TEST`、无 "Preview"
 - [ ] latest.yml version = 新版本号
+- [ ] **更新源真的被使用**：隔离启动打包产物并抓 Chromium net-log（`--log-net-log`），更新检查请求的必须是烧入的 feed，不是 `.invalid/api/v1/releases/electron/manifest`，日志里 `[auto-update]` 没有 error。在 asar 里 grep 到 feed 字符串只证明它在包里——v0.6.0 / v0.7.0 就是这样漏掉的
+- [ ] asar 里 `VITE_ZCODE_BASE_URL:` 后面跟的不是官方域名
 - [ ] 官网 index.md 下载链接文件名与产物一致，changelog 已加条目
 - [ ] 线上 `/downloads/<exe>` 200 且 sha512 与本地一致
 - [ ] 本机装一遍冒烟：网关连通、左下角本地身份、模型设置页、中文显示
@@ -500,14 +502,22 @@ node scripts/bundle.mjs --os win --arch x64
 - **启动冒烟（隔离数据目录，不碰本机真实数据）**：用 `USERPROFILE` / `APPDATA` / `--user-data-dir` 指向临时目录启动 `dist/win-unpacked/JGHarness.exe`，清空宿主环境变量。三次运行（首轮包、带网络日志、最终包）均 5 秒内出现主窗口、8 个进程稳定、无崩溃重启，欢迎页渲染正常（中文界面、JG 标识、默认选中「捷关模型网关」），结束后进程清零，`~/.jgharness` 未在真实主目录产生。日志里的 warn 均为预期降级（官方端点 `.invalid` 不可达、CUA 组件未随开源版提供）。
 - **网络审计（Chromium net-log）**：启动后的对外请求只有 `https://jgharness.invalid/api/v1/client/configs`、`…/api/v1/releases/electron/manifest`（占位域，直接失败）与 `https://redirector.gvt1.com/edgedl/chrome/dict/en-us-10-1.bdic`（Chromium 内置拼写检查下载英文词典，Electron 默认行为，本机解析到 `114.250.x.x`）。日志中官方域名命中 0。
 
-### ⚠️ 自动更新源在本机直连网络下不可达（发布前必须决策）
+### ⚠️ 自动更新：v0.5.0 ~ v0.7.0 实际从未生效（本次修复）
 
-冒烟时自动更新的启动检查报 `net::ERR_NAME_NOT_RESOLVED`。核实结果：
+冒烟时启动检查报 `net::ERR_NAME_NOT_RESOLVED`，顺着查出来两层问题：
 
-- `jg-agent.vercel.app` 在本机被 DNS 污染：`nslookup` 返回 `157.240.17.36`，系统解析器 `Resolve-DnsName` 返回 `69.171.229.11`（都是典型的污染地址）；`curl` 直连 12 秒超时，走本机代理（127.0.0.1:7897）返回 302。
-- 下载仓的 GitHub 链路直连可用：`https://github.com/yak33/JGHarness-downloads/releases/latest/download/latest.yml` 直连 302 → 200。
-- **影响**：v0.7.0 起烧入的就是 Vercel 域名的 feed，所以与这台机器同网络的用户收不到自动更新，官网（同在 vercel.app）也打不开；此前线上验证都是走代理做的。本次 1.0.0 安包同样烧的是 Vercel 域名，直接发布会把这个状态延续到 1.0.0 用户。
-- **可选去向（需用户决策）**：① 给官网套自定义域名（国内可达），feed 与官网一起换；② 仅把 feed 换成下载仓的 GitHub Releases 地址（更新器按 feed 所在目录解析文件地址，`releases/latest/download/JGHarness-<ver>-win-x64.exe(.blockmap)` 已在该路径），需重新打包 26 分钟，官网可达性另解；③ 维持现状（只适合用户都在代理/海外网络的情况）。无论选哪个，存量 v0.7.0 客户端都需要在有代理的网络下升级一次，或手动下载安装包。
+1. **打包版根本没在使用烧入的 feed**（与网络无关，v0.6.0、v0.7.0 都是）。`autoUpdater.ts` 的 `applyManifestUpdateProvider` 里有一行上游代码 `app.isPackaged ? undefined : options.updateFeedSource?.url`——上游只允许开发 / E2E 构建传自定义清单地址，打包版一律走官方清单接口。v3.18.2 同步（`230c1102`，即 v0.6.0）把它合进来之后，我方在 `resolveUpdateFeedSourceFromStartupConfig` 里解析出的烧入地址只被打进日志（`[auto-update] 使用构建期配置的更新 feed: …`），实际请求的是 `https://jgharness.invalid/api/v1/releases/electron/manifest`。v0.5.0 时代这里是 `options.updateFeedSource?.url`，所以 v0.4.0 的静态 feed 链路是通的。证据：冒烟抓到的 Chromium net-log 里只有 `.invalid/api/v1/releases/electron/manifest`，没有任何对 feed 域名的请求。
+2. **Vercel 域名在国内直连网络下不可达**：`jg-agent.vercel.app` 被 DNS 污染（`nslookup` 返回 `157.240.17.36`，系统解析器返回 `69.171.229.11`），`curl` 直连 12 秒超时，走本机代理才返回 302。此前每次线上验证都是走代理做的。
+
+连起来看：v0.4.0 之后自动更新没有真正生效过——v0.5.0 是 feed 烧入为空（第七·八节记录的 tsup 白名单问题），v0.6.0 / v0.7.0 是烧入了但代码不走它。第七·八节的「feed 烧入验证」需要按本节更正：**在 asar 里 grep 到 feed 字符串只能证明它在包里，不能证明它被使用**。
+
+本次修复与决策：
+
+- `applyManifestUpdateProvider` 改为：打包版只认构建期常量（`readBakedUpdateFeedUrl()`），非打包版才用调用方传入的值。既让打包版真的使用 feed，又保住上游的防改道边界（打包版下启动参数、环境变量、内部直传的更新源一律不采纳）。上游的更新源安全冒烟 `pnpm --filter @zcode/desktop test:auto-update-source-security-smoke` 24 个场景（8 场景 × 默认 / AppImage / NSIS，含 `packaged-direct`）全部通过。
+- 静态 feed 是普通文件下载，不再把 `device_mid` 带给下载服务。
+- feed 换成 `https://github.com/yak33/JGHarness-downloads/releases/latest/download/latest.yml`：下载仓直连可用（带更新器实际发送的查询参数与请求头实测 200），而且 Vercel 那条 rewrite 链路的终点本来就是它。官网仍在 vercel.app 上，国内直连打不开的问题没有解决，需要套自定义域名（待办）。
+- 已知边界：该安全冒烟的夹具里烧入常量为空，覆盖不到「烧入后被使用」，这一环靠第六节验证清单里的「隔离启动 + net-log」保证；更新包的实际下载与安装要等下一个版本发布后才会第一次真实触发。
+- 存量 v0.5.0 ~ v0.7.0 用户收不到这次更新，需要手动安装 1.0.0 一次（直连网络下从下载仓的 Release 页面下载）。
 
 ## 八、反馈收集服务（运维手册）【服务端随 82 服务器回收已下线：客户端提交走本地降级存 tickets.json 不丢失；管理台与工单数据已不可达，重建方案待定】
 
