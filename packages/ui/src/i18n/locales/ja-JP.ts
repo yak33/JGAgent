@@ -1560,7 +1560,7 @@ const jaJP: Record<string, string> = {
   "welcome.loggingIn": "サインイン中...",
   "welcome.loginFailed": "サインインに失敗しました",
   "login.title": "JGHarness へようこそ",
-  "login.description": "アカウントを接続して JGHarness を使い始めましょう",
+  "login.description": "API Key を設定して JGHarness を使い始めましょう",
   "login.oauth.activeProviderHint":
     "現在のプロバイダー: {provider}。再度サインインすると現在の ID が置き換えられます。",
   "login.oauth.loadingProviders": "アカウントプロバイダーを読み込み中...",
@@ -7505,7 +7505,7 @@ const jaJP: Record<string, string> = {
   "chat.error.feedback": "問題を報告",
   "chat.error.feedbackOpened": "エラーのコンテキストを添付してフィードバックを開きました",
   "chat.error.noAvailableModel":
-    "利用可能なモデルがありません。アップグレードするか、カスタムモデルを設定してください。",
+    "利用可能なモデルがありません。設定でカスタムモデルを設定してください。",
   "chat.error.remoteNoAvailableModel":
     "このリモートデバイスにはまだ利用可能なモデルがありません。まずこのコンピューターでモデルを構成してください。保存後、リモートデバイスに自動的に同期されます。",
   "chat.error.sendFailed": "送信に失敗しました。しばらくしてからもう一度お試しください。",

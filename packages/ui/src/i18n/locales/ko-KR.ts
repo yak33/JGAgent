@@ -1508,7 +1508,7 @@ const koKR: Record<string, string> = {
   "welcome.loggingIn": "로그인 중...",
   "welcome.loginFailed": "로그인 실패",
   "login.title": "JGHarness에 오신 것을 환영합니다",
-  "login.description": "계정을 연결하여 JGHarness 사용을 시작하세요",
+  "login.description": "API Key를 설정하여 JGHarness 사용을 시작하세요",
   "login.oauth.activeProviderHint":
     "현재 활성 공급자: {provider}. 다시 로그인하면 현재 ID가 대체됩니다.",
   "login.oauth.loadingProviders": "계정 공급자 로드 중...",
@@ -7332,7 +7332,7 @@ const koKR: Record<string, string> = {
   "chat.error.feedback": "문제 신고",
   "chat.error.feedbackOpened": "오류 컨텍스트가 첨부된 피드백을 열었습니다",
   "chat.error.noAvailableModel":
-    "사용 가능한 모델이 없습니다. 업그레이드하거나 사용자 지정 모델을 설정하세요.",
+    "사용 가능한 모델이 없습니다. 설정에서 사용자 지정 모델을 구성하세요.",
   "chat.error.remoteNoAvailableModel":
     "이 원격 기기에는 아직 사용 가능한 모델이 없습니다. 먼저 이 컴퓨터에서 모델을 구성하세요. 저장하면 원격 기기에 자동으로 동기화됩니다.",
   "chat.error.sendFailed": "보내지 못했습니다. 잠시 후 다시 시도하세요.",

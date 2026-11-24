@@ -1539,7 +1539,7 @@ const ruRU: Record<string, string> = {
   "welcome.loggingIn": "Вход...",
   "welcome.loginFailed": "Не удалось войти",
   "login.title": "Добро пожаловать в JGHarness",
-  "login.description": "Подключите аккаунт, чтобы начать работу с JGHarness",
+  "login.description": "Настройте API Key, чтобы начать работу с JGHarness",
   "login.oauth.activeProviderHint":
     "Текущий провайдер: {provider}. Повторный вход заменит текущую учётную запись.",
   "login.oauth.loadingProviders": "Загрузка провайдеров аккаунтов...",
@@ -7476,7 +7476,7 @@ const ruRU: Record<string, string> = {
   "chat.error.feedback": "Сообщить о проблеме",
   "chat.error.feedbackOpened": "Открыта форма обратной связи с приложенным контекстом ошибки",
   "chat.error.noAvailableModel":
-    "Нет доступной модели. Повысьте тариф или настройте пользовательскую модель.",
+    "Нет доступной модели. Настройте пользовательскую модель в настройках.",
   "chat.error.remoteNoAvailableModel":
     "На этом удалённом устройстве пока нет доступной модели. Сначала настройте модели на этом компьютере — после сохранения они автоматически синхронизируются с удалённым устройством.",
   "chat.error.sendFailed": "Не удалось отправить. Повторите попытку позже.",
