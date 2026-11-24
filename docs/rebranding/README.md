@@ -31,6 +31,7 @@
 | 耦合项 | 收口位置 | 状态 |
 | --- | --- | --- |
 | 业务服务默认端点 | `packages/shared/src/zcodeEndpoint.ts` | ✅ 已改 `.invalid` 占位 |
+| 环境文件 `.env.production` / `.env.development` | 同名文件里的 `ZCODE_PRODUCTION_BASE_URL`、`ZAI_*_ORIGIN`、`*_CLIENT_ID` | ✅ 2026-11-24 补占位（阶段 2 漏改；此前渲染层会把官方域名作为 `VITE_ZCODE_BASE_URL` 烧进包，惰性无调用方） |
 | Coding Plan 网关转发 | `apps/zcode-cli/packages/adapters/src/model/official-coding-plan-gateway.ts` | ✅ 路由表已清空 |
 | 遥测总开关 | `packages/shared/src/env.ts` | ✅ 已置 `false` |
 | 插件市场源 | `packages/shared/src/plugin-marketplaces.ts` | ✅ 已改 `.invalid` 占位（本地种子分片保留） |

@@ -90,7 +90,10 @@ node scripts/bundle.mjs --os win --arch x64
   （"restored ready update version=3.14.3"）。publish 里显式改为 `jgagent-updater` 隔离。
 - ⚠️ 打包后验收 grep `dist/win-unpacked/resources/app.asar`：`api.z.ai` 仅允许
   OAuth 白名单/刻意保留常量（约 15 处），`ZCODE_BASE_URL":"https` 形式的烧入值必须为 0
-  （NSIS exe 是压缩载荷，grep 不出，别拿 exe 验）。
+  （NSIS exe 是压缩载荷，grep 不出，别拿 exe 验）。**渲染层是 Vite 压缩后的反引号写法，
+  要另查 `VITE_ZCODE_BASE_URL:` 后面跟的值**——2026-11-24 发现受版本控制的 `.env.production` /
+  `.env.development` 还留着官方地址，v1.0.0 之前的包都因此把它烧进了渲染层（惰性字符串，桌面端无调用方），
+  已占位化；这两个文件属于快速收口表，新增环境文件时一并核对。
 - 其它品牌残留点（阶段 1 词边界替换覆盖不到的构建资产）：`build/installer.nsh`
   的安装日志前缀（已改 JGAgent）、`electron-builder.config.js` 的 pkgData
   homepage/author（已改占位域）。
@@ -452,6 +455,7 @@ git apply --3way /tmp/v3.14.3.patch   # 用 872ad96 的 blob 做基准三方合�
 - 用户级数据路径 `.zcode` → `.jgharness` 共 8 处：CLI 浏览器登录态默认路径（`~/.jgharness/cli/browser-state.json`，含帮助文案与 2 个测试断言）、Source Server 与同机 Desktop 共用的凭据文件（`<dataBaseDir>/.jgharness/v2/credentials.json`，与 server 根目录 `.jgharness/server` 对齐）、诊断冒烟脚本的归档前缀。项目级 `.zcode/` 目录语义照旧保留。
 - `zcodeEndpoint.ts`、`env.ts`（遥测关闭）、`paths.ts`（`.jgharness`）、网关路由表、`tsup.config.ts` 的 feed 白名单、`electron-builder.config.js` 的 `.invalid` 主页与 `jgharness-updater` 缓存目录均未被冲掉。
 - 新增商业化源码文件 0 个（名字命中的 24 个全是 E2E 夹具与文档）。
+- **存量漏洞（本次打包验收时发现并修复）**：受版本控制的 `.env.production` / `.env.development` 还留着官方地址（`ZCODE_PRODUCTION_BASE_URL=https://zcode.z.ai`、`ZAI_PRODUCTION_OAUTH_ORIGIN=https://chat.z.ai` 等），阶段 2 只改了 `zcodeEndpoint.ts` 与 `.env.example`，漏了这两个文件。Vite 构建渲染层时经 `loadEnv` 读到它，把官方域名作为 `import.meta.env.VITE_ZCODE_BASE_URL` 烧进包里（反引号写法，旧的 grep 模式抓不到）。影响评估：读取它的 `ui/src/lib/rendererZCodeEndpoint.ts` 在桌面端没有任何调用方，主进程 / Host 包里也没有带 http(s) 值的端点变量，所以是惰性字符串，不产生请求；v1.0.0 之前的包同样如此。已改为 `.invalid` 占位并重新打包。
 
 ### 构建链变化
 
