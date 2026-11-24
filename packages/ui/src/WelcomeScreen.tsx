@@ -45,7 +45,9 @@ export function resolveLoginRegionForLocale(locale: string): SingleLoginRegion {
 export function WelcomeScreen({ onComplete }: WelcomeScreenProps) {
   const { intl } = useZCodeIntl();
   return (
-    <main className="relative h-full min-h-dvh overflow-hidden bg-background text-foreground">
+    // 居中类在 v0.6.0（上游 v3.18.2 同步）时被上游写法覆盖丢失；上游配套的两层居中容器
+    // 未随同步引入，导致欢迎卡片贴在窗口左上角（v1.0.0 用户反馈，2026/11/24 恢复）。
+    <main className="relative flex h-full min-h-dvh items-center justify-center overflow-hidden bg-background px-4 py-6 text-foreground sm:px-6">
       <ThemeHeroVisual className="absolute inset-0" />
       {/* 原生拖拽命中不受 pointer-events/z-index 约束；拖拽层必须避开窗控，且先于 no-drag 区声明。 */}
       <div className="pointer-events-none absolute left-0 top-0 right-0 z-10 flex h-12 items-center [app-region:drag] platform-windows-desktop:right-[134px] platform-linux-desktop:right-[134px]" />
