@@ -1,7 +1,7 @@
 # JGAgent 发布与官网部署（交接文档）
 
 > 用途：后续 AI 会话或新同事接手发版 / 官网 / 服务器运维时的唯一入口。
-> 最新发布：2026-11-23，**v0.6.0** 已上线 `https://jg-agent.vercel.app/`（上游 v3.18.2 同步版）。
+> 线上最新：**v0.7.0**（2026-11-24，捷关Harness 更名版，上游 v3.18.2）。**v1.0.0 首个正式版（上游 v4.0.0）安装包已打好、尚未发布**——分支 `sync/upstream-v4.0.0` 未合并未推送，发布前需先定自动更新源的去向，见第七·九节。
 > ⚠️ 架构变更（2026-11-23 起）：官网/下载走 **Vercel + 公开下载仓**（见第 一·A 节）。原腾讯云服务器 82.157.149.224 **未续费已被回收**（用户 2026-11-23 确认），第一、四、八节的服务器流程整体作废、仅作历史记录；存量 v0.5.0 及更早客户端的自动更新 feed 烧在该服务器，**永久断供**，只能手动到官网下载新版。
 > 官网目录细节见 [website/README.md](../../website/README.md)，本文只讲流程与坑。
 
@@ -49,16 +49,18 @@
 - 主仓保持私有；安装包只进公开下载仓（主仓单文件 100MB 硬限装不下 exe）。
 - ⚠️ 下载仓的两个坑（v0.6.0 实测）：① 空仓库 `gh release create` 报 HTTP 422 "Repository is empty"，先推一个初始提交；② 中途被杀的 create 进程会留下 **draft release**（draft 资产匿名下载 404），补传后须 `gh release edit v<ver> --draft=false`；draft 期间的 404 会被 CDN/代理负缓存几分钟，验证加 `-H "Cache-Control: no-cache"`。
 - ⚠️ exe 上传极慢（本机上行 ~100KB/s，204MB×2 约 1 小时）：直连与 VPN 代理速度相近，属本机出口带宽瓶颈；gh 进程 CPU 缓慢增长即健康，勿误判卡死。
-- **自动更新 feed 语义**：v0.6.0 安装包烧入的 feed 仍是 `http://82.157.149.224/downloads/latest.yml`（打包时服务器已被回收无法预知新址）——v0.6.0 自身也收不到后续自动更新，属已知断代。**v0.7.0 起打包必须烧 `https://jg-agent.vercel.app/downloads/latest.yml`**（Vercel 域名国内直连性需观察，必要时套自定义域）。存量 ≤v0.6.0 客户端的自动更新永久断供（82 已回收，无补救通道），只能手动下载。
+- **自动更新 feed 语义**：v0.6.0 安装包烧入的 feed 仍是 `http://82.157.149.224/downloads/latest.yml`（打包时服务器已被回收无法预知新址）——v0.6.0 自身也收不到后续自动更新，属已知断代。**v0.7.0 起打包必须烧 `https://jg-agent.vercel.app/downloads/latest.yml`**（Vercel 域名国内直连性需观察，必要时套自定义域——**2026-11-24 实测本机直连不可达，被 DNS 污染，见第七·九节「自动更新源」**）。存量 ≤v0.6.0 客户端的自动更新永久断供（82 已回收，无补救通道），只能手动下载。
 
 ## 二、打包：命令与陷阱
 
 **唯一正确命令**（在 `packages/desktop/` 下；与第一节流程一致，勿用旧文档里的裸命令）：
 
 ```bash
+# 打包前先清空宿主 ZCode 桌面版注入的 ZCODE_* / BIGMODEL_*，再只放回下面四个变量（见第七·九节「构建链变化」）
 ZCODE_ENV=production \
 JGAGENT_SANITIZE_BUILD_ENV=1 \
 ZCODE_UPDATE_FEED_URL="https://jg-agent.vercel.app/downloads/latest.yml" \
+ZCODE_WINDOWS_CMAKE_GENERATOR="Visual Studio 18 2026" \
 node scripts/bundle.mjs --os win --arch x64
 ```
 
@@ -473,6 +475,39 @@ git apply --3way /tmp/v3.14.3.patch   # 用 872ad96 的 blob 做基准三方合�
 - ✅ 构建链分段验证（清空宿主环境变量后执行）：`prepare:windows-runtime-host`（22 秒）、`prepare:agent-bundle`（4.5 分钟）、`build:no-runtime-assets`（主进程 / Host / preload 的 tsup 构建 + 渲染层 Vite 8323 模块，约 1 分钟）
 - ✅ 主进程产物端点抽查：`zcode.z.ai` 共 3 处——2 处是存量死文件 `shared/src/rewardsEmbedded.ts` 的信任白名单（奖励内嵌页，v0.7.0 同样存在且不可达），1 处是预装工具的 CDN 常量（功能关闭后不可达）；feed URL 烧入 1 处
 - 上游新增的 790 个文件中 778 个与上游逐字节一致，其余 12 个均为有意修改（品牌、路径、shim 构建开关）
+- **推送前校验链 `verify:pre-push` 现在可以不带 `--no-verify` 通过**（此前因 `db:schema:check` 一直失败）：工作区检查、E2E 远程目标、Lint、文档陈旧措辞、schema 检查、架构治理测试（61 项）逐项实测通过；`test:engineering:affected` 在同步类改动下会选中全套并按设计跳过执行。注意在官方 ZCode 宿主的终端里跑时，`ZCODE_PRE_PUSH_STDIN` 会被「清空环境变量」的包装脚本一并清掉，需单独放行。
+- **工程测试全套 `pnpm test:engineering`：182 个文件中 16 个失败（38 / 1180 个用例），均非本次同步引入**。在基线提交（main）上对同一批文件做了对照：
+  - 存量 11 个文件 34 个用例，基线上失败数完全相同：产品身份期望官方 appId 与「ZCode Dev.app」、Web 配置期望 `bigmodel.cn`（本仓为 `.invalid` 占位）、根 `package-lock.json` 版本号跟的是上游、升级 mock 服务器找不到已摘除的营销素材、遥测字段合同测试的 `git init` 在本机报错、`gen-ui-runtime-assets` 的哈希比对（Windows 检出行尾）、E2E 环境变量声明清单缺本仓的 `ZCODE_UPDATE_FEED_URL` / `ZCODE_CDN_BASE_URL`，以及 Windows 环境问题（路径分隔符、PowerShell 中文编码、安装器测试超时）。
+  - `bundleMirrorFallback.test.ts` 在宿主终端里被 `bundle.mjs` 的防污染守卫拦下（环境里有官方端点变量），清空环境后重跑通过。
+  - v4.0.0 新增的 4 个文件：`preinstalledEntryShim.test.ts`（本机无 VS 2022，带 `ZCODE_WINDOWS_CMAKE_GENERATOR` 重跑 16/16 通过）、`e2eSharedStageCache.test.ts`（Windows 创建符号链接 EPERM）、`liveBigmodelProfileFixture.test.ts`（夹具写死 `.zcode` 数据目录，本仓是 `.jgharness`）、`audit-conversation-session-json-out.test.mjs`（用例审计报 highspeed 夹具缺失，该域早已摘除）。
+
+### v1.0.0 打包记录（2026-11-24，安装包已就绪、尚未发布）
+
+分支 `sync/upstream-v4.0.0`，打包时 HEAD = `992fb0f2`（安装包内 `build-meta.json` 的 `buildCommitId` 与之一致）。命令：
+
+```bash
+# 在 packages/desktop/ 下；先清空宿主注入的 ZCODE_* / BIGMODEL_*，只放回下面四个变量
+ZCODE_ENV=production \
+ZCODE_UPDATE_FEED_URL="https://jg-agent.vercel.app/downloads/latest.yml" \
+ZCODE_WINDOWS_CMAKE_GENERATOR="Visual Studio 18 2026" \
+JGAGENT_SANITIZE_BUILD_ENV=1 \
+node scripts/bundle.mjs --os win --arch x64
+```
+
+- **耗时 26 分钟**（上一版 3 小时以上）：Agent 包 4.5 分钟、运行时宿主 22 秒、预装 shim 18 秒、asar 解包清理 4.5 分钟、asar 重包 1.7 分钟、NSIS 其余。
+- 产物 `packages/desktop/dist/`：`JGHarness-1.0.0-win-x64.exe`（204,371,777 字节，sha256 `95a3e9f7dbff91634d9f79ffc76772d679dd2c18b9ca29b7615589e735b41df8`）、同名 `.blockmap`（212,524 字节）、`latest.yml`（version 1.0.0，sha512 `5Bvok1o8Ioj/MeF/V+BaGr755ZKtANHFRcsBO43+UnH8NKDdOqz9mx6eskGJzFM1in9UZqW3S3AqKyYv6ualcA==`，与安装包实测一致）。exe 版本信息：ProductVersion / FileVersion 1.0.0，CompanyName JieGuan。
+- **asar 验收**：包内 `package.json` 为 jgharness 1.0.0；feed URL 1 处；带 http(s) 值的 `ZCODE_BASE_URL` / `ZCODE_ENDPOINT_ORIGIN` / `ZCODE_BUILTIN_PROVIDER_CONFIG_FILE` 烧入均为 0。残留的官方域名字面量均为存量且不可达：`api.z.ai` 6 处（Provider 目录静态条目、外链放行白名单）、`zcode.z.ai` 16 处（`rewardsEmbedded` 白名单、Gen UI 资源域白名单、预装工具 CDN 常量、5 种语言各 2 条已摘除的「高速卡 / 奖励分享」文案）、`bigmodel.cn` 14 处（Provider 目录与 OAuth 死常量）。旧名只剩迁移函数名 `migrateLegacyJGAgentDataRoot`。
+- **启动冒烟（隔离数据目录，不碰本机真实数据）**：用 `USERPROFILE` / `APPDATA` / `--user-data-dir` 指向临时目录启动 `dist/win-unpacked/JGHarness.exe`，清空宿主环境变量。三次运行（首轮包、带网络日志、最终包）均 5 秒内出现主窗口、8 个进程稳定、无崩溃重启，欢迎页渲染正常（中文界面、JG 标识、默认选中「捷关模型网关」），结束后进程清零，`~/.jgharness` 未在真实主目录产生。日志里的 warn 均为预期降级（官方端点 `.invalid` 不可达、CUA 组件未随开源版提供）。
+- **网络审计（Chromium net-log）**：启动后的对外请求只有 `https://jgharness.invalid/api/v1/client/configs`、`…/api/v1/releases/electron/manifest`（占位域，直接失败）与 `https://redirector.gvt1.com/edgedl/chrome/dict/en-us-10-1.bdic`（Chromium 内置拼写检查下载英文词典，Electron 默认行为，本机解析到 `114.250.x.x`）。日志中官方域名命中 0。
+
+### ⚠️ 自动更新源在本机直连网络下不可达（发布前必须决策）
+
+冒烟时自动更新的启动检查报 `net::ERR_NAME_NOT_RESOLVED`。核实结果：
+
+- `jg-agent.vercel.app` 在本机被 DNS 污染：`nslookup` 返回 `157.240.17.36`，系统解析器 `Resolve-DnsName` 返回 `69.171.229.11`（都是典型的污染地址）；`curl` 直连 12 秒超时，走本机代理（127.0.0.1:7897）返回 302。
+- 下载仓的 GitHub 链路直连可用：`https://github.com/yak33/JGHarness-downloads/releases/latest/download/latest.yml` 直连 302 → 200。
+- **影响**：v0.7.0 起烧入的就是 Vercel 域名的 feed，所以与这台机器同网络的用户收不到自动更新，官网（同在 vercel.app）也打不开；此前线上验证都是走代理做的。本次 1.0.0 安包同样烧的是 Vercel 域名，直接发布会把这个状态延续到 1.0.0 用户。
+- **可选去向（需用户决策）**：① 给官网套自定义域名（国内可达），feed 与官网一起换；② 仅把 feed 换成下载仓的 GitHub Releases 地址（更新器按 feed 所在目录解析文件地址，`releases/latest/download/JGHarness-<ver>-win-x64.exe(.blockmap)` 已在该路径），需重新打包 26 分钟，官网可达性另解；③ 维持现状（只适合用户都在代理/海外网络的情况）。无论选哪个，存量 v0.7.0 客户端都需要在有代理的网络下升级一次，或手动下载安装包。
 
 ## 八、反馈收集服务（运维手册）【服务端随 82 服务器回收已下线：客户端提交走本地降级存 tickets.json 不丢失；管理台与工单数据已不可达，重建方案待定】
 
