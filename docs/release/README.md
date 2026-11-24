@@ -525,6 +525,42 @@ node scripts/bundle.mjs --os win --arch x64
 - 已知边界：该安全冒烟的夹具里烧入常量为空，覆盖不到「烧入后被使用」，这一环靠第六节验证清单里的「隔离启动 + net-log」保证；更新包的实际下载与安装要等下一个版本发布后才会第一次真实触发。
 - 存量 v0.5.0 ~ v0.7.0 用户收不到这次更新，需要手动安装 1.0.0 一次（直连网络下从下载仓的 Release 页面下载）。
 
+## 七·十、v1.0.1 热修复记录（2026-11-24，界面卡死 + 旧数据未迁移 + 欢迎页居中 + 文案）
+
+### 用户报告与定位过程（关键证据链）
+
+用户报告「安装 1.0.0 后点左下角用户按钮界面卡死，只能退出」+「欢迎页卡片贴左上角」。隔离环境（临时 `USERPROFILE` + `--user-data-dir` + CDP）复现结论：
+
+1. **卡死与点击无关**：跳过欢迎页进入主界面后 17~42 秒自发卡死（`webContents unresponsive` / `perf_freeze 30288ms`），主进程存活、渲染主线程 100%。
+2. **渲染风暴测量**（条件断点采样，M4=SessionPane）：SessionPane 以 ~70Hz 重渲染，`lanes` 在 32（React 19 store 通知 = TransitionLane）与 0（父级 props 带动）间 1:1 交替；每次渲染 `timelineRows?.window ?? []` 产生新的空数组，让时间线 renderUnits 备注失效、底部锚定布局副作用每圈执行 `scrollToBottom()` 并派发合成 scroll（35 次/秒）。
+3. **真凶在日志里**：一次 20 秒实验会话的日志高达 **8.7MB**——host 进程收到约 190 次/秒的 `<channel>.toJSON` RPC（zcode-agent / model-selection / conversation-share / managed-worktrees / broadcast 等 12 类通道全部 `Method not found: toJSON`），另有 `window-controller.subscribeControllerV4` 同毫秒成对反复调用与 `MaxListenersExceededWarning`（11 个 settings-changed 监听器泄漏）。
+4. **机制**：`ProxyChannel.toService` 的代理把 `toJSON` 也按方法转发（`channel.call('toJSON')`），任何对服务代理的 `JSON.stringify`（日志 / 遥测 / 深比较）都变成跨进程调用且必然失败；`windowControllerTaskListRegistry` 按 controller 代理身份 WeakMap 缓存，而 services 聚合对象在部分渲染路径下逐次重建，注册表每代重建导致 Controller 订阅同帧成对拆建并泄漏旧代理上的事件监听。风暴叠加巨型 SessionPane 全量渲染，偶发失去让出点即死循环。相关组件与上游 v4.0.0 逐字节一致（放大器在上游，风暴源在本仓运行形态），修复不依赖上游。
+
+### 修复清单（fix/v1.0.1-hotfix 分支，7 个提交）
+
+| 修复 | 文件 | 内容 |
+| --- | --- | --- |
+| rows 稳定 | `SessionPane.tsx` | 空时间线 rows 用模块级常量（`EMPTY_TIMELINE_ROWS`），断掉布局副作用高频执行 |
+| RPC toJSON 风暴 | `packages/rpc/src/proxy-channel.ts` | 代理的 `toJSON` 返回占位函数 `"[rpc-proxy]"`，序列化不再发起跨进程调用 |
+| 订阅风暴与泄漏 | `windowControllerTaskListRegistry.ts` | 退订延迟 50ms 合并同帧拆建；`FinalizationRegistry` 在代理换代被 GC 时兜底 `stop()` |
+| 存储根迁移 | `desktopDataBaseDirBootstrap.ts` + `index.ts` | 迁移并入启动引导模块、由 index.ts 第一行 import 最先执行（此前 crash 采集在模块加载期先建 `~/.jgharness`，令迁移静默跳过）；新增「空壳合并」：旧根有 provider 配置而新根没有（v1.0.0 踩坑形态）时用旧根 v2 用户数据覆盖（排除 crash/logs/runtime），旧目录保留 |
+| 欢迎页居中 | `WelcomeScreen.tsx` | 恢复 v0.6.0 同步时丢失的 `flex items-center justify-center` 类 |
+| 文案 | 5 个 locale | 「开通编程套餐 / 连接账号」改为 API Key 配置指引 |
+
+注：迁移最初写在独立新文件 `migrateLegacyJGAgentDataRoot.ts`，被架构基线拦下（`unmanaged-new-file`），已并入受管的 `desktopDataBaseDirBootstrap.ts`（函数名保留，品牌残留甄别项不受影响）。
+
+### 验证（打包版 win-unpacked，隔离环境）
+
+- **卡死**：修复前 17~42 秒必现；修复后 240+180+180 秒三轮 + 终验 180 秒，共 780 秒零卡死。
+- **风暴指标**：SessionPane 渲染 0/s（修复前 ~70/s）、合成 scroll 0.00/s（修复前 35/s）、日志量 69KB/240s（修复前 8.7MB/20s，三个数量级）、`toJSON` 调用 0、`subscribeControllerV4` 2 次（正常一次性订阅）。
+- **迁移**：整体迁移（`.jgagent` 改名消失、新根配置正确）与空壳合并（空 provider_config 被旧数据覆盖、旧目录保留）两场景通过；setting.json 在合并后会被应用按启动流程规范化回写（未知字段丢弃），属正常行为，以 provider_config 为准。
+- **居中**：卡片水平偏移 0.0px。
+- typecheck / lint / 架构检查全过；推送未用 `--no-verify`。
+
+### 打包与发布记录（2026-11-24）
+
+由 `33918b6b` 打出，命令与 v1.0.0 相同（见上节）。产物：`JGHarness-1.0.1-win-x64.exe`（204,341,287 字节）+ `.blockmap` + `latest.yml`。发布资产与流程同第七·九节（draft → 上传 5 资产 → 回比 SHA-256 → 正式发布）。
+
 ## 八、反馈收集服务（运维手册）【服务端随 82 服务器回收已下线：客户端提交走本地降级存 tickets.json 不丢失；管理台与工单数据已不可达，重建方案待定】
 
 > 2026-09-27 上线。承接客户端「问题上报 / 给产品提需求」，工单集中存官网服务器，
