@@ -122,6 +122,14 @@ export namespace ProxyChannel {
             return undefined;
           }
 
+          // JSON.stringify（日志、遥测、深比较都会走到）会先探测 toJSON。这里若继续
+          // 走 RPC 分派，会把序列化变成一次跨进程调用，host 端必然 "Method not found"。
+          // v1.0.1 卡死调查（2026/11/24）：渲染层约 190 次/秒的 toJSON RPC 风暴由此产生，
+          // 叠加高频渲染后拖垮主线程。返回占位函数让序列化安全跳过代理内容。
+          if (propKey === "toJSON") {
+            return () => "[rpc-proxy]";
+          }
+
           // 动态事件
           if (isDynamicEvent(propKey)) {
             return (arg: unknown) => channel.listen(propKey, arg);

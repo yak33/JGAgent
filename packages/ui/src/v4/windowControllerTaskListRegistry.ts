@@ -41,6 +41,16 @@ export interface WindowControllerTaskListVersion {
 
 const registries = new WeakMap<object, WindowControllerTaskListRegistry>();
 
+// v1.0.1 卡死调查（2026/11/24）：services 对象在部分渲染路径下会被重建，controller 代理
+// 随之换代；旧 registry 被丢弃时不会走 stop()，controller 上的 Controller 帧监听与订阅就此
+// 泄漏（每代泄漏一组）。GC 时兜底清理，避免长期运行后监听器与订阅持续累积。
+const registryFinalizer =
+  typeof FinalizationRegistry === "function"
+    ? new FinalizationRegistry<() => void>((held) => {
+        held();
+      })
+    : null;
+
 function directoryFacts(row: WindowHostControllerTaskRow): string {
   // 活动的时间、状态与阻塞摘要也会覆盖 meta，不能把这些变化误判为目录失效。
   // 没有 live activity 时仍保留完整持久事实；首次接入或撤销 live 的边界也会刷新。
@@ -123,7 +133,17 @@ export function getWindowControllerTaskListRegistry(
     });
   };
 
+  let stopTimer: ReturnType<typeof setTimeout> | null = null;
+
+  const cancelPendingStop = (): void => {
+    if (stopTimer !== null) {
+      clearTimeout(stopTimer);
+      stopTimer = null;
+    }
+  };
+
   const stop = (): void => {
+    cancelPendingStop();
     if (!started) return;
     started = false;
     generation += 1;
@@ -239,11 +259,22 @@ export function getWindowControllerTaskListRegistry(
 
   const registry: WindowControllerTaskListRegistry = {
     subscribe(listener) {
+      cancelPendingStop();
       listeners.add(listener);
       start();
       return () => {
         listeners.delete(listener);
-        if (listeners.size === 0) stop();
+        if (listeners.size === 0) {
+          // v1.0.1 卡死调查（2026/11/24）：services 聚合对象在部分渲染路径下逐次重建，
+          // registry 随 controller 每代更新，退订/再订会在同一帧成对发生；立即 stop 会让
+          // Controller 订阅以每秒数十次的节奏反复建立又拆除。延迟一拍再停，换代风暴
+          // 被合并为一次，真无人消费时仍会正常退订。
+          cancelPendingStop();
+          stopTimer = setTimeout(() => {
+            stopTimer = null;
+            stop();
+          }, 50);
+        }
       };
     },
     getRevision() {
@@ -279,5 +310,6 @@ export function getWindowControllerTaskListRegistry(
     },
   };
   registries.set(key, registry);
+  registryFinalizer?.register(key, () => stop());
   return registry;
 }
