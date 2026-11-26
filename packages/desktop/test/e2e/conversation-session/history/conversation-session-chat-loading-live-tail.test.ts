@@ -535,9 +535,9 @@ async function installChatLoadingLayoutProbe() {
       const slotRect = slot?.getBoundingClientRect();
       const loadingRect = loading?.getBoundingClientRect();
       const iconRect = loading?.querySelector("[data-chat-loading-icon]")?.getBoundingClientRect();
-      // Loading 已改为 SVG 球体，旧点阵类名已删除；继续验证图标居中和文字间距。
+      // Loading 使用 JG 品牌图标；继续验证图标居中和文字间距。
       const glyphRect = loading
-        ?.querySelector("[data-chat-loading-icon] svg")
+        ?.querySelector("[data-chat-loading-icon] [data-app-logo]")
         ?.getBoundingClientRect();
       const labelRect = loading
         ?.querySelector("[data-chat-loading-icon] + span")

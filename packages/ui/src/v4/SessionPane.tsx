@@ -500,6 +500,37 @@ const EMPTY_SUBAGENT_PROJECTION: NonNullable<ConversationSnapshot["subagents"]> 
 //（v1.0.0 界面无响应问题的放大器，2026/11/24 修复）。
 const EMPTY_TIMELINE_ROWS: readonly ConversationRow[] = [];
 
+// JGHarness 去官方化（阶段 3）：Highspeed 卡服务随加速域移除；本地 no-op stub——
+// 快照恒无卡、turn 恒走普通推理路由（fallback），发送链路直连模型。
+// 官方 v3.18 新增 getCurrentOwnerKey：无卡无归属，恒返回 null。
+// Bug 根因（v1.0.1 点击即卡死，2026/11/26）：stub 原先写在组件函数体内，每次渲染都是新对象；
+// 「刷新 highspeedOwner」副作用以它为依赖，于是每次提交都重跑并 setHighspeedOwner(新对象)，
+// 新对象再触发渲染 → 新 stub → 副作用重跑，形成无尽渲染循环，巨型 SessionPane 持续占满渲染主线程。
+// 修复依据：stub 无状态，模块级引用避免副作用与回调仅因组件重渲染而反复重建。
+const HIGHSPEED_CARD_SERVICE_STUB = {
+  prepareTurn: async (_params: unknown): Promise<HighspeedPrepareTurnResult> => ({
+    kind: "fallback",
+    reason: "no_subscription" as never,
+    nextDrawAt: null,
+  }),
+  getSnapshot: async (): Promise<import("@zcode/shared").HighspeedServiceSnapshot> => ({
+    card: null,
+    nextDrawAt: null,
+    drawing: false,
+  }),
+  invalidateCard: async (_cardId: string): Promise<void> => {},
+  getCurrentOwnerKey: async (): Promise<string | null> => null,
+  healthy: async (
+    _cardId: string,
+    _ownerKey?: string | null,
+  ): Promise<import("@zcode/shared").HighspeedCardUsage> => ({
+    completionTokens: 0,
+    durationSeconds: 0,
+    cardId: "",
+    promptTokens: 0,
+  }),
+};
+
 const MAX_CONVERSATION_FILE_CHANGES_CACHE_ENTRIES = 20;
 
 function toComposerUiError(
@@ -716,27 +747,8 @@ export function SessionPane({
     fileRewindPreview,
   } = useV4Conversation();
   const platform = useOptionalPlatform();
-  // JGHarness 去官方化（阶段 3）：Highspeed 卡服务随加速域移除；本地 no-op stub——
-  // 快照恒无卡、turn 恒走普通推理路由（fallback），发送链路直连模型。
-  // 官方 v3.18 新增 getCurrentOwnerKey：无卡无归属，恒返回 null。
-  const highspeedCardService = {
-    prepareTurn: async (_params: unknown): Promise<
-      import("@zcode/shared").HighspeedPrepareTurnResult
-    > => ({ kind: "fallback", reason: "no_subscription" as never, nextDrawAt: null }),
-    getSnapshot: async (): Promise<import("@zcode/shared").HighspeedServiceSnapshot> => ({
-      card: null,
-      nextDrawAt: null,
-      drawing: false,
-    }),
-    invalidateCard: async (_cardId: string): Promise<void> => {},
-    getCurrentOwnerKey: async (): Promise<string | null> => null,
-    healthy: async (_cardId: string, _ownerKey?: string | null): Promise<import("@zcode/shared").HighspeedCardUsage> => ({
-      completionTokens: 0,
-      durationSeconds: 0,
-      cardId: "",
-      promptTokens: 0,
-    }),
-  };
+  // 引用稳定的模块级 stub，见 HIGHSPEED_CARD_SERVICE_STUB 注释。
+  const highspeedCardService = HIGHSPEED_CARD_SERVICE_STUB;
   const {
     conversationShareService,
     modelSelectionService,
