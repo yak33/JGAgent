@@ -1,5 +1,12 @@
 # 更新日志
 
+## v1.0.2 <Badge type="tip">正式版</Badge>
+
+2026-11-26 · [下载 Windows 版](/downloads/JGHarness-1.0.2-win-x64.exe)
+
+- 修复对话页仍可能因服务引用不稳定形成副作用与状态更新循环，导致点击后或空闲时界面无响应；本版固定无卡服务替身的引用，切断持续重渲染
+- 运行中加载图标由上游 Z 点阵替换为 JG 品牌标识，保留工作时长、减少动态效果支持与原有布局
+
 ## v1.0.1 <Badge type="tip">正式版</Badge>
 
 2026-11-24 · [下载 Windows 版](/downloads/JGHarness-1.0.1-win-x64.exe)

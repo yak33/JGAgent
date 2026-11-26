@@ -4,13 +4,12 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 // 版本与下载地址单点维护：发版时改 VERSION、RELEASE_DATE、latest 三处（需与 changelog.md 最新一节一致）。
 // ⚠️ v0.4.0/v0.5.0 连续两版只改了 VERSION，漏了 RELEASE_DATE 与 latest——首页页脚会停在旧日期。
 const DOWNLOAD_URL = "/downloads/JGHarness-latest-win-x64.exe";
-const VERSION = "1.0.1";
-const RELEASE_DATE = "2026-11-24";
+const VERSION = "1.0.2";
+const RELEASE_DATE = "2026-11-26";
 
 const latest = [
-  "修复 v1.0.0 空闲时界面卡死无响应：消除高频 RPC 序列化风暴",
-  "修复从 v0.x 升级后旧数据未迁移，安装本版并重启即自动恢复",
-  "修复欢迎页卡片未居中；移除「开通套餐 / 连接账号」类遗留文案",
+  "修复对话页持续重渲染造成的卡死与点击无响应",
+  "运行中加载动画替换为 JG 品牌图标，保留计时与减少动态效果支持",
 ];
 
 // Hero 规格表：macOS / Linux 与 Windows 并列，仅以"稍后即来"弱化展示。
