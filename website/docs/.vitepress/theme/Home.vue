@@ -4,12 +4,13 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 // 版本与下载地址单点维护：发版时改 VERSION、RELEASE_DATE、latest 三处（需与 changelog.md 最新一节一致）。
 // ⚠️ v0.4.0/v0.5.0 连续两版只改了 VERSION，漏了 RELEASE_DATE 与 latest——首页页脚会停在旧日期。
 const DOWNLOAD_URL = "/downloads/JGHarness-latest-win-x64.exe";
-const VERSION = "1.0.2";
-const RELEASE_DATE = "2026-11-26";
+const VERSION = "1.0.3";
+const RELEASE_DATE = "2026-11-27";
 
 const latest = [
-  "修复对话页持续重渲染造成的卡死与点击无响应",
-  "运行中加载动画替换为 JG 品牌图标，保留计时与减少动态效果支持",
+  "默认界面视觉升级：对齐极简高对比风格，深色/浅色双主题全新配色，去掉浮岛灰边改为 1px 贴边分割",
+  "全应用引入本地 Geist 字体并优化中文字体回退与抗锯齿渲染，侧栏字号与字重层级更清晰",
+  "顶栏收紧至 40px、对话阅读宽度与输入框更聚焦，同时完整保留既有操作习惯与交互逻辑",
 ];
 
 // Hero 规格表：macOS / Linux 与 Windows 并列，仅以"稍后即来"弱化展示。
