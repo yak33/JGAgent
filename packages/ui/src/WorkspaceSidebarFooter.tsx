@@ -150,7 +150,7 @@ export const WorkspaceSidebarFooter = memo(function WorkspaceSidebarFooterCompon
 
   return (
     // footer 被 Settings 复用，页面专属边距由调用方传入，避免修改共享默认样式。
-    <footer className={cn("flex shrink-0 flex-col gap-2.5 px-4 pt-2 pb-4", className)}>
+    <footer className={cn("flex shrink-0 flex-col gap-2 border-t border-border px-2.5 py-2", className)}>
       {banner}
       <div className="flex min-w-0 gap-2">
         <DropdownMenu open={profileMenuOpen} onOpenChange={setProfileMenuOpen}>

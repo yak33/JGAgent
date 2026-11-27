@@ -627,14 +627,14 @@ export const MemoTaskItem = memo(function TaskListItem({
         }
       }}
       className={cn(
-        "group/task-item flex cursor-pointer gap-2 rounded-lg pl-2.5 pr-1 py-1 transition-[background-color,border-color,box-shadow]",
-        // 默认行 32px 时前置槽整行居中；长出工作流运行行后行体是两行的纵向列，槽改为对齐首行。
+        "group/task-item flex cursor-pointer gap-2 rounded-md pl-2 pr-1 py-0.5 transition-[background-color,border-color,box-shadow]",
+        // 默认行紧凑居中；长出工作流运行行后行体是两行的纵向列，槽改为对齐首行。
         variant === "timeline"
           ? "items-start py-1.5"
           : hasWorkflowRunLines
-            ? "items-start"
+            ? "items-start py-1"
             : "items-center",
-        isActive ? "bg-selected" : hoverEnabled && "hover:bg-surface-hover",
+        isActive ? "bg-selected" : hoverEnabled && "hover:bg-hover",
       )}
     >
       {/* Bugfix: 之前任务列表依赖 divide-y 画分隔线，深色侧栏里每个 item 上下都会出现明显黑线，
@@ -706,7 +706,10 @@ export const MemoTaskItem = memo(function TaskListItem({
             ) : null}
             {remoteConnectionBadge}
             <TaskTitleOverflowText
-              className="text-ui-base text-foreground"
+              className={cn(
+                "text-ui-caption tracking-tight text-foreground",
+                isActive ? "font-semibold" : "font-medium",
+              )}
               title={taskTitleWithChanges}
             >
               {/* Bugfix: task 标题之前使用 truncate，会在长标题末尾显示省略号；
@@ -813,7 +816,10 @@ export const MemoTaskItem = memo(function TaskListItem({
               {/* 默认行与 timeline 共用远程断连投影，工作流多行布局不改变连接状态。 */}
               {remoteConnectionBadge}
               <TaskTitleOverflowText
-                className="text-ui-base text-foreground"
+                className={cn(
+                  "text-ui-caption tracking-tight",
+                  isActive ? "font-medium text-foreground" : "font-normal text-foreground/90",
+                )}
                 title={taskTitleWithChanges}
               >
                 {/* Bugfix: 默认 workspace task item 和 timeline item 共享标题溢出规则；

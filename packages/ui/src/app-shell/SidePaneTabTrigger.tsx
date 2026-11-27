@@ -149,14 +149,14 @@ export function SortableSidePaneTabTrigger({
           onCloseTab(tab.id);
         }}
         className={cn(
-          "group relative inline-flex items-center gap-1 [corner-shape:superellipse(1.5)]",
-          "flex-[1_1_9.75rem] !h-7 min-w-15 max-w-39 justify-start overflow-hidden rounded-md border px-1.5 pr-2 text-ui-base font-medium whitespace-nowrap transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 focus-visible:outline-ring",
-          "!border-transparent !bg-transparent text-foreground-subtle !rounded-lg",
+          "group relative inline-flex items-center gap-1",
+          "flex-[1_1_9.75rem] !h-7 min-w-15 max-w-39 justify-start overflow-hidden rounded-md border px-2 pr-2 text-ui-caption font-medium whitespace-nowrap transition-colors focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 focus-visible:outline-ring",
+          "!border-transparent !bg-transparent text-foreground-subtle !rounded-md",
           "hover:text-foreground",
           !isActive && "hover:!bg-hover",
           // TabsTrigger asChild 经过 ContextMenuTrigger 再包一层后，Radix 的 active 标记不会稳定落到真实 tab div。
           // 这里用受控的 isActive 同步补齐 data-active / data-state，保证 Tailwind 的 active variant 能命中。
-          "data-active:!bg-selected data-active:text-foreground data-active:shadow-[0_1px_2px_-1px_rgb(0_0_0/0.08)]",
+          "data-active:!bg-selected data-active:text-foreground",
           "cursor-default",
           isDragging && "cursor-grabbing shadow-md",
         )}

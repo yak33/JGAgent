@@ -252,17 +252,15 @@ body {
 /* === 主题变量 === */
 
 @theme {
-  /* 中文 Windows 的 Chromium 把 ui-sans-serif/system-ui 按系统 locale 解析成微软雅黑，
-   * 界面西文与数字会整体使用雅黑的西文字形（实测宽度与 YaHei 精确一致），观感明显差于 Segoe UI。
-   * 显式让西文优先落到各系统 UI 字体，中文再落到雅黑 UI；勿把开头的西文字体从栈里去掉。 */
+  /* 西文与数字优先使用本地 Geist，中文在 Windows 下落到标准微软雅黑（避免 Microsoft YaHei UI 偏瘦偏挤）。 */
   --font-sans:
-    "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Microsoft YaHei UI",
-    "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", ui-sans-serif, system-ui, sans-serif;
+    "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "PingFang SC",
+    "Microsoft YaHei", "Noto Sans CJK SC", ui-sans-serif, system-ui, sans-serif;
   /* Windows 的 Consolas 不含中文字形，Tailwind 默认栈最终会让中文落到宋体。
    * 保留各平台西文等宽字体，并在通用 monospace 前显式加入各平台 CJK 无衬线字体。 */
   --font-mono:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
-    "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", monospace;
+    "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", monospace;
   /* 设置页直接恢复通用大字号会绕过 UI 字号体系；专用 token 保留默认 24px / 30px，并跟随界面字号缩放。 */
   --text-ui-settings-title: calc(var(--ui-font-size) + 10px);
   --text-ui-settings-title--line-height: calc(4 / 3);
@@ -2533,4 +2531,177 @@ body {
   > :is(.summary-hover-text, :has(.summary-hover-text)):not([data-consecutive-summary-group])
   + :is(.summary-hover-text, :has(.summary-hover-text)):not([data-consecutive-summary-group]) {
   padding-top: 0;
+}
+
+/* ============================================================================
+ * JGHarness Orca / Qoder 风格默认皮肤（docs/specs/ui-orca-skin-refresh.md）
+ * 独立追加在样式表末尾，便于后续同步上游 ZCode 时将冲突面收口在一处。
+ * ============================================================================ */
+
+@font-face {
+  font-family: "Geist";
+  src: url("./assets/fonts/Geist-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* 西文优先使用本地 Geist，中文在 Windows 走标准微软雅黑而非偏瘦的 YaHei UI。 */
+  --font-sans:
+    "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "PingFang SC",
+    "Microsoft YaHei", "Noto Sans CJK SC", ui-sans-serif, system-ui, sans-serif;
+  --default-font-family: var(--font-sans);
+  --shadow-composer-soft: none;
+  --shadow-status-panel: 0 8px 24px rgb(0 0 0 / 16%);
+}
+
+/* 对齐 Orca 全局文字渲染：开启灰度抗锯齿与细微字距，避免深色底白字发虚发毛。 */
+body {
+  font-family: var(--font-sans);
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 浅色默认主题：纯白工作区画布 + 柔和浅灰侧栏 + 极克制 1px 细线 */
+.theme-zai-light {
+  --shadow-composer-soft: none;
+  --color-background: #ffffff;
+  --color-background-win-alt: #f5f5f5;
+  --color-background-alt: color-mix(in oklab, #f5f5f5 84%, transparent);
+  --color-brand: #171717;
+  --color-accent: #f0f0f0;
+  --color-border: #e5e5e5;
+  --color-border-hover: #d4d4d8;
+  --color-hover: rgb(10 10 10 / 0.045);
+  --color-selected: rgb(10 10 10 / 0.075);
+  --color-header: #ffffff;
+  --color-panel: #fafafa;
+  --color-sidebar: #f5f5f5;
+  --color-surface: rgb(10 10 10 / 0.03);
+  --color-user-message-bubble: rgb(10 10 10 / 0.045);
+  --color-surface-hover: rgb(10 10 10 / 0.055);
+  --color-card: #ffffff;
+  --color-card-selected: #f2f2f2;
+  --color-card-border: #e5e5e5;
+  --color-popover: #ffffff;
+  --color-popover-header: #fafafa;
+  --color-popover-border: #e5e5e5;
+  --color-input: #ffffff;
+  --color-input-focused: #ffffff;
+  --color-input-border: #e2e2e5;
+  --color-input-border-hover: #d0d0d5;
+  --color-input-border-focused: #b4b4bc;
+  --color-tab: #f5f5f5;
+  --color-tab-active: #ffffff;
+  --color-menu: #ffffff;
+  --color-menu-hover: #f4f4f5;
+  --color-primary: #171717;
+  --color-primary-foreground: #fafafa;
+  --color-secondary: #ececef;
+  --color-foreground: #0a0a0a;
+  --color-foreground-subtle: rgb(10 10 10 / 0.62);
+  --color-foreground-subtlest: rgb(10 10 10 / 0.38);
+  --color-toast: #ffffff;
+  --color-tooltip: #18181b;
+  --color-tooltip-foreground: #fafafa;
+  --color-tooltip-tag: rgb(255 255 255 / 0.14);
+  --color-tooltip-tag-foreground: rgb(255 255 255 / 0.72);
+  --color-tag: #ededef;
+  --color-terminal-bg: #fafafa;
+  --color-terminal-fg: #0a0a0a;
+  --color-terminal-cursor: #0a0a0a;
+  --color-terminal-cursor-accent: #fafafa;
+}
+
+/* 深色默认主题：对齐 Orca 托起式深灰侧栏 (#222222) + 深炭画布 (#121212) + 7.5% 极细分割线 */
+.dark,
+.theme-zai-dark {
+  --shadow-composer-soft: none;
+  --color-background: #121212;
+  --color-background-win-alt: #202020;
+  --color-background-alt: color-mix(in oklab, #202020 84%, transparent);
+  --color-brand: #f0f0f0;
+  --color-accent: #1d2738;
+  --color-border: rgb(255 255 255 / 0.075);
+  --color-border-hover: rgb(255 255 255 / 0.14);
+  --color-hover: rgb(255 255 255 / 0.06);
+  --color-selected: rgb(255 255 255 / 0.1);
+  --color-header: #161616;
+  --color-panel: #181818;
+  --color-sidebar: #202020;
+  --color-surface: rgb(255 255 255 / 0.04);
+  --color-user-message-bubble: rgb(255 255 255 / 0.07);
+  --color-surface-hover: rgb(255 255 255 / 0.07);
+  --color-card: #1a1a1a;
+  --color-card-selected: #252525;
+  --color-card-border: rgb(255 255 255 / 0.08);
+  --color-popover: #1c1c1c;
+  --color-popover-header: #171717;
+  --color-popover-border: rgb(255 255 255 / 0.1);
+  --color-input: #191919;
+  --color-input-focused: #1d1d1d;
+  --color-input-border: rgb(255 255 255 / 0.09);
+  --color-input-border-hover: rgb(255 255 255 / 0.15);
+  --color-input-border-focused: rgb(255 255 255 / 0.24);
+  --color-tab: #161616;
+  --color-tab-active: #252525;
+  --color-menu: #1c1c1c;
+  --color-menu-hover: #282828;
+  --color-primary: #ebebeb;
+  --color-primary-foreground: #121212;
+  --color-secondary: #262626;
+  --color-foreground: #f0f0f0;
+  --color-foreground-subtle: rgb(240 240 240 / 0.65);
+  --color-foreground-subtlest: rgb(240 240 240 / 0.42);
+  --color-success: #4ade80;
+  --color-warning: #eab308;
+  --color-destructive: #ff6568;
+  --color-diff-added: #4ade80;
+  --color-diff-removed: #ff6568;
+  --color-git-added: #81b88b;
+  --color-git-modified: #e2c08d;
+  --color-git-deleted: #e06c58;
+  --color-git-untracked: #73c991;
+  --color-toast: #1c1c1c;
+  --color-tooltip: #222224;
+  --color-tooltip-foreground: #f0f0f0;
+  --color-tooltip-tag: rgb(255 255 255 / 0.1);
+  --color-tooltip-tag-foreground: rgb(240 240 240 / 0.68);
+  --color-tag: #282828;
+  --color-terminal-bg: #121212;
+  --color-terminal-fg: #f0f0f0;
+  --color-terminal-cursor: #f0f0f0;
+  --color-terminal-cursor-accent: #121212;
+}
+
+/* 细腻滚动条：由 14px 收窄为 10px，保留既有透明轨道与按需浮现策略。 */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  min-height: 28px;
+  min-width: 28px;
+  border: 2px solid transparent;
+  border-radius: 9999px;
+}
+
+/* 浮层菜单与对话框在极简暗色下补充更柔和的分层投影。 */
+[data-slot="dropdown-menu-content"],
+[data-slot="dropdown-menu-sub-content"],
+[data-slot="context-menu-content"],
+[data-slot="popover-content"],
+[data-slot="select-content"] {
+  box-shadow: 0 10px 28px rgb(0 0 0 / 0.24);
+}
+
+.theme-zai-light [data-slot="dropdown-menu-content"],
+.theme-zai-light [data-slot="dropdown-menu-sub-content"],
+.theme-zai-light [data-slot="context-menu-content"],
+.theme-zai-light [data-slot="popover-content"],
+.theme-zai-light [data-slot="select-content"] {
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.08);
 }

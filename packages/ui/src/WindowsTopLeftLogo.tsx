@@ -12,8 +12,8 @@ export function WindowsTopLeftLogo({
   return (
     <div
       className={cn(
-        // Logo 底座和外部占位统一为 20px，保留原中心点（27px / 29px）。
-        "absolute left-1 top-1 mt-px ml-px z-20 flex h-12 items-center px-3 [app-region:drag]",
+        // 贴边顶栏统一为 h-10（40px），与主窗口左上角控制组基线对齐。
+        "absolute left-0 top-0 z-20 flex h-10 items-center px-3 [app-region:drag]",
         className,
       )}
     >

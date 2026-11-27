@@ -30,13 +30,13 @@ export function NewTaskButtonGroup({
         }
       }}
       className={cn(
-        "group w-full h-8 rounded-lg inline-flex shrink-0 items-center justify-stretch gap-2 overflow-hidden pl-2.5 pr-2.5 hover:bg-surface-hover hover:text-foreground active:translate-y-0 cursor-pointer",
+        "group w-full h-7 rounded-md inline-flex shrink-0 items-center justify-stretch gap-2 overflow-hidden pl-2 pr-2 text-foreground-subtle hover:bg-hover hover:text-foreground active:translate-y-0 cursor-pointer transition-colors",
         disabled &&
           "cursor-not-allowed text-foreground-subtlest hover:bg-transparent hover:text-foreground-subtlest",
       )}
     >
-      <div className="flex min-w-0 flex-1 items-center gap-2 text-ui-base">
-        <MessageCirclePlus className="h-4 w-4 shrink-0" />
+      <div className="flex min-w-0 flex-1 items-center gap-2 text-ui-caption font-medium tracking-tight">
+        <MessageCirclePlus className="size-3.5 shrink-0" />
         <span className="truncate">{intl.formatMessage({ id: "taskList.newThread" })}</span>
         <span className="ml-auto shrink-0 text-ui-xs font-normal text-foreground-subtlest">
           {newTaskShortcutLabel}

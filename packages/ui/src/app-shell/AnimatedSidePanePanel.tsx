@@ -975,7 +975,6 @@ export function AnimatedSidePanePanel({
           !isScreenshotSurfaceActive &&
           "w-[var(--side-pane-content-width,100%)]",
         !mobileOverlay && frameClassName,
-        !mobileOverlay && "border-[0.5px] shadow-xs",
         mobileStacked && "max-md:rounded-none max-md:border-0",
         mobileOverlay && "min-w-0",
         mobileStacked && "max-md:!w-full",
@@ -1020,7 +1019,7 @@ export function AnimatedSidePanePanel({
                 <TabsList
                   style={mobileOverlay ? undefined : captionControlsStyle}
                   className={cn(
-                    "flex justify-start w-full rounded-none p-0 border-0 border-b border-border/50 bg-transparent shadow-none !h-12 overflow-hidden",
+                    "flex justify-start w-full rounded-none p-0 border-0 border-b border-border bg-header shadow-none !h-10 overflow-hidden",
                     fullView?.leadingInsetClassName,
                     // 独立面板将标签栏移至窗口顶部，需补充窗口拖拽区域；标签和按钮仍处理自身交互。
                     isDesktop &&
@@ -1029,8 +1028,8 @@ export function AnimatedSidePanePanel({
                   )}
                 >
                   <div className="flex items-center justify-start flex-1 min-w-0">
-                    {/* 与 WorkspaceHeader 的 p-2 对齐，避免切换面板后左右操作区跳动。 */}
-                    <div className="flex h-full shrink-0 items-center p-2">
+                    {/* 与 WorkspaceHeader 的水平内边距对齐，避免切换面板后左右操作区跳动。 */}
+                    <div className="flex h-full shrink-0 items-center px-2 py-1">
                       {sidePaneTabOverview}
                     </div>
                     {fullView ? (
@@ -1052,7 +1051,7 @@ export function AnimatedSidePanePanel({
                         ref={tabsScrollViewportRef}
                         data-side-pane-tabs-viewport=""
                         className={cn(
-                          "min-w-0 flex-1 overflow-x-auto !scrollbar-hide h-12 items-center",
+                          "min-w-0 flex-1 overflow-x-auto !scrollbar-hide h-10 items-center",
                           tabsScrollMaskEdges.left &&
                             tabsScrollMaskEdges.right &&
                             "[mask-image:linear-gradient(to_right,transparent_0%,black_16px,black_calc(100%-16px),transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_16px,black_calc(100%-16px),transparent_100%)]",

@@ -91,7 +91,7 @@ export function WorkspacePurposeSection({
               type="button"
               aria-description={dragHandleLabel}
               data-purpose-section-drag-trigger={sortableId}
-              className="flex h-7 min-w-0 flex-1 touch-none items-center gap-1 px-2.5 text-left text-ui-base font-medium text-foreground-subtlest outline-none transition-colors hover:text-foreground focus-visible:text-foreground focus-visible:ring-2 focus-visible:ring-ring/30"
+              className="flex h-7 min-w-0 flex-1 touch-none items-center gap-1 px-2 text-left text-ui-sm font-semibold text-foreground-subtle outline-none transition-colors hover:text-foreground focus-visible:text-foreground focus-visible:ring-2 focus-visible:ring-ring/30"
             >
               <span className="min-w-0 truncate">{title}</span>
               {open ? (

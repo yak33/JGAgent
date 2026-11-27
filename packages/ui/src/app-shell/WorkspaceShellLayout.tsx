@@ -492,8 +492,8 @@ const WorkspaceShellLayoutContent = memo(function WorkspaceShellLayoutComponent(
   );
   const isLinuxDesktop = Boolean(isDesktop && !isMacDesktop && !isWindowsDesktop);
   const isWebRemoteControlShell = Boolean(webRemoteControlWorkspaceSwitcher);
-  // Windows/Linux 原先遗漏外层留白，导致独立面板贴住窗口边缘；桌面统一使用 4px 间距。
-  const hasDesktopPanelInset = isMacDesktop || isWindowsDesktop || isLinuxDesktop;
+  // JGHarness Orca 风格贴边布局：移除桌面端浮岛外围留白，面板贴边并用 1px 细线分隔。
+  const hasDesktopPanelInset = false;
   const usesInlineWindowControls = Boolean(isWindowsDesktop || isLinuxDesktop);
   const workspaceShellRadiusOptions = {
     isMacDesktop,
@@ -2734,10 +2734,11 @@ const WorkspaceShellLayoutContent = memo(function WorkspaceShellLayoutComponent(
             onPointerMove={handleWorkspaceSidebarResizeMove}
             onPointerUp={(event) => finishWorkspaceSidebarResize(event)}
             className={cn(
-              "group/handle relative z-10 flex h-full w-1 shrink-0 touch-none cursor-ew-resize items-center justify-center bg-transparent outline-none [app-region:no-drag] focus:outline-none focus-visible:ring-0",
-              "after:pointer-events-none after:absolute after:rounded-full after:bg-foreground-subtlest/50 platform-mac-desktop:after:bg-resize-handle platform-windows-desktop:after:bg-resize-handle platform-linux-desktop:after:bg-resize-handle after:opacity-0 after:transition-opacity after:content-[''] after:inset-y-[var(--workspace-panel-radius)] after:w-0.5",
+              "group/handle relative z-10 flex h-full w-px shrink-0 touch-none cursor-ew-resize items-center justify-center bg-border outline-none [app-region:no-drag] focus:outline-none focus-visible:ring-0",
+              // 1px 细线 + 左右 3px 透明命中扩区，兼顾视觉精致与拖拽易用性。
+              "before:absolute before:inset-y-0 before:-inset-x-1 before:content-['']",
+              "after:pointer-events-none after:absolute after:inset-y-0 after:w-0.5 after:bg-resize-handle after:opacity-0 after:transition-opacity after:content-['']",
               "hover:after:opacity-100 data-[separator=hover]:after:opacity-100 data-[separator=active]:after:opacity-100 focus-visible:after:opacity-100 [[data-workspace-sidebar-resizing=true]_&]:after:opacity-100",
-              hasDesktopPanelInset && "after:inset-y-[var(--workspace-resize-handle-inset)]",
               isWebRemoteControlShell && "max-md:hidden",
             )}
           />
@@ -2818,7 +2819,7 @@ const WorkspaceShellLayoutContent = memo(function WorkspaceShellLayoutComponent(
                       className={cn(
                         "relative flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-background",
                         isSidePaneVisible
-                          ? "rounded-[var(--workspace-panel-radius)] border border-border"
+                          ? "rounded-none border-0"
                           : resolveWorkspaceShellWindowChromeClass({
                               isMacDesktop,
                               isWindowsDesktop,
@@ -2828,9 +2829,6 @@ const WorkspaceShellLayoutContent = memo(function WorkspaceShellLayoutComponent(
                               supportsNativeRoundedCorners:
                                 desktopWindowChromeState?.supportsNativeRoundedCorners ?? null,
                             }),
-                        isTerminalVisible && "rounded-b-[var(--workspace-panel-radius)] border-b",
-                        "border-[0.5px]",
-                        !isFullView && "shadow-xs",
                         isWebRemoteControlShell &&
                           "max-md:rounded-none max-md:border-x-0 max-md:border-b-0",
                         // 完整视图由面板外框或浮窗外框承担边框与圆角，对话 frame 不再叠一层。
@@ -2911,7 +2909,7 @@ const WorkspaceShellLayoutContent = memo(function WorkspaceShellLayoutComponent(
                           data-web-remote-navigation-resize-handle="true"
                           className={cn(
                             "absolute left-1/2 z-30 hidden -translate-x-1/2 -translate-y-1/2 touch-none cursor-ns-resize border-border bg-surface text-foreground-subtle shadow-sm hover:bg-surface-hover hover:text-foreground max-md:inline-flex [app-region:no-drag]",
-                            shouldRenderWorkspaceHeader ? "top-12" : "top-0",
+                            shouldRenderWorkspaceHeader ? "top-10" : "top-0",
                             isWebRemoteControlNavigationDragging &&
                               "border-border-hover bg-surface-hover text-foreground",
                           )}
@@ -3116,20 +3114,7 @@ const WorkspaceShellLayoutContent = memo(function WorkspaceShellLayoutComponent(
                   {isWebRemoteControlShell ||
                   (workspaceMainView !== "automations" && workspaceMainView !== "plugin-store") ? (
                     <AnimatedTerminalPanel
-                      frameClassName={cn(
-                        isSidePaneVisible
-                          ? "rounded-[var(--workspace-panel-radius)] border border-border"
-                          : resolveWorkspaceShellWindowChromeClass({
-                              isMacDesktop,
-                              isWindowsDesktop,
-                              isLinuxDesktop,
-                              macOSMajorVersion: desktopWindowChromeState?.macOSMajorVersion,
-                              isWindowsMaximized: desktopWindowChromeState?.isMaximized ?? false,
-                              supportsNativeRoundedCorners:
-                                desktopWindowChromeState?.supportsNativeRoundedCorners ?? null,
-                            }),
-                        "rounded-t-[var(--workspace-panel-radius)] border-t",
-                      )}
+                      frameClassName="rounded-none border-0"
                       services={services}
                       workspaceAbsPath={workspaceAbsPath}
                       workspaceIdentity={workspaceIdentity}

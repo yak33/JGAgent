@@ -34,7 +34,7 @@ export const ProjectSidebarListHeader = memo(function ProjectSidebarListHeader({
     >
       <span
         data-testid="sidebar-list-title"
-        className="min-w-0 flex-1 truncate px-2.5 text-ui-base font-medium text-foreground-subtle"
+        className="min-w-0 flex-1 truncate px-2 text-ui-sm font-semibold text-foreground-subtle"
       >
         {intl.formatMessage({ id: "taskList.title" })}
       </span>

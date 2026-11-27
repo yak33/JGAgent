@@ -34,7 +34,7 @@ export const ProjectSidebarNavigation = memo(function ProjectSidebarNavigation({
   return (
     <div
       data-testid="sidebar-primary-navigation"
-      className={`flex flex-col gap-1 px-2 py-3 ${props.isWebRemoteControl && !deviceNavigation ? "max-md:pt-11" : ""}`}
+      className={`flex flex-col gap-0.5 px-2 py-2 ${props.isWebRemoteControl && !deviceNavigation ? "max-md:pt-10" : ""}`}
     >
       {/* Relay V2 远控：当前电脑是项目与任务的上一级，放在导航首行；手机端占用原顶部留白。 */}
       {deviceNavigation ? <WebRemoteControlDeviceHeader navigation={deviceNavigation} /> : null}
@@ -43,27 +43,27 @@ export const ProjectSidebarNavigation = memo(function ProjectSidebarNavigation({
       {!props.isWebRemoteControl && props.onOpenAutomations ? (
         <Button
           variant="ghost"
-          size="lg"
-          className={`w-full justify-start gap-2 ${props.automationsActive ? "bg-selected text-foreground" : ""}`}
+          size="default"
+          className={`w-full justify-start gap-2 rounded-md text-ui-caption font-medium tracking-tight ${props.automationsActive ? "bg-selected text-foreground" : "text-foreground-subtle hover:text-foreground"}`}
           aria-pressed={props.automationsActive ?? false}
           data-testid={TID_AUTOMATIONS_OPEN}
           // 点击事件不能进入业务导航的可选 automationId 参数。
           onClick={() => props.onOpenAutomations?.()}
         >
-          <CalendarClock className="size-4" />
+          <CalendarClock className="size-3.5" />
           {intl.formatMessage({ id: "workspace.openScheduledSettings" })}
         </Button>
       ) : null}
       {!props.isWebRemoteControl ? (
         <Button
           variant="ghost"
-          size="lg"
-          className={`w-full justify-start gap-2 ${props.pluginStoreActive ? "bg-selected text-foreground" : ""}`}
+          size="default"
+          className={`w-full justify-start gap-2 rounded-md text-ui-caption font-medium tracking-tight ${props.pluginStoreActive ? "bg-selected text-foreground" : "text-foreground-subtle hover:text-foreground"}`}
           aria-pressed={props.pluginStoreActive ?? false}
           data-testid="plugin-store-sidebar-open"
           onClick={() => props.onOpenPluginStore?.()}
         >
-          <Blocks className="size-4" />
+          <Blocks className="size-3.5" />
           {intl.formatMessage({ id: "workspace.openPluginsSettings" })}
         </Button>
       ) : null}

@@ -1161,9 +1161,7 @@ export function SettingsPage({
           {usesInlineWindowControls ? (
             <div
               className={cn(
-                "absolute z-30 mt-px mr-px flex h-12 items-center gap-0.5 px-2 pointer-events-auto [app-region:no-drag]",
-                // 外沿留白变化后，悬浮操作组也必须同步，否则与内容 Header 错位。
-                isWindowsDesktop ? "right-1.5 top-1.5" : "right-1 top-1",
+                "absolute right-0 top-0 z-30 flex h-10 items-center gap-0.5 px-2 pointer-events-auto [app-region:no-drag]",
               )}
             >
               {/* Bug 原因：Windows/Linux 设置页仍保留旧 caption 下箭头，与主界面和 macOS 的帮助入口不一致。
@@ -1177,8 +1175,8 @@ export function SettingsPage({
               spec：docs/settings-narrow-layout.md */}
           <aside className="min-w-0">
             <div className="flex h-full flex-col compact-web:flex-row compact-web:items-center">
-              <div className="h-12 [app-region:drag] compact-web:hidden"></div>
-              <div className="px-2 pb-3 pt-3 compact-web:shrink-0 compact-web:py-1.5 compact-web:pr-0">
+              <div className="h-10 [app-region:drag] compact-web:hidden"></div>
+              <div className="px-2 pb-2 pt-2 compact-web:shrink-0 compact-web:py-1.5 compact-web:pr-0">
                 {onBack ? (
                   <ControlHintTooltip
                     title={intl.formatMessage({
@@ -1336,38 +1334,26 @@ export function SettingsPage({
 
           <section
             data-settings-content-frame="true"
-            className={cn(
-              "flex min-h-0 flex-col",
-              // 桌面平台统一复用主工作区的面板 inset；左侧仍与导航相接，顶部由独立拖拽留白承接。
-              isDesktop ? (isWindowsDesktop ? "pr-1.5 pb-1.5" : "pr-1 pb-1") : "p-0",
-            )}
+            className="flex min-h-0 flex-col p-0"
           >
             <div
-              data-settings-top-inset={isDesktop ? "true" : undefined}
-              // 下方面板使用 h-full；顶部留白不能参与 flex 收缩，否则 6px 会变成小数像素。
-              className={cn(
-                "shrink-0 [app-region:drag]",
-                isDesktop && (isWindowsDesktop ? "h-1.5" : "h-1"),
-                isMacDesktop && "max-lg:h-16",
-              )}
+              data-settings-top-inset={isMacDesktop ? "true" : undefined}
+              // 仅在 macOS 窄布局为原生红绿灯预留拖拽避让条；贴边风格不再使用浮岛外边距。
+              className={cn("shrink-0 [app-region:drag]", isMacDesktop && "max-lg:h-12")}
             />
             <div
               data-settings-panel-frame="true"
-              className={cn(
-                "relative flex flex-col min-h-0 h-full border border-border bg-background",
-                // 直接写像素圆角会绕过设计 token；设置页与工作区统一复用 rounded-md（默认 6px）。
-                isWindowsDesktop ? "rounded-md" : "rounded-xl",
-              )}
+              className="relative flex flex-col min-h-0 h-full border-l border-border bg-background compact-web:border-l-0 compact-web:border-t"
             >
               {!usesInlineWindowControls ? (
                 <div
                   className={cn(
-                    // Settings 使用和 new task 一致的问号定位：在内容面板内定位，外层让出自绘窗口按钮区，内层保持 top-2.5/right-2.5。
+                    // Settings 使用和 new task 一致的问号定位：在内容面板内定位，外层让出自绘窗口按钮区，内层保持对齐。
                     "absolute top-0 z-50 h-10 w-10 pointer-events-auto [app-region:no-drag]",
                     "right-0",
                   )}
                 >
-                  <div className="absolute right-2.5 top-2.5 pointer-events-auto [app-region:no-drag]">
+                  <div className="absolute right-2 top-1.5 pointer-events-auto [app-region:no-drag]">
                     <WorkspaceHelpMenuButton
                       className="relative z-50 [app-region:no-drag]"
                       isDesktop={Boolean(isDesktop)}
@@ -1380,7 +1366,7 @@ export function SettingsPage({
                 sectionLabel={settingsBreadcrumbSectionLabel}
               >
                 <div className="flex min-h-0 flex-1 flex-col">
-                  <div className="flex h-12 shrink-0">
+                  <div className="flex h-10 shrink-0 border-b border-border bg-header">
                     <div
                       // Settings 窄布局会像左侧导航一样在 max-lg 收成 icon rail。
                       // 此时外层已经提供 max-lg:h-16 的顶部拖拽/避让区，内层 h-10 再保留会把内容额外压低。
